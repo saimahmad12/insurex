@@ -4,4 +4,5 @@ abstract final class AppAssets {
 
   static const String googleGLogo =
       'assets/images/google_g_logo_transparent.png';
+
 }
