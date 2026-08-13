@@ -3,18 +3,25 @@ import 'package:flutter/material.dart';
 import 'core/navigation/app_routes.dart';
 import 'core/theme/app_theme.dart';
 
+// Controllers
 import 'features/auth/application/controllers/forgot_password_controller.dart';
 import 'features/auth/application/controllers/login_controller.dart';
+import 'features/auth/application/controllers/otp_verification_controller.dart';
 import 'features/auth/application/controllers/signup_controller.dart';
 
+// Repositories
 import 'features/auth/data/repositories/mock_auth_repository.dart';
+import 'features/auth/data/repositories/mock_otp_verification_repository.dart';
 import 'features/auth/data/repositories/mock_password_recovery_repository.dart';
 import 'features/auth/data/repositories/mock_signup_repository.dart';
 
+// Auth Pages
 import 'features/auth/presentation/pages/forgot_password_page.dart';
 import 'features/auth/presentation/pages/login_page.dart';
+import 'features/auth/presentation/pages/otp_verification_page.dart';
 import 'features/auth/presentation/pages/signup_page.dart';
 
+// Other Pages
 import 'features/dashboard/presentation/pages/dashboard_placeholder_page.dart';
 import 'features/splash/presentation/pages/splash_page.dart';
 
@@ -30,7 +37,11 @@ class InsureXApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
       initialRoute: AppRoutes.splash,
+
       routes: <String, WidgetBuilder>{
+        // ============================================================
+        // SPLASH
+        // ============================================================
         AppRoutes.splash: (
             BuildContext context,
             ) {
@@ -48,6 +59,9 @@ class InsureXApp extends StatelessWidget {
           );
         },
 
+        // ============================================================
+        // LOGIN
+        // ============================================================
         AppRoutes.login: (
             BuildContext context,
             ) {
@@ -103,6 +117,9 @@ class InsureXApp extends StatelessWidget {
           );
         },
 
+        // ============================================================
+        // SIGN UP
+        // ============================================================
         AppRoutes.signup: (
             BuildContext context,
             ) {
@@ -160,6 +177,9 @@ class InsureXApp extends StatelessWidget {
           );
         },
 
+        // ============================================================
+        // FORGOT PASSWORD
+        // ============================================================
         AppRoutes.forgotPassword: (
             BuildContext context,
             ) {
@@ -186,9 +206,64 @@ class InsureXApp extends StatelessWidget {
                 },
               );
             },
+
+            // NEW:
+            // Pass email/mobile to OTP screen.
+            onContinueToVerification: (
+                String identity,
+                ) {
+              Navigator.of(context).pushNamed(
+                AppRoutes.otpVerification,
+                arguments: identity,
+              );
+            },
           );
         },
 
+        // ============================================================
+        // OTP VERIFICATION
+        // ============================================================
+        AppRoutes.otpVerification: (
+            BuildContext context,
+            ) {
+          // Get email/mobile passed from Forgot Password screen.
+          final Object? arguments =
+              ModalRoute.of(context)
+                  ?.settings
+                  .arguments;
+
+          final String identity =
+          arguments is String
+              ? arguments
+              : '';
+
+          return OtpVerificationPage(
+            identity: identity,
+
+            controller:
+            OtpVerificationController(
+              repository:
+              const MockOtpVerificationRepository(),
+            ),
+
+            onBack: () {
+              Navigator.of(context).pop();
+            },
+
+            // OTP verified successfully.
+            // Next screen will be Create New Password.
+            onVerified: () {
+              _showMessage(
+                context,
+                'OTP verified successfully. Create New Password screen is next.',
+              );
+            },
+          );
+        },
+
+        // ============================================================
+        // DASHBOARD
+        // ============================================================
         AppRoutes.dashboard: (
             BuildContext context,
             ) {
