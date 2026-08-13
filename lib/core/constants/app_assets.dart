@@ -5,4 +5,6 @@ abstract final class AppAssets {
   static const String googleGLogo =
       'assets/images/google_g_logo_transparent.png';
 
+  static const String insureXSignupLogo =
+      'assets/images/insurex_signup_logo_transparent.png';
 }
