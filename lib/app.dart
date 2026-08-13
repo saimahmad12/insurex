@@ -2,17 +2,26 @@ import 'package:flutter/material.dart';
 
 import 'core/navigation/app_routes.dart';
 import 'core/theme/app_theme.dart';
+
+import 'features/auth/application/controllers/forgot_password_controller.dart';
 import 'features/auth/application/controllers/login_controller.dart';
 import 'features/auth/application/controllers/signup_controller.dart';
+
 import 'features/auth/data/repositories/mock_auth_repository.dart';
+import 'features/auth/data/repositories/mock_password_recovery_repository.dart';
 import 'features/auth/data/repositories/mock_signup_repository.dart';
+
+import 'features/auth/presentation/pages/forgot_password_page.dart';
 import 'features/auth/presentation/pages/login_page.dart';
 import 'features/auth/presentation/pages/signup_page.dart';
+
 import 'features/dashboard/presentation/pages/dashboard_placeholder_page.dart';
 import 'features/splash/presentation/pages/splash_page.dart';
 
 class InsureXApp extends StatelessWidget {
-  const InsureXApp({super.key});
+  const InsureXApp({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -44,39 +53,47 @@ class InsureXApp extends StatelessWidget {
             ) {
           return LoginPage(
             controller: LoginController(
-              repository: const MockAuthRepository(),
+              repository:
+              const MockAuthRepository(),
             ),
+
             onBack: () {
               Navigator.of(context).pop();
             },
+
             onLoginSuccess: () {
-              Navigator.of(context).pushReplacementNamed(
+              Navigator.of(context)
+                  .pushReplacementNamed(
                 AppRoutes.dashboard,
               );
             },
+
             onForgotPassword: () {
-              _showMessage(
-                context,
-                'Forgot-password screen will be created later.',
+              Navigator.of(context).pushNamed(
+                AppRoutes.forgotPassword,
               );
             },
+
             onSignUp: () {
               Navigator.of(context).pushNamed(
                 AppRoutes.signup,
               );
             },
+
             onGoogleLogin: () {
               _showMessage(
                 context,
                 'Google authentication is not connected yet.',
               );
             },
+
             onAppleLogin: () {
               _showMessage(
                 context,
                 'Apple authentication is not connected yet.',
               );
             },
+
             onBiometricLogin: () {
               _showMessage(
                 context,
@@ -91,43 +108,82 @@ class InsureXApp extends StatelessWidget {
             ) {
           return SignupPage(
             controller: SignupController(
-              repository: const MockSignupRepository(),
+              repository:
+              const MockSignupRepository(),
             ),
+
             onBack: () {
               Navigator.of(context).pop();
             },
+
             onSignupSuccess: () {
-              Navigator.of(context).pushReplacementNamed(
+              Navigator.of(context)
+                  .pushReplacementNamed(
                 AppRoutes.login,
               );
             },
+
             onLoginPressed: () {
-              Navigator.of(context).pushReplacementNamed(
+              Navigator.of(context)
+                  .pushReplacementNamed(
                 AppRoutes.login,
               );
             },
+
             onGoogleSignup: () {
               _showMessage(
                 context,
                 'Google registration is not connected yet.',
               );
             },
+
             onAppleSignup: () {
               _showMessage(
                 context,
                 'Apple registration is not connected yet.',
               );
             },
+
             onTermsPressed: () {
               _showMessage(
                 context,
                 'Terms of Service will be added later.',
               );
             },
+
             onPrivacyPressed: () {
               _showMessage(
                 context,
                 'Privacy Policy will be added later.',
+              );
+            },
+          );
+        },
+
+        AppRoutes.forgotPassword: (
+            BuildContext context,
+            ) {
+          return ForgotPasswordPage(
+            controller:
+            ForgotPasswordController(
+              repository:
+              const MockPasswordRecoveryRepository(),
+            ),
+
+            onBack: () {
+              Navigator.of(context).pop();
+            },
+
+            onBackToLogin: () {
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil(
+                AppRoutes.login,
+                    (
+                    Route<dynamic> route,
+                    ) {
+                  return route.settings.name ==
+                      AppRoutes.splash;
+                },
               );
             },
           );
@@ -151,7 +207,8 @@ class InsureXApp extends StatelessWidget {
       ..showSnackBar(
         SnackBar(
           content: Text(message),
-          behavior: SnackBarBehavior.floating,
+          behavior:
+          SnackBarBehavior.floating,
         ),
       );
   }
