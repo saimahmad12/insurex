@@ -7,4 +7,7 @@ abstract final class AppAssets {
 
   static const String insureXSignupLogo =
       'assets/images/insurex_signup_logo_transparent.png';
+
+  static const String forgotPasswordLogo =
+      'assets/images/forgot_password_logo.png';
 }
