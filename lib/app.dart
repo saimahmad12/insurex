@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'core/navigation/app_routes.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/application/controllers/login_controller.dart';
+import 'features/auth/application/controllers/signup_controller.dart';
 import 'features/auth/data/repositories/mock_auth_repository.dart';
+import 'features/auth/data/repositories/mock_signup_repository.dart';
 import 'features/auth/presentation/pages/login_page.dart';
+import 'features/auth/presentation/pages/signup_page.dart';
 import 'features/dashboard/presentation/pages/dashboard_placeholder_page.dart';
 import 'features/splash/presentation/pages/splash_page.dart';
 
@@ -25,7 +28,7 @@ class InsureXApp extends StatelessWidget {
           return SplashPage(
             onGetStarted: () {
               Navigator.of(context).pushNamed(
-                AppRoutes.login,
+                AppRoutes.signup,
               );
             },
             onLogin: () {
@@ -58,9 +61,8 @@ class InsureXApp extends StatelessWidget {
               );
             },
             onSignUp: () {
-              _showMessage(
-                context,
-                'Sign-up screen will be created next.',
+              Navigator.of(context).pushNamed(
+                AppRoutes.signup,
               );
             },
             onGoogleLogin: () {
@@ -79,6 +81,53 @@ class InsureXApp extends StatelessWidget {
               _showMessage(
                 context,
                 'Biometric authentication is not connected yet.',
+              );
+            },
+          );
+        },
+
+        AppRoutes.signup: (
+            BuildContext context,
+            ) {
+          return SignupPage(
+            controller: SignupController(
+              repository: const MockSignupRepository(),
+            ),
+            onBack: () {
+              Navigator.of(context).pop();
+            },
+            onSignupSuccess: () {
+              Navigator.of(context).pushReplacementNamed(
+                AppRoutes.login,
+              );
+            },
+            onLoginPressed: () {
+              Navigator.of(context).pushReplacementNamed(
+                AppRoutes.login,
+              );
+            },
+            onGoogleSignup: () {
+              _showMessage(
+                context,
+                'Google registration is not connected yet.',
+              );
+            },
+            onAppleSignup: () {
+              _showMessage(
+                context,
+                'Apple registration is not connected yet.',
+              );
+            },
+            onTermsPressed: () {
+              _showMessage(
+                context,
+                'Terms of Service will be added later.',
+              );
+            },
+            onPrivacyPressed: () {
+              _showMessage(
+                context,
+                'Privacy Policy will be added later.',
               );
             },
           );
