@@ -14,6 +14,7 @@ class ForgotPasswordPage extends StatefulWidget {
     required this.controller,
     required this.onBack,
     required this.onBackToLogin,
+    required this.onContinueToVerification,
     super.key,
   });
 
@@ -21,6 +22,9 @@ class ForgotPasswordPage extends StatefulWidget {
 
   final VoidCallback onBack;
   final VoidCallback onBackToLogin;
+
+  /// Sends the entered email/mobile number to the OTP screen.
+  final ValueChanged<String> onContinueToVerification;
 
   @override
   State<ForgotPasswordPage> createState() {
@@ -45,8 +49,10 @@ class _ForgotPasswordPageState
   }
 
   Future<void> _submitRequest() async {
+    // Hide keyboard.
     FocusManager.instance.primaryFocus?.unfocus();
 
+    // Validate email/mobile.
     final bool isValid =
         _formKey.currentState?.validate() ?? false;
 
@@ -54,8 +60,23 @@ class _ForgotPasswordPageState
       return;
     }
 
+    final String identity =
+    _identityController.text.trim();
+
+    // Mock/API call through controller.
+    final bool sent =
     await widget.controller.requestPasswordReset(
-      identity: _identityController.text,
+      identity: identity,
+    );
+
+    // User might leave screen while request is running.
+    if (!mounted || !sent) {
+      return;
+    }
+
+    // Navigate to OTP screen and send the email/mobile with it.
+    widget.onContinueToVerification(
+      identity,
     );
   }
 
@@ -77,8 +98,7 @@ class _ForgotPasswordPageState
               );
 
               return SingleChildScrollView(
-                physics:
-                const BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 padding: EdgeInsets.fromLTRB(
                   22,
                   12,
@@ -90,40 +110,19 @@ class _ForgotPasswordPageState
                 ),
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
-                    minHeight:
-                    constraints.maxHeight - 36,
+                    minHeight: constraints.maxHeight - 36,
                   ),
                   child: Center(
                     child: ConstrainedBox(
-                      constraints:
-                      const BoxConstraints(
+                      constraints: const BoxConstraints(
                         maxWidth: 430,
                       ),
                       child: AnimatedBuilder(
-                        animation:
-                        widget.controller,
+                        animation: widget.controller,
                         builder: (
                             BuildContext context,
                             Widget? child,
                             ) {
-                          if (widget
-                              .controller.isSuccess) {
-                            return _SuccessContent(
-                              identity:
-                              _identityController
-                                  .text,
-                              logoSize:
-                              logoSize,
-                              onBackToLogin:
-                              widget
-                                  .onBackToLogin,
-                              onTryAgain: () {
-                                widget.controller
-                                    .resetState();
-                              },
-                            );
-                          }
-
                           return _RequestContent(
                             formKey: _formKey,
                             identityController:
@@ -131,10 +130,10 @@ class _ForgotPasswordPageState
                             controller:
                             widget.controller,
                             logoSize: logoSize,
-                            onBack:
-                            widget.onBack,
-                            onSubmit:
-                            _submitRequest,
+                            onBack: widget.onBack,
+                            onBackToLogin:
+                            widget.onBackToLogin,
+                            onSubmit: _submitRequest,
                           );
                         },
                       ),
@@ -157,6 +156,7 @@ class _RequestContent extends StatelessWidget {
     required this.controller,
     required this.logoSize,
     required this.onBack,
+    required this.onBackToLogin,
     required this.onSubmit,
   });
 
@@ -169,26 +169,35 @@ class _RequestContent extends StatelessWidget {
   final double logoSize;
 
   final VoidCallback onBack;
+  final VoidCallback onBackToLogin;
   final VoidCallback onSubmit;
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment:
-      MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
+        //
+        // BACK BUTTON
+        //
         _BackButton(
           onPressed: onBack,
         ),
 
         const SizedBox(height: 8),
 
+        //
+        // FORGOT PASSWORD LOGO
+        //
         ForgotPasswordLogo(
           size: logoSize,
         ),
 
         const SizedBox(height: 13),
 
+        //
+        // TITLE
+        //
         const Text(
           'Forgot Password?',
           textAlign: TextAlign.center,
@@ -202,14 +211,16 @@ class _RequestContent extends StatelessWidget {
 
         const SizedBox(height: 9),
 
+        //
+        // SUBTITLE
+        //
         Text(
           'Enter your registered email or mobile '
-              'number and we will help you recover '
-              'your account securely.',
+              'number and we will send you a secure '
+              'verification code.',
           textAlign: TextAlign.center,
           style: TextStyle(
-            color:
-            AppColors.textSecondary.withValues(
+            color: AppColors.textSecondary.withValues(
               alpha: 0.78,
             ),
             height: 1.5,
@@ -219,6 +230,9 @@ class _RequestContent extends StatelessWidget {
 
         const SizedBox(height: 27),
 
+        //
+        // GLASS FORM CARD
+        //
         GlassContainer(
           width: double.infinity,
           padding: const EdgeInsets.fromLTRB(
@@ -235,25 +249,22 @@ class _RequestContent extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
+                //
+                // EMAIL / MOBILE INPUT
+                //
                 AuthTextField(
-                  controller:
-                  identityController,
-                  label:
-                  'Email or mobile number',
-                  hintText:
-                  'example@email.com',
+                  controller: identityController,
+                  label: 'Email or mobile number',
+                  hintText: 'example@email.com',
                   prefixIcon:
                   Icons.person_outline_rounded,
-                  keyboardType:
-                  TextInputType.text,
+                  keyboardType: TextInputType.text,
                   textInputAction:
                   TextInputAction.done,
-                  autofillHints:
-                  const <String>[
+                  autofillHints: const <String>[
                     AutofillHints.username,
                     AutofillHints.email,
-                    AutofillHints
-                        .telephoneNumber,
+                    AutofillHints.telephoneNumber,
                   ],
                   validator:
                   ForgotPasswordValidator
@@ -270,10 +281,12 @@ class _RequestContent extends StatelessWidget {
                   },
                 ),
 
+                //
+                // ERROR MESSAGE
+                //
                 if (controller.errorMessage !=
                     null) ...<Widget>[
                   const SizedBox(height: 14),
-
                   _ForgotPasswordError(
                     message:
                     controller.errorMessage!,
@@ -282,13 +295,14 @@ class _RequestContent extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
+                //
+                // SEND OTP BUTTON
+                //
                 GlassActionButton(
-                  label:
-                  'Send Reset Instructions',
-                  icon: Icons
-                      .arrow_forward_rounded,
-                  isLoading:
-                  controller.isLoading,
+                  label: 'Send Verification Code',
+                  icon:
+                  Icons.arrow_forward_rounded,
+                  isLoading: controller.isLoading,
                   onPressed:
                   controller.isLoading
                       ? null
@@ -301,11 +315,13 @@ class _RequestContent extends StatelessWidget {
 
         const SizedBox(height: 22),
 
+        //
+        // BACK TO LOGIN
+        //
         Text(
           'Remember your password?',
           style: TextStyle(
-            color:
-            AppColors.textSecondary.withValues(
+            color: AppColors.textSecondary.withValues(
               alpha: 0.72,
             ),
             fontSize: 13,
@@ -313,7 +329,7 @@ class _RequestContent extends StatelessWidget {
         ),
 
         TextButton(
-          onPressed: onBack,
+          onPressed: onBackToLogin,
           child: const Text(
             'Back to Login',
             style: TextStyle(
@@ -340,8 +356,7 @@ class _RecoveryTitle extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius:
             BorderRadius.circular(14),
-            gradient:
-            const LinearGradient(
+            gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: <Color>[
@@ -386,10 +401,9 @@ class _RecoveryTitle extends StatelessWidget {
               const SizedBox(height: 3),
 
               Text(
-                'We will send secure reset instructions.',
+                'We will send a secure verification code.',
                 style: TextStyle(
-                  color: AppColors
-                      .textSecondary
+                  color: AppColors.textSecondary
                       .withValues(
                     alpha: 0.67,
                   ),
@@ -424,8 +438,7 @@ class _BackButton extends StatelessWidget {
             alpha: 0.09,
           ),
           side: BorderSide(
-            color:
-            AppColors.white.withValues(
+            color: AppColors.white.withValues(
               alpha: 0.20,
             ),
           ),
@@ -435,162 +448,6 @@ class _BackButton extends StatelessWidget {
           color: AppColors.white,
         ),
       ),
-    );
-  }
-}
-
-class _SuccessContent extends StatelessWidget {
-  const _SuccessContent({
-    required this.identity,
-    required this.logoSize,
-    required this.onBackToLogin,
-    required this.onTryAgain,
-  });
-
-  final String identity;
-  final double logoSize;
-
-  final VoidCallback onBackToLogin;
-  final VoidCallback onTryAgain;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment:
-      MainAxisAlignment.center,
-      children: <Widget>[
-        ForgotPasswordLogo(
-          size: logoSize,
-        ),
-
-        const SizedBox(height: 23),
-
-        GlassContainer(
-          width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(
-            24,
-            30,
-            24,
-            25,
-          ),
-          child: Column(
-            children: <Widget>[
-              Container(
-                width: 74,
-                height: 74,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color:
-                  AppColors.blue.withValues(
-                    alpha: 0.14,
-                  ),
-                  border: Border.all(
-                    color:
-                    AppColors.blue.withValues(
-                      alpha: 0.48,
-                    ),
-                  ),
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      color:
-                      AppColors.blue.withValues(
-                        alpha: 0.24,
-                      ),
-                      blurRadius: 25,
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.mark_email_read_rounded,
-                  size: 36,
-                  color: AppColors.blue,
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              const Text(
-                'Reset Instructions Sent',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: AppColors.white,
-                  fontSize: 25,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-
-              const SizedBox(height: 10),
-
-              Text(
-                'We have sent password recovery '
-                    'instructions to:',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: AppColors
-                      .textSecondary
-                      .withValues(
-                    alpha: 0.75,
-                  ),
-                  fontSize: 13,
-                  height: 1.45,
-                ),
-              ),
-
-              const SizedBox(height: 8),
-
-              Text(
-                identity,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: AppColors.blue,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-
-              const SizedBox(height: 10),
-
-              Text(
-                'Please check your inbox or messages '
-                    'and follow the instructions.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: AppColors
-                      .textSecondary
-                      .withValues(
-                    alpha: 0.63,
-                  ),
-                  fontSize: 12,
-                  height: 1.45,
-                ),
-              ),
-
-              const SizedBox(height: 25),
-
-              GlassActionButton(
-                label: 'Back to Login',
-                icon: Icons.login_rounded,
-                onPressed: onBackToLogin,
-              ),
-
-              const SizedBox(height: 9),
-
-              TextButton(
-                onPressed: onTryAgain,
-                child: const Text(
-                  'Try another email or number',
-                  style: TextStyle(
-                    color:
-                    AppColors.textSecondary,
-                    fontWeight:
-                    FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }
@@ -607,22 +464,19 @@ class _ForgotPasswordError
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding:
-      const EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: 13,
         vertical: 11,
       ),
       decoration: BoxDecoration(
-        color:
-        const Color(0xFFFF6680)
+        color: const Color(0xFFFF6680)
             .withValues(
           alpha: 0.13,
         ),
         borderRadius:
         BorderRadius.circular(13),
         border: Border.all(
-          color:
-          const Color(0xFFFF8A9B)
+          color: const Color(0xFFFF8A9B)
               .withValues(
             alpha: 0.50,
           ),
@@ -642,8 +496,7 @@ class _ForgotPasswordError
             child: Text(
               message,
               style: const TextStyle(
-                color:
-                Color(0xFFFFD6DC),
+                color: Color(0xFFFFD6DC),
                 fontSize: 12.5,
               ),
             ),
