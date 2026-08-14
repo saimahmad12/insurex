@@ -22,7 +22,9 @@ import 'features/auth/presentation/pages/otp_verification_page.dart';
 import 'features/auth/presentation/pages/signup_page.dart';
 
 // Other Pages
-import 'features/dashboard/presentation/pages/dashboard_placeholder_page.dart';
+import 'features/dashboard/application/controllers/dashboard_controller.dart';
+import 'features/dashboard/data/repositories/mock_dashboard_repository.dart';
+import 'features/dashboard/presentation/pages/dashboard_page.dart';
 import 'features/splash/presentation/pages/splash_page.dart';
 import 'features/auth/application/controllers/reset_password_controller.dart';
 
@@ -72,8 +74,7 @@ class InsureXApp extends StatelessWidget {
             ) {
           return LoginPage(
             controller: LoginController(
-              repository:
-              const MockAuthRepository(),
+              repository: const MockAuthRepository(),
             ),
 
             onBack: () {
@@ -81,9 +82,9 @@ class InsureXApp extends StatelessWidget {
             },
 
             onLoginSuccess: () {
-              Navigator.of(context)
-                  .pushReplacementNamed(
+              Navigator.of(context).pushNamedAndRemoveUntil(
                 AppRoutes.dashboard,
+                    (Route<dynamic> route) => false,
               );
             },
 
@@ -331,7 +332,61 @@ class InsureXApp extends StatelessWidget {
         AppRoutes.dashboard: (
             BuildContext context,
             ) {
-          return const DashboardPlaceholderPage();
+          return DashboardPage(
+            controller: DashboardController(
+              repository:
+              const MockDashboardRepository(),
+            ),
+
+            onPolicies: () {
+              _showMessage(
+                context,
+                'My Policies screen will be created next.',
+              );
+            },
+
+            onFileClaim: () {
+              _showMessage(
+                context,
+                'File a Claim screen will be created soon.',
+              );
+            },
+
+            onClaimStatus: () {
+              _showMessage(
+                context,
+                'Claim Status screen will be created soon.',
+              );
+            },
+
+            onPayments: () {
+              _showMessage(
+                context,
+                'Payments screen will be created soon.',
+              );
+            },
+
+            onNotifications: () {
+              _showMessage(
+                context,
+                'Notifications screen will be created soon.',
+              );
+            },
+
+            onClaims: () {
+              _showMessage(
+                context,
+                'Claims screen will be created soon.',
+              );
+            },
+
+            onProfile: () {
+              _showMessage(
+                context,
+                'Profile screen will be created soon.',
+              );
+            },
+          );
         },
       },
     );
