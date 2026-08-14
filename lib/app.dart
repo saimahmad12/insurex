@@ -24,6 +24,11 @@ import 'features/auth/presentation/pages/signup_page.dart';
 // Other Pages
 import 'features/dashboard/presentation/pages/dashboard_placeholder_page.dart';
 import 'features/splash/presentation/pages/splash_page.dart';
+import 'features/auth/application/controllers/reset_password_controller.dart';
+
+import 'features/auth/data/repositories/mock_reset_password_repository.dart';
+
+import 'features/auth/presentation/pages/reset_password_page.dart';
 
 class InsureXApp extends StatelessWidget {
   const InsureXApp({
@@ -253,9 +258,68 @@ class InsureXApp extends StatelessWidget {
             // OTP verified successfully.
             // Next screen will be Create New Password.
             onVerified: () {
+              Navigator.of(context).pushReplacementNamed(
+                AppRoutes.resetPassword,
+                arguments: identity,
+              );
+            },
+          );
+        },
+
+
+        // ============================================================
+        // RESET PASSWORD ROUTE
+        // ============================================================
+        AppRoutes.resetPassword: (
+            BuildContext context,
+            ) {
+          final Object? arguments =
+              ModalRoute.of(context)
+                  ?.settings
+                  .arguments;
+
+          final String identity =
+          arguments is String
+              ? arguments
+              : '';
+
+          return ResetPasswordPage(
+            identity: identity,
+
+            controller:
+            ResetPasswordController(
+              repository:
+              const MockResetPasswordRepository(),
+            ),
+
+            onBack: () {
+              Navigator.of(context).pop();
+            },
+
+            onResetSuccess: () {
               _showMessage(
                 context,
-                'OTP verified successfully. Create New Password screen is next.',
+                'Password reset successfully.',
+              );
+
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil(
+                AppRoutes.login,
+                    (
+                    Route<dynamic> route,
+                    ) =>
+                false,
+              );
+            },
+
+            onBackToLogin: () {
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil(
+                AppRoutes.login,
+                    (
+                    Route<dynamic> route,
+                    ) =>
+                false,
               );
             },
           );
