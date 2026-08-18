@@ -27,10 +27,12 @@ import 'features/dashboard/data/repositories/mock_dashboard_repository.dart';
 import 'features/dashboard/presentation/pages/dashboard_page.dart';
 import 'features/splash/presentation/pages/splash_page.dart';
 import 'features/auth/application/controllers/reset_password_controller.dart';
-
 import 'features/auth/data/repositories/mock_reset_password_repository.dart';
-
 import 'features/auth/presentation/pages/reset_password_page.dart';
+import 'features/policies/application/controllers/policies_controller.dart';
+import 'features/policies/data/repositories/mock_policies_repository.dart';
+import 'features/policies/domain/entities/insurance_policy.dart';
+import 'features/policies/presentation/pages/my_policies_page.dart';
 
 class InsureXApp extends StatelessWidget {
   const InsureXApp({
@@ -339,9 +341,8 @@ class InsureXApp extends StatelessWidget {
             ),
 
             onPolicies: () {
-              _showMessage(
-                context,
-                'My Policies screen will be created next.',
+              Navigator.of(context).pushNamed(
+                AppRoutes.myPolicies,
               );
             },
 
@@ -384,6 +385,46 @@ class InsureXApp extends StatelessWidget {
               _showMessage(
                 context,
                 'Profile screen will be created soon.',
+              );
+            },
+          );
+        },
+        // ============================================================
+        // MY POLICIES
+        // ============================================================
+        AppRoutes.myPolicies: (
+            BuildContext context,
+            ) {
+          return MyPoliciesPage(
+            controller: PoliciesController(
+              repository:
+              const MockPoliciesRepository(),
+            ),
+
+            onBack: () {
+              Navigator.of(context).pop();
+            },
+
+            onSearch: () {
+              _showMessage(
+                context,
+                'Policy search will be added later.',
+              );
+            },
+
+            onPolicyPressed: (
+                InsurancePolicy policy,
+                ) {
+              _showMessage(
+                context,
+                '${policy.title} details screen will be created next.',
+              );
+            },
+
+            onBuyPolicy: () {
+              _showMessage(
+                context,
+                'Buy New Policy screen will be added later.',
               );
             },
           );
