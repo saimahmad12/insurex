@@ -1,4 +1,6 @@
 abstract final class AppRoutes {
+  const AppRoutes._();
+
   static const String splash = '/';
 
   static const String login = '/login';
@@ -16,4 +18,7 @@ abstract final class AppRoutes {
 
   static const String dashboard =
       '/dashboard';
+
+  static const String myPolicies =
+      '/my-policies';
 }
