@@ -21,4 +21,7 @@ abstract final class AppRoutes {
 
   static const String myPolicies =
       '/my-policies';
+
+  static const String policyDetails =
+      '/policy-details';
 }
