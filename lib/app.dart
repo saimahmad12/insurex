@@ -3,36 +3,58 @@ import 'package:flutter/material.dart';
 import 'core/navigation/app_routes.dart';
 import 'core/theme/app_theme.dart';
 
-// Controllers
+// ============================================================
+// AUTH CONTROLLERS
+// ============================================================
 import 'features/auth/application/controllers/forgot_password_controller.dart';
 import 'features/auth/application/controllers/login_controller.dart';
 import 'features/auth/application/controllers/otp_verification_controller.dart';
+import 'features/auth/application/controllers/reset_password_controller.dart';
 import 'features/auth/application/controllers/signup_controller.dart';
 
-// Repositories
+// ============================================================
+// AUTH REPOSITORIES
+// ============================================================
 import 'features/auth/data/repositories/mock_auth_repository.dart';
 import 'features/auth/data/repositories/mock_otp_verification_repository.dart';
 import 'features/auth/data/repositories/mock_password_recovery_repository.dart';
+import 'features/auth/data/repositories/mock_reset_password_repository.dart';
 import 'features/auth/data/repositories/mock_signup_repository.dart';
 
-// Auth Pages
+// ============================================================
+// AUTH PAGES
+// ============================================================
 import 'features/auth/presentation/pages/forgot_password_page.dart';
 import 'features/auth/presentation/pages/login_page.dart';
 import 'features/auth/presentation/pages/otp_verification_page.dart';
+import 'features/auth/presentation/pages/reset_password_page.dart';
 import 'features/auth/presentation/pages/signup_page.dart';
 
-// Other Pages
+// ============================================================
+// SPLASH
+// ============================================================
+import 'features/splash/presentation/pages/splash_page.dart';
+
+// ============================================================
+// DASHBOARD
+// ============================================================
 import 'features/dashboard/application/controllers/dashboard_controller.dart';
 import 'features/dashboard/data/repositories/mock_dashboard_repository.dart';
 import 'features/dashboard/presentation/pages/dashboard_page.dart';
-import 'features/splash/presentation/pages/splash_page.dart';
-import 'features/auth/application/controllers/reset_password_controller.dart';
-import 'features/auth/data/repositories/mock_reset_password_repository.dart';
-import 'features/auth/presentation/pages/reset_password_page.dart';
+
+// ============================================================
+// POLICIES
+// ============================================================
 import 'features/policies/application/controllers/policies_controller.dart';
+import 'features/policies/application/controllers/policy_details_controller.dart';
+
 import 'features/policies/data/repositories/mock_policies_repository.dart';
+import 'features/policies/data/repositories/mock_policy_details_repository.dart';
+
 import 'features/policies/domain/entities/insurance_policy.dart';
+
 import 'features/policies/presentation/pages/my_policies_page.dart';
+import 'features/policies/presentation/pages/policy_details_page.dart';
 
 class InsureXApp extends StatelessWidget {
   const InsureXApp({
@@ -60,6 +82,7 @@ class InsureXApp extends StatelessWidget {
                 AppRoutes.signup,
               );
             },
+
             onLogin: () {
               Navigator.of(context).pushNamed(
                 AppRoutes.login,
@@ -83,6 +106,12 @@ class InsureXApp extends StatelessWidget {
               Navigator.of(context).pop();
             },
 
+            // --------------------------------------------------------
+            // Successful login
+            //
+            // Clear previous authentication screens so pressing
+            // Android back from Dashboard does not reopen Login.
+            // --------------------------------------------------------
             onLoginSuccess: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
                 AppRoutes.dashboard,
@@ -133,8 +162,7 @@ class InsureXApp extends StatelessWidget {
             ) {
           return SignupPage(
             controller: SignupController(
-              repository:
-              const MockSignupRepository(),
+              repository: const MockSignupRepository(),
             ),
 
             onBack: () {
@@ -142,15 +170,13 @@ class InsureXApp extends StatelessWidget {
             },
 
             onSignupSuccess: () {
-              Navigator.of(context)
-                  .pushReplacementNamed(
+              Navigator.of(context).pushReplacementNamed(
                 AppRoutes.login,
               );
             },
 
             onLoginPressed: () {
-              Navigator.of(context)
-                  .pushReplacementNamed(
+              Navigator.of(context).pushReplacementNamed(
                 AppRoutes.login,
               );
             },
@@ -192,8 +218,7 @@ class InsureXApp extends StatelessWidget {
             BuildContext context,
             ) {
           return ForgotPasswordPage(
-            controller:
-            ForgotPasswordController(
+            controller: ForgotPasswordController(
               repository:
               const MockPasswordRecoveryRepository(),
             ),
@@ -203,8 +228,7 @@ class InsureXApp extends StatelessWidget {
             },
 
             onBackToLogin: () {
-              Navigator.of(context)
-                  .pushNamedAndRemoveUntil(
+              Navigator.of(context).pushNamedAndRemoveUntil(
                 AppRoutes.login,
                     (
                     Route<dynamic> route,
@@ -215,7 +239,6 @@ class InsureXApp extends StatelessWidget {
               );
             },
 
-            // NEW:
             // Pass email/mobile to OTP screen.
             onContinueToVerification: (
                 String identity,
@@ -234,7 +257,7 @@ class InsureXApp extends StatelessWidget {
         AppRoutes.otpVerification: (
             BuildContext context,
             ) {
-          // Get email/mobile passed from Forgot Password screen.
+          // Get email/mobile passed from Forgot Password.
           final Object? arguments =
               ModalRoute.of(context)
                   ?.settings
@@ -259,7 +282,6 @@ class InsureXApp extends StatelessWidget {
             },
 
             // OTP verified successfully.
-            // Next screen will be Create New Password.
             onVerified: () {
               Navigator.of(context).pushReplacementNamed(
                 AppRoutes.resetPassword,
@@ -269,9 +291,8 @@ class InsureXApp extends StatelessWidget {
           );
         },
 
-
         // ============================================================
-        // RESET PASSWORD ROUTE
+        // RESET PASSWORD
         // ============================================================
         AppRoutes.resetPassword: (
             BuildContext context,
@@ -340,6 +361,9 @@ class InsureXApp extends StatelessWidget {
               const MockDashboardRepository(),
             ),
 
+            // --------------------------------------------------------
+            // Dashboard → My Policies
+            // --------------------------------------------------------
             onPolicies: () {
               Navigator.of(context).pushNamed(
                 AppRoutes.myPolicies,
@@ -389,6 +413,7 @@ class InsureXApp extends StatelessWidget {
             },
           );
         },
+
         // ============================================================
         // MY POLICIES
         // ============================================================
@@ -412,12 +437,18 @@ class InsureXApp extends StatelessWidget {
               );
             },
 
+            // --------------------------------------------------------
+            // My Policies → Policy Details
+            //
+            // The complete selected policy object is passed to
+            // Policy Details through route arguments.
+            // --------------------------------------------------------
             onPolicyPressed: (
                 InsurancePolicy policy,
                 ) {
-              _showMessage(
-                context,
-                '${policy.title} details screen will be created next.',
+              Navigator.of(context).pushNamed(
+                AppRoutes.policyDetails,
+                arguments: policy,
               );
             },
 
@@ -429,10 +460,118 @@ class InsureXApp extends StatelessWidget {
             },
           );
         },
+
+        // ============================================================
+        // POLICY DETAILS
+        // ============================================================
+        AppRoutes.policyDetails: (
+            BuildContext context,
+            ) {
+          // Get selected InsurancePolicy passed from
+          // My Policies screen.
+          final Object? arguments =
+              ModalRoute.of(context)
+                  ?.settings
+                  .arguments;
+
+          // ----------------------------------------------------------
+          // Route safety
+          //
+          // Policy Details cannot work without a selected policy.
+          // ----------------------------------------------------------
+          if (arguments is! InsurancePolicy) {
+            return Scaffold(
+              backgroundColor:
+              const Color(0xFF061027),
+              appBar: AppBar(
+                backgroundColor:
+                Colors.transparent,
+                elevation: 0,
+                leading: IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              body: const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize:
+                    MainAxisSize.min,
+                    children: <Widget>[
+                      Icon(
+                        Icons.error_outline_rounded,
+                        color:
+                        Color(0xFFFF718A),
+                        size: 46,
+                      ),
+
+                      SizedBox(height: 16),
+
+                      Text(
+                        'Policy information is unavailable.',
+                        textAlign:
+                        TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight:
+                          FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }
+
+          final InsurancePolicy policy =
+              arguments;
+
+          return PolicyDetailsPage(
+            policy: policy,
+
+            controller:
+            PolicyDetailsController(
+              repository:
+              const MockPolicyDetailsRepository(),
+            ),
+
+            onBack: () {
+              Navigator.of(context).pop();
+            },
+
+            // --------------------------------------------------------
+            // Policy Details → File a Claim
+            //
+            // File a Claim is the next feature.
+            // For now we only show a message.
+            // --------------------------------------------------------
+            onActivateClaim: (
+                InsurancePolicy selectedPolicy,
+                ) {
+              _showMessage(
+                context,
+                'File a Claim for '
+                    '${selectedPolicy.title} '
+                    'will be created next.',
+              );
+            },
+          );
+        },
       },
     );
   }
 
+  // ================================================================
+  // COMMON MESSAGE
+  // ================================================================
   static void _showMessage(
       BuildContext context,
       String message,
