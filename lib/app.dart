@@ -36,6 +36,18 @@ import 'features/auth/presentation/pages/signup_page.dart';
 import 'features/splash/presentation/pages/splash_page.dart';
 
 // ============================================================
+// CLAIMS
+// ============================================================
+import 'features/claims/application/controllers/file_claim_controller.dart';
+import 'features/claims/data/repositories/mock_claim_image_repository.dart';
+import 'features/claims/data/repositories/mock_claim_image_source.dart';
+import 'features/claims/data/repositories/mock_claim_verification_repository.dart';
+import 'features/claims/data/repositories/mock_file_claim_repository.dart';
+import 'features/claims/domain/entities/claim_submission_result.dart';
+import 'features/claims/presentation/pages/claim_submitted_page.dart';
+import 'features/claims/presentation/pages/file_claim_page.dart';
+
+// ============================================================
 // DASHBOARD
 // ============================================================
 import 'features/dashboard/application/controllers/dashboard_controller.dart';
@@ -373,11 +385,68 @@ class InsureXApp extends StatelessWidget {
             // For now we only show a message.
             // --------------------------------------------------------
             onActivateClaim: (InsurancePolicy selectedPolicy) {
-              _showMessage(
-                context,
-                'File a Claim for '
-                '${selectedPolicy.title} '
-                'will be created next.',
+              _openFileClaim(context, policy: selectedPolicy);
+            },
+          );
+        },
+
+        // ============================================================
+        // FILE A CLAIM
+        // ============================================================
+        AppRoutes.fileClaim: (BuildContext context) {
+          final Object? arguments = ModalRoute.of(context)?.settings.arguments;
+          final InsurancePolicy? selectedPolicy = arguments is InsurancePolicy
+              ? arguments
+              : null;
+
+          return _FileClaimRouteScope(
+            initialPolicyId: selectedPolicy?.id,
+            onBack: () {
+              Navigator.of(context).pop();
+            },
+            onSubmitted: (ClaimSubmissionResult result) {
+              Navigator.of(context).pushReplacementNamed(
+                AppRoutes.claimSubmitted,
+                arguments: result,
+              );
+            },
+          );
+        },
+
+        // ============================================================
+        // CLAIM SUBMITTED
+        // ============================================================
+        AppRoutes.claimSubmitted: (BuildContext context) {
+          final Object? arguments = ModalRoute.of(context)?.settings.arguments;
+
+          if (arguments is! ClaimSubmissionResult) {
+            return Scaffold(
+              body: Center(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      AppRoutes.dashboard,
+                      (Route<dynamic> route) => false,
+                    );
+                  },
+                  child: const Text('Return to Dashboard'),
+                ),
+              ),
+            );
+          }
+
+          return ClaimSubmittedPage(
+            result: arguments,
+            onTrackClaim: () {
+              _showMessage(context, 'Claim tracking will be connected next.');
+            },
+            onViewDetails: () {
+              _showMessage(context, 'Claim details will be connected next.');
+            },
+            onReturnToDashboard: () {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                AppRoutes.dashboard,
+                (Route<dynamic> route) => false,
               );
             },
           );
@@ -401,7 +470,7 @@ class InsureXApp extends StatelessWidget {
         repository: const MockPoliciesRepository(),
       ),
       onFileClaim: () {
-        _showMessage(context, 'File a Claim screen will be created soon.');
+        _openFileClaim(context);
       },
       onClaimStatus: () {
         _showMessage(context, 'Claim Status screen will be created soon.');
@@ -432,6 +501,10 @@ class InsureXApp extends StatelessWidget {
     );
   }
 
+  static void _openFileClaim(BuildContext context, {InsurancePolicy? policy}) {
+    Navigator.of(context).pushNamed(AppRoutes.fileClaim, arguments: policy);
+  }
+
   // ================================================================
   // COMMON MESSAGE
   // ================================================================
@@ -441,5 +514,45 @@ class InsureXApp extends StatelessWidget {
       ..showSnackBar(
         SnackBar(content: Text(message), behavior: SnackBarBehavior.floating),
       );
+  }
+}
+
+class _FileClaimRouteScope extends StatefulWidget {
+  const _FileClaimRouteScope({
+    required this.onBack,
+    required this.onSubmitted,
+    this.initialPolicyId,
+  });
+
+  final String? initialPolicyId;
+  final VoidCallback onBack;
+  final ValueChanged<ClaimSubmissionResult> onSubmitted;
+
+  @override
+  State<_FileClaimRouteScope> createState() => _FileClaimRouteScopeState();
+}
+
+class _FileClaimRouteScopeState extends State<_FileClaimRouteScope> {
+  late final FileClaimController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = FileClaimController(
+      fileClaimRepository: MockFileClaimRepository(),
+      verificationRepository: const MockClaimVerificationRepository(),
+      imageSource: MockClaimImageSource(),
+      imageRepository: const MockClaimImageRepository(),
+      initialPolicyId: widget.initialPolicyId,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FileClaimPage(
+      controller: _controller,
+      onBack: widget.onBack,
+      onSubmitted: widget.onSubmitted,
+    );
   }
 }
