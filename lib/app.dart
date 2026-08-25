@@ -39,8 +39,9 @@ import 'features/splash/presentation/pages/splash_page.dart';
 // DASHBOARD
 // ============================================================
 import 'features/dashboard/application/controllers/dashboard_controller.dart';
+import 'features/dashboard/application/controllers/dashboard_navigation_controller.dart';
 import 'features/dashboard/data/repositories/mock_dashboard_repository.dart';
-import 'features/dashboard/presentation/pages/dashboard_page.dart';
+import 'features/dashboard/presentation/pages/dashboard_navigation_shell.dart';
 
 // ============================================================
 // POLICIES
@@ -53,13 +54,10 @@ import 'features/policies/data/repositories/mock_policy_details_repository.dart'
 
 import 'features/policies/domain/entities/insurance_policy.dart';
 
-import 'features/policies/presentation/pages/my_policies_page.dart';
 import 'features/policies/presentation/pages/policy_details_page.dart';
 
 class InsureXApp extends StatelessWidget {
-  const InsureXApp({
-    super.key,
-  });
+  const InsureXApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -73,20 +71,14 @@ class InsureXApp extends StatelessWidget {
         // ============================================================
         // SPLASH
         // ============================================================
-        AppRoutes.splash: (
-            BuildContext context,
-            ) {
+        AppRoutes.splash: (BuildContext context) {
           return SplashPage(
             onGetStarted: () {
-              Navigator.of(context).pushNamed(
-                AppRoutes.signup,
-              );
+              Navigator.of(context).pushNamed(AppRoutes.signup);
             },
 
             onLogin: () {
-              Navigator.of(context).pushNamed(
-                AppRoutes.login,
-              );
+              Navigator.of(context).pushNamed(AppRoutes.login);
             },
           );
         },
@@ -94,13 +86,9 @@ class InsureXApp extends StatelessWidget {
         // ============================================================
         // LOGIN
         // ============================================================
-        AppRoutes.login: (
-            BuildContext context,
-            ) {
+        AppRoutes.login: (BuildContext context) {
           return LoginPage(
-            controller: LoginController(
-              repository: const MockAuthRepository(),
-            ),
+            controller: LoginController(repository: const MockAuthRepository()),
 
             onBack: () {
               Navigator.of(context).pop();
@@ -115,20 +103,16 @@ class InsureXApp extends StatelessWidget {
             onLoginSuccess: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
                 AppRoutes.dashboard,
-                    (Route<dynamic> route) => false,
+                (Route<dynamic> route) => false,
               );
             },
 
             onForgotPassword: () {
-              Navigator.of(context).pushNamed(
-                AppRoutes.forgotPassword,
-              );
+              Navigator.of(context).pushNamed(AppRoutes.forgotPassword);
             },
 
             onSignUp: () {
-              Navigator.of(context).pushNamed(
-                AppRoutes.signup,
-              );
+              Navigator.of(context).pushNamed(AppRoutes.signup);
             },
 
             onGoogleLogin: () {
@@ -157,9 +141,7 @@ class InsureXApp extends StatelessWidget {
         // ============================================================
         // SIGN UP
         // ============================================================
-        AppRoutes.signup: (
-            BuildContext context,
-            ) {
+        AppRoutes.signup: (BuildContext context) {
           return SignupPage(
             controller: SignupController(
               repository: const MockSignupRepository(),
@@ -170,15 +152,11 @@ class InsureXApp extends StatelessWidget {
             },
 
             onSignupSuccess: () {
-              Navigator.of(context).pushReplacementNamed(
-                AppRoutes.login,
-              );
+              Navigator.of(context).pushReplacementNamed(AppRoutes.login);
             },
 
             onLoginPressed: () {
-              Navigator.of(context).pushReplacementNamed(
-                AppRoutes.login,
-              );
+              Navigator.of(context).pushReplacementNamed(AppRoutes.login);
             },
 
             onGoogleSignup: () {
@@ -189,24 +167,15 @@ class InsureXApp extends StatelessWidget {
             },
 
             onAppleSignup: () {
-              _showMessage(
-                context,
-                'Apple registration is not connected yet.',
-              );
+              _showMessage(context, 'Apple registration is not connected yet.');
             },
 
             onTermsPressed: () {
-              _showMessage(
-                context,
-                'Terms of Service will be added later.',
-              );
+              _showMessage(context, 'Terms of Service will be added later.');
             },
 
             onPrivacyPressed: () {
-              _showMessage(
-                context,
-                'Privacy Policy will be added later.',
-              );
+              _showMessage(context, 'Privacy Policy will be added later.');
             },
           );
         },
@@ -214,13 +183,10 @@ class InsureXApp extends StatelessWidget {
         // ============================================================
         // FORGOT PASSWORD
         // ============================================================
-        AppRoutes.forgotPassword: (
-            BuildContext context,
-            ) {
+        AppRoutes.forgotPassword: (BuildContext context) {
           return ForgotPasswordPage(
             controller: ForgotPasswordController(
-              repository:
-              const MockPasswordRecoveryRepository(),
+              repository: const MockPasswordRecoveryRepository(),
             ),
 
             onBack: () {
@@ -228,25 +194,18 @@ class InsureXApp extends StatelessWidget {
             },
 
             onBackToLogin: () {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                AppRoutes.login,
-                    (
-                    Route<dynamic> route,
-                    ) {
-                  return route.settings.name ==
-                      AppRoutes.splash;
-                },
-              );
+              Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.login, (
+                Route<dynamic> route,
+              ) {
+                return route.settings.name == AppRoutes.splash;
+              });
             },
 
             // Pass email/mobile to OTP screen.
-            onContinueToVerification: (
-                String identity,
-                ) {
-              Navigator.of(context).pushNamed(
-                AppRoutes.otpVerification,
-                arguments: identity,
-              );
+            onContinueToVerification: (String identity) {
+              Navigator.of(
+                context,
+              ).pushNamed(AppRoutes.otpVerification, arguments: identity);
             },
           );
         },
@@ -254,27 +213,17 @@ class InsureXApp extends StatelessWidget {
         // ============================================================
         // OTP VERIFICATION
         // ============================================================
-        AppRoutes.otpVerification: (
-            BuildContext context,
-            ) {
+        AppRoutes.otpVerification: (BuildContext context) {
           // Get email/mobile passed from Forgot Password.
-          final Object? arguments =
-              ModalRoute.of(context)
-                  ?.settings
-                  .arguments;
+          final Object? arguments = ModalRoute.of(context)?.settings.arguments;
 
-          final String identity =
-          arguments is String
-              ? arguments
-              : '';
+          final String identity = arguments is String ? arguments : '';
 
           return OtpVerificationPage(
             identity: identity,
 
-            controller:
-            OtpVerificationController(
-              repository:
-              const MockOtpVerificationRepository(),
+            controller: OtpVerificationController(
+              repository: const MockOtpVerificationRepository(),
             ),
 
             onBack: () {
@@ -294,26 +243,16 @@ class InsureXApp extends StatelessWidget {
         // ============================================================
         // RESET PASSWORD
         // ============================================================
-        AppRoutes.resetPassword: (
-            BuildContext context,
-            ) {
-          final Object? arguments =
-              ModalRoute.of(context)
-                  ?.settings
-                  .arguments;
+        AppRoutes.resetPassword: (BuildContext context) {
+          final Object? arguments = ModalRoute.of(context)?.settings.arguments;
 
-          final String identity =
-          arguments is String
-              ? arguments
-              : '';
+          final String identity = arguments is String ? arguments : '';
 
           return ResetPasswordPage(
             identity: identity,
 
-            controller:
-            ResetPasswordController(
-              repository:
-              const MockResetPasswordRepository(),
+            controller: ResetPasswordController(
+              repository: const MockResetPasswordRepository(),
             ),
 
             onBack: () {
@@ -321,29 +260,18 @@ class InsureXApp extends StatelessWidget {
             },
 
             onResetSuccess: () {
-              _showMessage(
-                context,
-                'Password reset successfully.',
-              );
+              _showMessage(context, 'Password reset successfully.');
 
-              Navigator.of(context)
-                  .pushNamedAndRemoveUntil(
+              Navigator.of(context).pushNamedAndRemoveUntil(
                 AppRoutes.login,
-                    (
-                    Route<dynamic> route,
-                    ) =>
-                false,
+                (Route<dynamic> route) => false,
               );
             },
 
             onBackToLogin: () {
-              Navigator.of(context)
-                  .pushNamedAndRemoveUntil(
+              Navigator.of(context).pushNamedAndRemoveUntil(
                 AppRoutes.login,
-                    (
-                    Route<dynamic> route,
-                    ) =>
-                false,
+                (Route<dynamic> route) => false,
               );
             },
           );
@@ -352,127 +280,27 @@ class InsureXApp extends StatelessWidget {
         // ============================================================
         // DASHBOARD
         // ============================================================
-        AppRoutes.dashboard: (
-            BuildContext context,
-            ) {
-          return DashboardPage(
-            controller: DashboardController(
-              repository:
-              const MockDashboardRepository(),
-            ),
-
-            // --------------------------------------------------------
-            // Dashboard → My Policies
-            // --------------------------------------------------------
-            onPolicies: () {
-              Navigator.of(context).pushNamed(
-                AppRoutes.myPolicies,
-              );
-            },
-
-            onFileClaim: () {
-              _showMessage(
-                context,
-                'File a Claim screen will be created soon.',
-              );
-            },
-
-            onClaimStatus: () {
-              _showMessage(
-                context,
-                'Claim Status screen will be created soon.',
-              );
-            },
-
-            onPayments: () {
-              _showMessage(
-                context,
-                'Payments screen will be created soon.',
-              );
-            },
-
-            onNotifications: () {
-              _showMessage(
-                context,
-                'Notifications screen will be created soon.',
-              );
-            },
-
-            onClaims: () {
-              _showMessage(
-                context,
-                'Claims screen will be created soon.',
-              );
-            },
-
-            onProfile: () {
-              _showMessage(
-                context,
-                'Profile screen will be created soon.',
-              );
-            },
-          );
+        AppRoutes.dashboard: (BuildContext context) {
+          return _buildDashboardNavigationShell(context);
         },
 
         // ============================================================
         // MY POLICIES
         // ============================================================
-        AppRoutes.myPolicies: (
-            BuildContext context,
-            ) {
-          return MyPoliciesPage(
-            controller: PoliciesController(
-              repository:
-              const MockPoliciesRepository(),
-            ),
-
-            onBack: () {
-              Navigator.of(context).pop();
-            },
-
-            onSearch: () {
-              _showMessage(
-                context,
-                'Policy search will be added later.',
-              );
-            },
-
-            // --------------------------------------------------------
-            // My Policies → Policy Details
-            //
-            // The complete selected policy object is passed to
-            // Policy Details through route arguments.
-            // --------------------------------------------------------
-            onPolicyPressed: (
-                InsurancePolicy policy,
-                ) {
-              Navigator.of(context).pushNamed(
-                AppRoutes.policyDetails,
-                arguments: policy,
-              );
-            },
-
-            onBuyPolicy: () {
-              _showMessage(
-                context,
-                'Buy New Policy screen will be added later.',
-              );
-            },
+        AppRoutes.myPolicies: (BuildContext context) {
+          return _buildDashboardNavigationShell(
+            context,
+            initialTab: DashboardNavigationTab.policies,
           );
         },
 
         // ============================================================
         // POLICY DETAILS
         // ============================================================
-        AppRoutes.policyDetails: (
-            BuildContext context,
-            ) {
+        AppRoutes.policyDetails: (BuildContext context) {
           // Get selected InsurancePolicy passed from
           // My Policies screen.
-          final Object? arguments =
-              ModalRoute.of(context)
-                  ?.settings
-                  .arguments;
+          final Object? arguments = ModalRoute.of(context)?.settings.arguments;
 
           // ----------------------------------------------------------
           // Route safety
@@ -481,11 +309,9 @@ class InsureXApp extends StatelessWidget {
           // ----------------------------------------------------------
           if (arguments is! InsurancePolicy) {
             return Scaffold(
-              backgroundColor:
-              const Color(0xFF061027),
+              backgroundColor: const Color(0xFF061027),
               appBar: AppBar(
-                backgroundColor:
-                Colors.transparent,
+                backgroundColor: Colors.transparent,
                 elevation: 0,
                 leading: IconButton(
                   onPressed: () {
@@ -501,13 +327,11 @@ class InsureXApp extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.all(24),
                   child: Column(
-                    mainAxisSize:
-                    MainAxisSize.min,
+                    mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       Icon(
                         Icons.error_outline_rounded,
-                        color:
-                        Color(0xFFFF718A),
+                        color: Color(0xFFFF718A),
                         size: 46,
                       ),
 
@@ -515,13 +339,11 @@ class InsureXApp extends StatelessWidget {
 
                       Text(
                         'Policy information is unavailable.',
-                        textAlign:
-                        TextAlign.center,
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
-                          fontWeight:
-                          FontWeight.w600,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
@@ -531,16 +353,13 @@ class InsureXApp extends StatelessWidget {
             );
           }
 
-          final InsurancePolicy policy =
-              arguments;
+          final InsurancePolicy policy = arguments;
 
           return PolicyDetailsPage(
             policy: policy,
 
-            controller:
-            PolicyDetailsController(
-              repository:
-              const MockPolicyDetailsRepository(),
+            controller: PolicyDetailsController(
+              repository: const MockPolicyDetailsRepository(),
             ),
 
             onBack: () {
@@ -553,14 +372,12 @@ class InsureXApp extends StatelessWidget {
             // File a Claim is the next feature.
             // For now we only show a message.
             // --------------------------------------------------------
-            onActivateClaim: (
-                InsurancePolicy selectedPolicy,
-                ) {
+            onActivateClaim: (InsurancePolicy selectedPolicy) {
               _showMessage(
                 context,
                 'File a Claim for '
-                    '${selectedPolicy.title} '
-                    'will be created next.',
+                '${selectedPolicy.title} '
+                'will be created next.',
               );
             },
           );
@@ -569,21 +386,60 @@ class InsureXApp extends StatelessWidget {
     );
   }
 
+  static Widget _buildDashboardNavigationShell(
+    BuildContext context, {
+    DashboardNavigationTab initialTab = DashboardNavigationTab.home,
+  }) {
+    return DashboardNavigationShell(
+      navigationController: DashboardNavigationController(
+        initialTab: initialTab,
+      ),
+      dashboardController: DashboardController(
+        repository: const MockDashboardRepository(),
+      ),
+      policiesController: PoliciesController(
+        repository: const MockPoliciesRepository(),
+      ),
+      onFileClaim: () {
+        _showMessage(context, 'File a Claim screen will be created soon.');
+      },
+      onClaimStatus: () {
+        _showMessage(context, 'Claim Status screen will be created soon.');
+      },
+      onPayments: () {
+        _showMessage(context, 'Payments screen will be created soon.');
+      },
+      onNotifications: () {
+        _showMessage(context, 'Notifications screen will be created soon.');
+      },
+      onClaims: () {
+        _showMessage(context, 'Claims screen will be created soon.');
+      },
+      onProfile: () {
+        _showMessage(context, 'Profile screen will be created soon.');
+      },
+      onPolicySearch: () {
+        _showMessage(context, 'Policy search will be added later.');
+      },
+      onPolicyPressed: (InsurancePolicy policy) {
+        Navigator.of(
+          context,
+        ).pushNamed(AppRoutes.policyDetails, arguments: policy);
+      },
+      onBuyPolicy: () {
+        _showMessage(context, 'Buy New Policy screen will be added later.');
+      },
+    );
+  }
+
   // ================================================================
   // COMMON MESSAGE
   // ================================================================
-  static void _showMessage(
-      BuildContext context,
-      String message,
-      ) {
+  static void _showMessage(BuildContext context, String message) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
-        SnackBar(
-          content: Text(message),
-          behavior:
-          SnackBarBehavior.floating,
-        ),
+        SnackBar(content: Text(message), behavior: SnackBarBehavior.floating),
       );
   }
 }

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 
-class DashboardBottomNavigation
-    extends StatelessWidget {
+class DashboardBottomNavigation extends StatelessWidget {
   const DashboardBottomNavigation({
+    required this.selectedIndex,
     required this.onHome,
     required this.onPolicies,
     required this.onAddClaim,
@@ -13,6 +13,7 @@ class DashboardBottomNavigation
     super.key,
   });
 
+  final int selectedIndex;
   final VoidCallback onHome;
   final VoidCallback onPolicies;
   final VoidCallback onAddClaim;
@@ -25,23 +26,13 @@ class DashboardBottomNavigation
       decoration: BoxDecoration(
         color: const Color(0xFF151E42),
         border: Border(
-          top: BorderSide(
-            color:
-            AppColors.white.withValues(
-              alpha: 0.12,
-            ),
-          ),
+          top: BorderSide(color: AppColors.white.withValues(alpha: 0.12)),
         ),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: Colors.black.withValues(
-              alpha: 0.20,
-            ),
+            color: Colors.black.withValues(alpha: 0.20),
             blurRadius: 20,
-            offset: const Offset(
-              0,
-              -5,
-            ),
+            offset: const Offset(0, -5),
           ),
         ],
       ),
@@ -52,17 +43,16 @@ class DashboardBottomNavigation
           child: Row(
             children: <Widget>[
               _NavigationItem(
-                icon:
-                Icons.home_rounded,
+                icon: Icons.home_rounded,
                 label: 'Home',
-                selected: true,
+                selected: selectedIndex == 0,
                 onPressed: onHome,
               ),
 
               _NavigationItem(
-                icon:
-                Icons.description_outlined,
+                icon: Icons.description_outlined,
                 label: 'Policies',
+                selected: selectedIndex == 1,
                 onPressed: onPolicies,
               ),
 
@@ -73,43 +63,26 @@ class DashboardBottomNavigation
                     child: Container(
                       width: 52,
                       height: 52,
-                      decoration:
-                      BoxDecoration(
-                        shape:
-                        BoxShape.circle,
-                        gradient:
-                        const LinearGradient(
-                          begin:
-                          Alignment.topLeft,
-                          end: Alignment
-                              .bottomRight,
-                          colors: <Color>[
-                            AppColors.violet,
-                            AppColors.blue,
-                          ],
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: <Color>[AppColors.violet, AppColors.blue],
                         ),
                         border: Border.all(
-                          color: AppColors.white
-                              .withValues(
-                            alpha: 0.35,
-                          ),
+                          color: AppColors.white.withValues(alpha: 0.35),
                         ),
-                        boxShadow:
-                        <BoxShadow>[
+                        boxShadow: <BoxShadow>[
                           BoxShadow(
-                            color: AppColors
-                                .violet
-                                .withValues(
-                              alpha: 0.45,
-                            ),
+                            color: AppColors.violet.withValues(alpha: 0.45),
                             blurRadius: 20,
                           ),
                         ],
                       ),
                       child: const Icon(
                         Icons.add_rounded,
-                        color:
-                        AppColors.white,
+                        color: AppColors.white,
                         size: 29,
                       ),
                     ),
@@ -118,16 +91,16 @@ class DashboardBottomNavigation
               ),
 
               _NavigationItem(
-                icon:
-                Icons.assignment_outlined,
+                icon: Icons.assignment_outlined,
                 label: 'Claims',
+                selected: selectedIndex == 3,
                 onPressed: onClaims,
               ),
 
               _NavigationItem(
-                icon:
-                Icons.person_outline_rounded,
+                icon: Icons.person_outline_rounded,
                 label: 'Profile',
+                selected: selectedIndex == 4,
                 onPressed: onProfile,
               ),
             ],
@@ -155,22 +128,15 @@ class _NavigationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color color = selected
-        ? AppColors.pink
-        : AppColors.textSecondary;
+    final Color color = selected ? AppColors.pink : AppColors.textSecondary;
 
     return Expanded(
       child: InkWell(
         onTap: onPressed,
         child: Column(
-          mainAxisAlignment:
-          MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(
-              icon,
-              color: color,
-              size: 22,
-            ),
+            Icon(icon, color: color, size: 22),
 
             const SizedBox(height: 4),
 
@@ -179,9 +145,7 @@ class _NavigationItem extends StatelessWidget {
               style: TextStyle(
                 color: color,
                 fontSize: 9.5,
-                fontWeight: selected
-                    ? FontWeight.w700
-                    : FontWeight.w500,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
               ),
             ),
           ],
