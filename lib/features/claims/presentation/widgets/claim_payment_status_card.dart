@@ -6,9 +6,10 @@ import '../../domain/entities/claim_payment.dart';
 import 'claim_formatters.dart';
 
 class ClaimPaymentStatusCard extends StatelessWidget {
-  const ClaimPaymentStatusCard({required this.payment, super.key});
+  const ClaimPaymentStatusCard({required this.payment, this.action, super.key});
 
   final ClaimPayment payment;
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
@@ -46,17 +47,34 @@ class ClaimPaymentStatusCard extends StatelessWidget {
           ),
           if (payment.method != null)
             _PaymentRow(label: 'Payment method', value: payment.method!),
+          if (payment.maskedDestination != null)
+            _PaymentRow(
+              label: 'Destination',
+              value: payment.maskedDestination!,
+            ),
           if (payment.transactionReference != null)
             _PaymentRow(
               label: 'Transaction reference',
               value: payment.transactionReference!,
             ),
+          if (payment.requestedAt != null)
+            _PaymentRow(
+              label: 'Requested',
+              value: ClaimFormatters.dateTime(payment.requestedAt!),
+            ),
+          if (payment.processingAt != null)
+            _PaymentRow(
+              label: 'Processing since',
+              value: ClaimFormatters.dateTime(payment.processingAt!),
+            ),
           if (payment.paidAt != null)
             _PaymentRow(
               label: 'Payment date',
               value: ClaimFormatters.dateTime(payment.paidAt!),
-              isLast: true,
             ),
+          if (payment.failureMessage != null)
+            _PaymentRow(label: 'Status detail', value: payment.failureMessage!),
+          if (action != null) ...<Widget>[const SizedBox(height: 8), action!],
         ],
       ),
     );
@@ -64,20 +82,15 @@ class ClaimPaymentStatusCard extends StatelessWidget {
 }
 
 class _PaymentRow extends StatelessWidget {
-  const _PaymentRow({
-    required this.label,
-    required this.value,
-    this.isLast = false,
-  });
+  const _PaymentRow({required this.label, required this.value});
 
   final String label;
   final String value;
-  final bool isLast;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: isLast ? 0 : 10),
+      padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         children: <Widget>[
           Expanded(

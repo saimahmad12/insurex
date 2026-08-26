@@ -136,12 +136,18 @@ abstract final class ClaimFormatters {
     switch (status) {
       case ClaimPaymentStatus.notStarted:
         return 'Not Started';
+      case ClaimPaymentStatus.verificationPending:
+        return 'Verification Pending';
+      case ClaimPaymentStatus.ready:
+        return 'Ready';
       case ClaimPaymentStatus.processing:
         return 'Processing';
       case ClaimPaymentStatus.paid:
         return 'Paid';
       case ClaimPaymentStatus.failed:
         return 'Needs Attention';
+      case ClaimPaymentStatus.reversed:
+        return 'Reversed';
     }
   }
 

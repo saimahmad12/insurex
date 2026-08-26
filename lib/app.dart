@@ -48,9 +48,20 @@ import 'features/claims/data/repositories/mock_file_claim_repository.dart';
 import 'features/claims/data/repositories/mock_claim_status_repository.dart';
 import 'features/claims/domain/entities/claim_submission_result.dart';
 import 'features/claims/domain/entities/insurance_claim.dart';
+import 'features/claims/domain/repositories/claim_status_repository.dart';
 import 'features/claims/presentation/pages/claim_status_page.dart';
 import 'features/claims/presentation/pages/claim_submitted_page.dart';
 import 'features/claims/presentation/pages/file_claim_page.dart';
+
+// ============================================================
+// PAYMENTS
+// ============================================================
+import 'features/payments/application/controllers/claim_payout_controller.dart';
+import 'features/payments/application/controllers/payments_history_controller.dart';
+import 'features/payments/data/repositories/mock_claim_payout_repository.dart';
+import 'features/payments/domain/repositories/claim_payout_repository.dart';
+import 'features/payments/presentation/pages/claim_payout_flow_page.dart';
+import 'features/payments/presentation/pages/payments_history_page.dart';
 
 // ============================================================
 // DASHBOARD
@@ -73,8 +84,25 @@ import 'features/policies/domain/entities/insurance_policy.dart';
 
 import 'features/policies/presentation/pages/policy_details_page.dart';
 
-class InsureXApp extends StatelessWidget {
+class InsureXApp extends StatefulWidget {
   const InsureXApp({super.key});
+
+  @override
+  State<InsureXApp> createState() => _InsureXAppState();
+}
+
+class _InsureXAppState extends State<InsureXApp> {
+  late final MockClaimStatusRepository _claimsRepository;
+  late final MockClaimPayoutRepository _payoutRepository;
+
+  @override
+  void initState() {
+    super.initState();
+    _claimsRepository = MockClaimStatusRepository();
+    _payoutRepository = MockClaimPayoutRepository(
+      claimsRepository: _claimsRepository,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -312,6 +340,16 @@ class InsureXApp extends StatelessWidget {
         },
 
         // ============================================================
+        // MY CLAIMS
+        // ============================================================
+        AppRoutes.myClaims: (BuildContext context) {
+          return _buildDashboardNavigationShell(
+            context,
+            initialTab: DashboardNavigationTab.claims,
+          );
+        },
+
+        // ============================================================
         // POLICY DETAILS
         // ============================================================
         AppRoutes.policyDetails: (BuildContext context) {
@@ -480,14 +518,84 @@ class InsureXApp extends StatelessWidget {
             claimId: claimId,
             initialClaim: initialClaim,
             invalidArgument: invalidArgument,
+            claimsRepository: _claimsRepository,
+            payoutRepository: _payoutRepository,
             onBack: () {
               Navigator.of(context).pop();
             },
             onFileClaim: () {
               _openFileClaim(context);
             },
-            onContextualAction: (ClaimStatusAction action) {
-              _showMessage(context, _claimStatusActionMessage(action));
+            onContextualAction:
+                (ClaimStatusAction action, InsuranceClaim? claim) async {
+                  if (_isPayoutAction(action) && claim != null) {
+                    await Navigator.of(
+                      context,
+                    ).pushNamed(AppRoutes.claimPayout, arguments: claim.id);
+                    return;
+                  }
+                  _showMessage(context, _claimStatusActionMessage(action));
+                },
+          );
+        },
+
+        // ============================================================
+        // CLAIM PAYOUT
+        // ============================================================
+        AppRoutes.claimPayout: (BuildContext context) {
+          final Object? arguments = ModalRoute.of(context)?.settings.arguments;
+          if (arguments is! String || arguments.isEmpty) {
+            return Scaffold(
+              body: Center(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Payment information is unavailable.'),
+                ),
+              ),
+            );
+          }
+
+          return ClaimPayoutFlowPage(
+            controller: ClaimPayoutController(
+              claimId: arguments,
+              claimsRepository: _claimsRepository,
+              payoutRepository: _payoutRepository,
+            ),
+            onClose: () {
+              Navigator.of(context).pop();
+            },
+            onReturnToClaimStatus: () {
+              _returnToClaimStatus(context, arguments);
+            },
+            onReturnToMyClaims: () {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                AppRoutes.myClaims,
+                (Route<dynamic> route) => false,
+              );
+            },
+            onPlaceholderAction: (String action) {
+              _showMessage(context, '$action will be connected next.');
+            },
+          );
+        },
+
+        // ============================================================
+        // PAYMENTS HISTORY
+        // ============================================================
+        AppRoutes.paymentsHistory: (BuildContext context) {
+          return PaymentsHistoryPage(
+            controller: PaymentsHistoryController(
+              repository: _payoutRepository,
+            ),
+            onBack: () {
+              Navigator.of(context).pop();
+            },
+            onPayoutPressed: (payout) {
+              Navigator.of(
+                context,
+              ).pushNamed(AppRoutes.claimPayout, arguments: payout.claimId);
             },
           );
         },
@@ -495,12 +603,10 @@ class InsureXApp extends StatelessWidget {
     );
   }
 
-  static Widget _buildDashboardNavigationShell(
+  Widget _buildDashboardNavigationShell(
     BuildContext context, {
     DashboardNavigationTab initialTab = DashboardNavigationTab.home,
   }) {
-    final MockClaimStatusRepository claimsRepository =
-        MockClaimStatusRepository();
     return DashboardNavigationShell(
       navigationController: DashboardNavigationController(
         initialTab: initialTab,
@@ -511,7 +617,7 @@ class InsureXApp extends StatelessWidget {
       policiesController: PoliciesController(
         repository: const MockPoliciesRepository(),
       ),
-      myClaimsController: MyClaimsController(repository: claimsRepository),
+      myClaimsController: MyClaimsController(repository: _claimsRepository),
       onFileClaim: () {
         _openFileClaim(context);
       },
@@ -524,13 +630,16 @@ class InsureXApp extends StatelessWidget {
         ).pushNamed(AppRoutes.claimStatus, arguments: claim.id);
       },
       onPayments: () {
-        _showMessage(context, 'Payments screen will be created soon.');
+        Navigator.of(context).pushNamed(AppRoutes.paymentsHistory);
       },
       onNotifications: () {
         _showMessage(context, 'Notifications screen will be created soon.');
       },
       onProfile: () {
-        _showMessage(context, 'Profile screen will be created soon.');
+        _showMessage(
+          context,
+          'Profile and saved payout method management will be added next.',
+        );
       },
       onPolicySearch: () {
         _showMessage(context, 'Policy search will be added later.');
@@ -546,8 +655,31 @@ class InsureXApp extends StatelessWidget {
     );
   }
 
-  static void _openFileClaim(BuildContext context, {InsurancePolicy? policy}) {
+  void _openFileClaim(BuildContext context, {InsurancePolicy? policy}) {
     Navigator.of(context).pushNamed(AppRoutes.fileClaim, arguments: policy);
+  }
+
+  void _returnToClaimStatus(BuildContext context, String claimId) {
+    final NavigatorState navigator = Navigator.of(context);
+    bool foundClaimStatus = false;
+    navigator.popUntil((Route<dynamic> route) {
+      if (route.settings.name == AppRoutes.claimStatus) {
+        foundClaimStatus = true;
+        return true;
+      }
+      return route.isFirst;
+    });
+    if (!foundClaimStatus) {
+      navigator.pushNamed(AppRoutes.claimStatus, arguments: claimId);
+    }
+  }
+
+  static bool _isPayoutAction(ClaimStatusAction action) {
+    return action == ClaimStatusAction.receivePayment ||
+        action == ClaimStatusAction.viewVerificationStatus ||
+        action == ClaimStatusAction.trackPayment ||
+        action == ClaimStatusAction.retryPayment ||
+        action == ClaimStatusAction.viewReceipt;
   }
 
   static String _claimStatusActionMessage(ClaimStatusAction action) {
@@ -561,11 +693,17 @@ class InsureXApp extends StatelessWidget {
       ClaimStatusAction.uploadEvidence =>
         'Additional-evidence upload will be connected next.',
       ClaimStatusAction.viewDecision => 'The claim decision is shown above.',
-      ClaimStatusAction.viewPaymentStatus =>
-        'The latest payment status is shown above.',
+      ClaimStatusAction.receivePayment => 'Payment setup is unavailable.',
+      ClaimStatusAction.viewVerificationStatus =>
+        'Payout method verification is shown in the payment flow.',
+      ClaimStatusAction.trackPayment =>
+        'The latest payment status is shown in the payment flow.',
+      ClaimStatusAction.retryPayment =>
+        'Retry the payment from the payment flow.',
       ClaimStatusAction.viewReason =>
         'The decision reason is shown above. Support will be connected next.',
-      ClaimStatusAction.viewReceipt => 'Claim receipt will be connected next.',
+      ClaimStatusAction.viewReceipt =>
+        'The payment receipt is shown in the payment flow.',
     };
   }
 
@@ -627,6 +765,8 @@ class _ClaimStatusRouteScope extends StatefulWidget {
     required this.onFileClaim,
     required this.onContextualAction,
     required this.invalidArgument,
+    required this.claimsRepository,
+    required this.payoutRepository,
     this.claimId,
     this.initialClaim,
   });
@@ -634,9 +774,12 @@ class _ClaimStatusRouteScope extends StatefulWidget {
   final String? claimId;
   final InsuranceClaim? initialClaim;
   final bool invalidArgument;
+  final ClaimStatusRepository claimsRepository;
+  final ClaimPayoutRepository payoutRepository;
   final VoidCallback onBack;
   final VoidCallback onFileClaim;
-  final ValueChanged<ClaimStatusAction> onContextualAction;
+  final Future<void> Function(ClaimStatusAction, InsuranceClaim?)
+  onContextualAction;
 
   @override
   State<_ClaimStatusRouteScope> createState() => _ClaimStatusRouteScopeState();
@@ -649,7 +792,8 @@ class _ClaimStatusRouteScopeState extends State<_ClaimStatusRouteScope> {
   void initState() {
     super.initState();
     _controller = ClaimStatusController(
-      repository: MockClaimStatusRepository(),
+      repository: widget.claimsRepository,
+      payoutRepository: widget.payoutRepository,
       initialClaim: widget.initialClaim,
     );
   }
@@ -662,7 +806,10 @@ class _ClaimStatusRouteScopeState extends State<_ClaimStatusRouteScope> {
       invalidArgument: widget.invalidArgument,
       onBack: widget.onBack,
       onFileClaim: widget.onFileClaim,
-      onContextualAction: widget.onContextualAction,
+      onContextualAction: (ClaimStatusAction action) async {
+        await widget.onContextualAction(action, _controller.claim);
+        await _controller.refresh();
+      },
     );
   }
 }

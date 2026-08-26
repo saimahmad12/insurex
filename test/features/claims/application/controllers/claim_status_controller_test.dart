@@ -161,7 +161,7 @@ void main() {
                 ClaimStatusAction.uploadEvidence,
             ClaimStatus.approved: ClaimStatusAction.viewDecision,
             ClaimStatus.rejected: ClaimStatusAction.viewReason,
-            ClaimStatus.paymentProcessing: ClaimStatusAction.viewPaymentStatus,
+            ClaimStatus.paymentProcessing: ClaimStatusAction.trackPayment,
             ClaimStatus.settled: ClaimStatusAction.viewReceipt,
           };
 

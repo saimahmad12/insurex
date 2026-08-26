@@ -229,7 +229,17 @@ class _ClaimStatusPageState extends State<ClaimStatusPage> {
                   ],
                   if (widget.controller.showPaymentCard) ...<Widget>[
                     const SizedBox(height: 24),
-                    ClaimPaymentStatusCard(payment: claim.payment!),
+                    ClaimPaymentStatusCard(
+                      payment: widget.controller.payment!,
+                      action: action == null
+                          ? null
+                          : ClaimStatusActionButton(
+                              action: action,
+                              onPressed: () {
+                                widget.onContextualAction(action);
+                              },
+                            ),
+                    ),
                   ],
                   if (claim.blockchainRecord != null) ...<Widget>[
                     const SizedBox(height: 24),
@@ -238,7 +248,8 @@ class _ClaimStatusPageState extends State<ClaimStatusPage> {
                       onCopyTransactionHash: _copyTransactionHash,
                     ),
                   ],
-                  if (action != null) ...<Widget>[
+                  if (action != null &&
+                      !widget.controller.showPaymentCard) ...<Widget>[
                     const SizedBox(height: 28),
                     ClaimStatusActionButton(
                       action: action,
