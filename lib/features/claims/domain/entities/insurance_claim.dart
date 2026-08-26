@@ -26,6 +26,7 @@ class InsuranceClaim {
     this.decision,
     this.payment,
     this.blockchainRecord,
+    this.belongsToCurrentUser = true,
   });
 
   final String id;
@@ -44,6 +45,7 @@ class InsuranceClaim {
   final ClaimDecision? decision;
   final ClaimPayment? payment;
   final BlockchainClaimRecord? blockchainRecord;
+  final bool belongsToCurrentUser;
 
   double? get approvedAmount => decision?.approvedAmount;
 

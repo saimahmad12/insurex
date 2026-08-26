@@ -31,7 +31,10 @@ class ClaimStatusActionButton extends StatelessWidget {
       ClaimStatusAction.contactSupport => 'Contact Support',
       ClaimStatusAction.uploadEvidence => 'Upload Evidence',
       ClaimStatusAction.viewDecision => 'View Decision',
-      ClaimStatusAction.viewPaymentStatus => 'View Payment Status',
+      ClaimStatusAction.receivePayment => 'Receive Payment',
+      ClaimStatusAction.viewVerificationStatus => 'View Verification Status',
+      ClaimStatusAction.trackPayment => 'Track Payment',
+      ClaimStatusAction.retryPayment => 'Retry Payment',
       ClaimStatusAction.viewReason => 'View Reason',
       ClaimStatusAction.viewReceipt => 'View Receipt',
     };
@@ -44,8 +47,10 @@ class ClaimStatusActionButton extends StatelessWidget {
       ClaimStatusAction.contactSupport => Icons.support_agent_rounded,
       ClaimStatusAction.uploadEvidence => Icons.upload_rounded,
       ClaimStatusAction.viewDecision => Icons.verified_outlined,
-      ClaimStatusAction.viewPaymentStatus =>
-        Icons.account_balance_wallet_outlined,
+      ClaimStatusAction.receivePayment => Icons.account_balance_wallet_outlined,
+      ClaimStatusAction.viewVerificationStatus => Icons.verified_user_outlined,
+      ClaimStatusAction.trackPayment => Icons.account_balance_wallet_outlined,
+      ClaimStatusAction.retryPayment => Icons.replay_rounded,
       ClaimStatusAction.viewReason => Icons.info_outline_rounded,
       ClaimStatusAction.viewReceipt => Icons.receipt_long_outlined,
     };
