@@ -1,10 +1,12 @@
 enum ClaimStatus {
-  draft,
-  imagesPending,
-  aiVerificationPending,
-  pendingReview,
+  submitted,
+  aiAnalysisPending,
+  aiAnalysisCompleted,
+  underReview,
+  additionalEvidenceRequired,
   approved,
   rejected,
+  paymentProcessing,
   settled,
 }
 

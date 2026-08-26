@@ -75,7 +75,7 @@ class MockFileClaimRepository implements FileClaimRepository {
     return ClaimSubmissionResult(
       claimId: 'CLM-${now.year}-$sequence',
       submittedAt: now,
-      status: ClaimStatus.pendingReview,
+      status: ClaimStatus.underReview,
       aiVerificationCompleted: true,
       blockchainRecordStatus: 'Pending Integration',
     );

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../claims/application/controllers/my_claims_controller.dart';
+import '../../../claims/domain/entities/insurance_claim.dart';
+import '../../../claims/presentation/pages/my_claims_page.dart';
 import '../../../policies/application/controllers/policies_controller.dart';
 import '../../../policies/domain/entities/insurance_policy.dart';
 import '../../../policies/presentation/pages/my_policies_page.dart';
@@ -13,11 +16,12 @@ class DashboardNavigationShell extends StatefulWidget {
     required this.navigationController,
     required this.dashboardController,
     required this.policiesController,
+    required this.myClaimsController,
     required this.onFileClaim,
     required this.onClaimStatus,
+    required this.onClaimPressed,
     required this.onPayments,
     required this.onNotifications,
-    required this.onClaims,
     required this.onProfile,
     required this.onPolicySearch,
     required this.onPolicyPressed,
@@ -28,11 +32,12 @@ class DashboardNavigationShell extends StatefulWidget {
   final DashboardNavigationController navigationController;
   final DashboardController dashboardController;
   final PoliciesController policiesController;
+  final MyClaimsController myClaimsController;
   final VoidCallback onFileClaim;
   final VoidCallback onClaimStatus;
+  final ValueChanged<InsuranceClaim> onClaimPressed;
   final VoidCallback onPayments;
   final VoidCallback onNotifications;
-  final VoidCallback onClaims;
   final VoidCallback onProfile;
   final VoidCallback onPolicySearch;
   final ValueChanged<InsurancePolicy> onPolicyPressed;
@@ -68,7 +73,7 @@ class _DashboardNavigationShellState extends State<DashboardNavigationShell> {
           },
           child: Scaffold(
             body: IndexedStack(
-              index: widget.navigationController.selectedIndex,
+              index: widget.navigationController.stackIndex,
               children: <Widget>[
                 DashboardPage(
                   controller: widget.dashboardController,
@@ -85,6 +90,12 @@ class _DashboardNavigationShellState extends State<DashboardNavigationShell> {
                   onBuyPolicy: widget.onBuyPolicy,
                   onSearch: widget.onPolicySearch,
                 ),
+                MyClaimsPage(
+                  controller: widget.myClaimsController,
+                  onBack: widget.navigationController.showHome,
+                  onClaimPressed: widget.onClaimPressed,
+                  onFileClaim: widget.onFileClaim,
+                ),
               ],
             ),
             bottomNavigationBar: DashboardBottomNavigation(
@@ -92,7 +103,7 @@ class _DashboardNavigationShellState extends State<DashboardNavigationShell> {
               onHome: widget.navigationController.showHome,
               onPolicies: widget.navigationController.showPolicies,
               onAddClaim: widget.onFileClaim,
-              onClaims: widget.onClaims,
+              onClaims: widget.navigationController.showClaims,
               onProfile: widget.onProfile,
             ),
           ),
