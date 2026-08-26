@@ -30,4 +30,22 @@ abstract final class AppRoutes {
   static const String claimPayout = '/claim-payout';
 
   static const String paymentsHistory = '/payments';
+
+  static const String editProfile = '/profile/edit';
+
+  static const String identityVerification = '/profile/identity-verification';
+
+  static const String securitySettings = '/profile/security';
+
+  static const String changePassword = '/profile/security/change-password';
+
+  static const String notificationSettings = '/profile/notifications';
+
+  static const String payoutMethods = '/profile/payout-methods';
+
+  static const String helpSupport = '/profile/help-support';
+
+  static const String privacyPolicy = '/profile/privacy-policy';
+
+  static const String termsAndConditions = '/profile/terms-and-conditions';
 }

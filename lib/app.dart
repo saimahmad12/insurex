@@ -64,6 +64,31 @@ import 'features/payments/presentation/pages/claim_payout_flow_page.dart';
 import 'features/payments/presentation/pages/payments_history_page.dart';
 
 // ============================================================
+// PROFILE
+// ============================================================
+import 'features/profile/application/controllers/edit_profile_controller.dart';
+import 'features/profile/application/controllers/identity_verification_controller.dart';
+import 'features/profile/application/controllers/notification_preferences_controller.dart';
+import 'features/profile/application/controllers/profile_controller.dart';
+import 'features/profile/application/controllers/saved_payout_methods_controller.dart';
+import 'features/profile/application/controllers/security_settings_controller.dart';
+import 'features/profile/data/repositories/mock_auth_session_repository.dart';
+import 'features/profile/data/repositories/mock_notification_preferences_repository.dart';
+import 'features/profile/data/repositories/mock_profile_repository.dart';
+import 'features/profile/data/repositories/mock_security_repository.dart';
+import 'features/profile/domain/entities/identity_verification.dart';
+import 'features/profile/domain/entities/user_profile.dart';
+import 'features/profile/presentation/pages/change_password_page.dart';
+import 'features/profile/presentation/pages/edit_profile_page.dart';
+import 'features/profile/presentation/pages/help_support_page.dart';
+import 'features/profile/presentation/pages/identity_verification_page.dart';
+import 'features/profile/presentation/pages/legal_placeholder_page.dart';
+import 'features/profile/presentation/pages/notification_settings_page.dart';
+import 'features/profile/presentation/pages/profile_page.dart';
+import 'features/profile/presentation/pages/saved_payout_methods_page.dart';
+import 'features/profile/presentation/pages/security_settings_page.dart';
+
+// ============================================================
 // DASHBOARD
 // ============================================================
 import 'features/dashboard/application/controllers/dashboard_controller.dart';
@@ -94,6 +119,11 @@ class InsureXApp extends StatefulWidget {
 class _InsureXAppState extends State<InsureXApp> {
   late final MockClaimStatusRepository _claimsRepository;
   late final MockClaimPayoutRepository _payoutRepository;
+  late final MockProfileRepository _profileRepository;
+  late final MockNotificationPreferencesRepository
+  _notificationPreferencesRepository;
+  late final MockSecurityRepository _securityRepository;
+  late final MockAuthSessionRepository _authSessionRepository;
 
   @override
   void initState() {
@@ -102,6 +132,11 @@ class _InsureXAppState extends State<InsureXApp> {
     _payoutRepository = MockClaimPayoutRepository(
       claimsRepository: _claimsRepository,
     );
+    _profileRepository = MockProfileRepository();
+    _notificationPreferencesRepository =
+        MockNotificationPreferencesRepository();
+    _securityRepository = MockSecurityRepository();
+    _authSessionRepository = MockAuthSessionRepository();
   }
 
   @override
@@ -599,6 +634,172 @@ class _InsureXAppState extends State<InsureXApp> {
             },
           );
         },
+
+        // ============================================================
+        // PROFILE DETAILS
+        // ============================================================
+        AppRoutes.editProfile: (BuildContext context) {
+          final Object? arguments = ModalRoute.of(context)?.settings.arguments;
+          if (arguments is! UserProfile) {
+            return Scaffold(
+              body: Center(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Profile information is unavailable.'),
+                ),
+              ),
+            );
+          }
+          return EditProfilePage(
+            controller: EditProfileController(
+              repository: _profileRepository,
+              originalProfile: arguments,
+            ),
+            onBack: () {
+              Navigator.of(context).pop();
+            },
+            onSaved: (UserProfile updated) {
+              Navigator.of(context).pop(updated);
+            },
+            onRequestEmailChange: () {
+              _showMessage(
+                context,
+                'Email changes require verification and will be available after backend integration.',
+              );
+            },
+            onRequestMobileChange: () {
+              _showMessage(
+                context,
+                'Mobile number changes require OTP verification and will be available after backend integration.',
+              );
+            },
+            onRequestIdentityCorrection: () async {
+              final IdentityVerificationStatus status =
+                  arguments.identityVerification.status;
+              if (status == IdentityVerificationStatus.notStarted ||
+                  status == IdentityVerificationStatus.rejected) {
+                final Object? result = await Navigator.of(
+                  context,
+                ).pushNamed(AppRoutes.identityVerification);
+                if (result is IdentityVerification && context.mounted) {
+                  Navigator.of(
+                    context,
+                  ).pop(arguments.copyWith(identityVerification: result));
+                }
+                return;
+              }
+              _showMessage(
+                context,
+                'Identity corrections require support review and identity re-verification.',
+              );
+            },
+          );
+        },
+
+        AppRoutes.identityVerification: (BuildContext context) {
+          return IdentityVerificationPage(
+            controller: IdentityVerificationController(
+              repository: _profileRepository,
+            ),
+            onBack: (IdentityVerification? verification) {
+              Navigator.of(context).pop(verification);
+            },
+          );
+        },
+
+        AppRoutes.securitySettings: (BuildContext context) {
+          return SecuritySettingsPage(
+            controller: SecuritySettingsController(
+              repository: _securityRepository,
+              authSessionRepository: _authSessionRepository,
+            ),
+            onBack: () {
+              Navigator.of(context).pop();
+            },
+            onChangePassword: () async {
+              final Object? result = await Navigator.of(
+                context,
+              ).pushNamed(AppRoutes.changePassword);
+              if (result == true && context.mounted) {
+                Navigator.of(context).pop();
+              }
+            },
+            onPlaceholderAction: (String action) {
+              _showMessage(context, '$action will be connected later.');
+            },
+            onLogoutSuccess: () {
+              _logoutToLogin(context);
+            },
+          );
+        },
+
+        AppRoutes.changePassword: (BuildContext context) {
+          return ChangePasswordPage(
+            controller: SecuritySettingsController(
+              repository: _securityRepository,
+              authSessionRepository: _authSessionRepository,
+            ),
+            onBack: () {
+              Navigator.of(context).pop();
+            },
+            onPasswordChanged: () {
+              Navigator.of(context).pop(true);
+            },
+          );
+        },
+
+        AppRoutes.notificationSettings: (BuildContext context) {
+          return NotificationSettingsPage(
+            controller: NotificationPreferencesController(
+              repository: _notificationPreferencesRepository,
+            ),
+            onBack: () {
+              Navigator.of(context).pop();
+            },
+          );
+        },
+
+        AppRoutes.payoutMethods: (BuildContext context) {
+          return SavedPayoutMethodsPage(
+            controller: SavedPayoutMethodsController(
+              repository: _payoutRepository,
+            ),
+            onBack: () {
+              Navigator.of(context).pop();
+            },
+          );
+        },
+
+        AppRoutes.helpSupport: (BuildContext context) {
+          return HelpSupportPage(
+            onBack: () {
+              Navigator.of(context).pop();
+            },
+            onAction: (String action) {
+              _showMessage(context, '$action will be connected later.');
+            },
+          );
+        },
+
+        AppRoutes.privacyPolicy: (BuildContext context) {
+          return LegalPlaceholderPage(
+            type: LegalPlaceholderType.privacyPolicy,
+            onBack: () {
+              Navigator.of(context).pop();
+            },
+          );
+        },
+
+        AppRoutes.termsAndConditions: (BuildContext context) {
+          return LegalPlaceholderPage(
+            type: LegalPlaceholderType.termsAndConditions,
+            onBack: () {
+              Navigator.of(context).pop();
+            },
+          );
+        },
       },
     );
   }
@@ -607,10 +808,10 @@ class _InsureXAppState extends State<InsureXApp> {
     BuildContext context, {
     DashboardNavigationTab initialTab = DashboardNavigationTab.home,
   }) {
+    final DashboardNavigationController navigationController =
+        DashboardNavigationController(initialTab: initialTab);
     return DashboardNavigationShell(
-      navigationController: DashboardNavigationController(
-        initialTab: initialTab,
-      ),
+      navigationController: navigationController,
       dashboardController: DashboardController(
         repository: const MockDashboardRepository(),
       ),
@@ -633,14 +834,52 @@ class _InsureXAppState extends State<InsureXApp> {
         Navigator.of(context).pushNamed(AppRoutes.paymentsHistory);
       },
       onNotifications: () {
-        _showMessage(context, 'Notifications screen will be created soon.');
+        Navigator.of(context).pushNamed(AppRoutes.notificationSettings);
       },
-      onProfile: () {
-        _showMessage(
-          context,
-          'Profile and saved payout method management will be added next.',
-        );
-      },
+      profilePage: ProfilePage(
+        controller: ProfileController(
+          profileRepository: _profileRepository,
+          authSessionRepository: _authSessionRepository,
+        ),
+        onEditProfile: (UserProfile profile) async {
+          final Object? result = await Navigator.of(
+            context,
+          ).pushNamed(AppRoutes.editProfile, arguments: profile);
+          return result is UserProfile ? result : null;
+        },
+        onIdentityVerification: () async {
+          final Object? result = await Navigator.of(
+            context,
+          ).pushNamed(AppRoutes.identityVerification);
+          return result is IdentityVerification ? result : null;
+        },
+        onMyPolicies: navigationController.showPolicies,
+        onMyClaims: navigationController.showClaims,
+        onPayments: () {
+          Navigator.of(context).pushNamed(AppRoutes.paymentsHistory);
+        },
+        onPayoutMethods: () {
+          Navigator.of(context).pushNamed(AppRoutes.payoutMethods);
+        },
+        onSecurity: () {
+          Navigator.of(context).pushNamed(AppRoutes.securitySettings);
+        },
+        onNotifications: () {
+          Navigator.of(context).pushNamed(AppRoutes.notificationSettings);
+        },
+        onHelpSupport: () {
+          Navigator.of(context).pushNamed(AppRoutes.helpSupport);
+        },
+        onPrivacyPolicy: () {
+          Navigator.of(context).pushNamed(AppRoutes.privacyPolicy);
+        },
+        onTermsAndConditions: () {
+          Navigator.of(context).pushNamed(AppRoutes.termsAndConditions);
+        },
+        onLogoutSuccess: () {
+          _logoutToLogin(context);
+        },
+      ),
       onPolicySearch: () {
         _showMessage(context, 'Policy search will be added later.');
       },
@@ -657,6 +896,12 @@ class _InsureXAppState extends State<InsureXApp> {
 
   void _openFileClaim(BuildContext context, {InsurancePolicy? policy}) {
     Navigator.of(context).pushNamed(AppRoutes.fileClaim, arguments: policy);
+  }
+
+  void _logoutToLogin(BuildContext context) {
+    Navigator.of(
+      context,
+    ).pushNamedAndRemoveUntil(AppRoutes.login, (Route<dynamic> route) => false);
   }
 
   void _returnToClaimStatus(BuildContext context, String claimId) {

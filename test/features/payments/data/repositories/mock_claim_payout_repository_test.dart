@@ -99,5 +99,27 @@ void main() {
         expect(paid.blockchainRecord?.verificationStatus, 'Verified');
       },
     );
+
+    test('sets a verified default method and removes it safely', () async {
+      final MockClaimPayoutRepository repository = MockClaimPayoutRepository(
+        claimsRepository: claimsRepository,
+        delay: Duration.zero,
+      );
+      final List<PayoutMethod> methods = await repository.getPayoutMethods();
+
+      final List<PayoutMethod> defaulted = await repository
+          .setDefaultPayoutMethod(methods[1].id);
+      expect(
+        defaulted.where((PayoutMethod method) => method.isDefault),
+        hasLength(1),
+      );
+      expect(defaulted[1].isDefault, isTrue);
+
+      final List<PayoutMethod> remaining = await repository.removePayoutMethod(
+        methods[1].id,
+      );
+      expect(remaining, hasLength(2));
+      expect(remaining.any((PayoutMethod method) => method.isDefault), isTrue);
+    });
   });
 }
