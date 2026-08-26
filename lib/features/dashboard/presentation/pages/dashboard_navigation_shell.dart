@@ -22,7 +22,7 @@ class DashboardNavigationShell extends StatefulWidget {
     required this.onClaimPressed,
     required this.onPayments,
     required this.onNotifications,
-    required this.onProfile,
+    required this.profilePage,
     required this.onPolicySearch,
     required this.onPolicyPressed,
     required this.onBuyPolicy,
@@ -38,7 +38,7 @@ class DashboardNavigationShell extends StatefulWidget {
   final ValueChanged<InsuranceClaim> onClaimPressed;
   final VoidCallback onPayments;
   final VoidCallback onNotifications;
-  final VoidCallback onProfile;
+  final Widget profilePage;
   final VoidCallback onPolicySearch;
   final ValueChanged<InsurancePolicy> onPolicyPressed;
   final VoidCallback onBuyPolicy;
@@ -96,6 +96,7 @@ class _DashboardNavigationShellState extends State<DashboardNavigationShell> {
                   onClaimPressed: widget.onClaimPressed,
                   onFileClaim: widget.onFileClaim,
                 ),
+                widget.profilePage,
               ],
             ),
             bottomNavigationBar: DashboardBottomNavigation(
@@ -104,7 +105,7 @@ class _DashboardNavigationShellState extends State<DashboardNavigationShell> {
               onPolicies: widget.navigationController.showPolicies,
               onAddClaim: widget.onFileClaim,
               onClaims: widget.navigationController.showClaims,
-              onProfile: widget.onProfile,
+              onProfile: widget.navigationController.showProfile,
             ),
           ),
         );

@@ -43,6 +43,7 @@ class MockClaimPayoutRepository implements ClaimPayoutRepository {
     accountHolderName: 'Ayesha Khan',
     maskedAccount: '**** **** **** 4821',
     verificationStatus: PayoutMethodVerificationStatus.verified,
+    isDefault: true,
   );
 
   static const List<PayoutMethod> _defaultMethods = <PayoutMethod>[
@@ -132,6 +133,7 @@ class MockClaimPayoutRepository implements ClaimPayoutRepository {
       accountHolderName: request.accountHolderName.trim(),
       maskedAccount: maskedAccount,
       verificationStatus: PayoutMethodVerificationStatus.unverified,
+      isDefault: _methods.isEmpty,
     );
     _methods.add(method);
     return method;
@@ -154,6 +156,42 @@ class MockClaimPayoutRepository implements ClaimPayoutRepository {
     );
     _methods[index] = verified;
     return verified;
+  }
+
+  @override
+  Future<List<PayoutMethod>> setDefaultPayoutMethod(
+    String payoutMethodId,
+  ) async {
+    await _wait();
+    final int selectedIndex = _methods.indexWhere(
+      (PayoutMethod method) => method.id == payoutMethodId,
+    );
+    if (selectedIndex < 0 || !_methods[selectedIndex].isVerified) {
+      throw StateError('Only a verified payout method can be the default.');
+    }
+    for (int index = 0; index < _methods.length; index++) {
+      _methods[index] = _methods[index].copyWith(
+        isDefault: index == selectedIndex,
+      );
+    }
+    return List<PayoutMethod>.unmodifiable(_methods);
+  }
+
+  @override
+  Future<List<PayoutMethod>> removePayoutMethod(String payoutMethodId) async {
+    await _wait();
+    final int index = _methods.indexWhere(
+      (PayoutMethod method) => method.id == payoutMethodId,
+    );
+    if (index < 0) {
+      throw StateError('The payout method could not be found.');
+    }
+    final bool removedDefault = _methods[index].isDefault;
+    _methods.removeAt(index);
+    if (removedDefault && _methods.isNotEmpty) {
+      _methods[0] = _methods[0].copyWith(isDefault: true);
+    }
+    return List<PayoutMethod>.unmodifiable(_methods);
   }
 
   @override
