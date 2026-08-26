@@ -15,6 +15,7 @@ class PayoutMethod {
     required this.accountHolderName,
     required this.maskedAccount,
     required this.verificationStatus,
+    this.isDefault = false,
   });
 
   final String id;
@@ -23,11 +24,15 @@ class PayoutMethod {
   final String accountHolderName;
   final String maskedAccount;
   final PayoutMethodVerificationStatus verificationStatus;
+  final bool isDefault;
 
   bool get isVerified =>
       verificationStatus == PayoutMethodVerificationStatus.verified;
 
-  PayoutMethod copyWith({PayoutMethodVerificationStatus? verificationStatus}) {
+  PayoutMethod copyWith({
+    PayoutMethodVerificationStatus? verificationStatus,
+    bool? isDefault,
+  }) {
     return PayoutMethod(
       id: id,
       type: type,
@@ -35,6 +40,7 @@ class PayoutMethod {
       accountHolderName: accountHolderName,
       maskedAccount: maskedAccount,
       verificationStatus: verificationStatus ?? this.verificationStatus,
+      isDefault: isDefault ?? this.isDefault,
     );
   }
 }

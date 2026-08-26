@@ -8,6 +8,10 @@ abstract interface class ClaimPayoutRepository {
 
   Future<PayoutMethod> verifyPayoutMethod(String payoutMethodId);
 
+  Future<List<PayoutMethod>> setDefaultPayoutMethod(String payoutMethodId);
+
+  Future<List<PayoutMethod>> removePayoutMethod(String payoutMethodId);
+
   Future<ClaimPayout> requestPayout({
     required String claimId,
     required String payoutMethodId,

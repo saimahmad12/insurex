@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-enum DashboardNavigationTab { home, policies, claims }
+enum DashboardNavigationTab { home, policies, claims, profile }
 
 class DashboardNavigationController extends ChangeNotifier {
   DashboardNavigationController({
@@ -17,6 +17,7 @@ class DashboardNavigationController extends ChangeNotifier {
     DashboardNavigationTab.home => 0,
     DashboardNavigationTab.policies => 1,
     DashboardNavigationTab.claims => 3,
+    DashboardNavigationTab.profile => 4,
   };
 
   void showHome() {
@@ -29,6 +30,10 @@ class DashboardNavigationController extends ChangeNotifier {
 
   void showClaims() {
     _select(DashboardNavigationTab.claims);
+  }
+
+  void showProfile() {
+    _select(DashboardNavigationTab.profile);
   }
 
   void _select(DashboardNavigationTab tab) {

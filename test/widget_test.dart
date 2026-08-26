@@ -64,7 +64,10 @@ void main() {
           onClaimPressed: (InsuranceClaim claim) {},
           onPayments: () {},
           onNotifications: () {},
-          onProfile: () {},
+          profilePage: const SizedBox(
+            key: Key('test_profile_page'),
+            child: Text('Test Profile'),
+          ),
           onPolicySearch: () {},
           onPolicyPressed: (InsurancePolicy policy) {},
           onBuyPolicy: () {},
@@ -146,6 +149,29 @@ void main() {
     await tester.pumpAndSettle();
     expect(myClaimsController.searchQuery, 'preserved query');
     expect(claimsRepository.getClaimsCallCount, 1);
+
+    await tester.tap(find.text('Profile'));
+    await tester.pumpAndSettle();
+
+    expect(navigationController.selectedTab, DashboardNavigationTab.profile);
+    expect(find.byKey(const Key('test_profile_page')), findsOneWidget);
+    expect(find.byType(DashboardBottomNavigation), findsOneWidget);
+    expect(
+      tester
+          .widget<DashboardBottomNavigation>(
+            find.byType(DashboardBottomNavigation),
+          )
+          .selectedIndex,
+      4,
+    );
+
+    await tester.tap(find.text('Policies'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Profile'));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('test_profile_page')), findsOneWidget);
+    expect(policiesController.selectedFilter, PolicyFilter.expired);
   });
 
   testWidgets(
@@ -310,6 +336,273 @@ void main() {
 
     expect(find.byKey(const Key('payout_status_card')), findsOneWidget);
     expect(find.text('Payment Processing'), findsOneWidget);
+  });
+
+  testWidgets('Profile tab is persistent and shortcuts switch main tabs', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const InsureXApp());
+    final NavigatorState navigator = tester.state<NavigatorState>(
+      find.byType(Navigator),
+    );
+    unawaited(navigator.pushNamed(AppRoutes.dashboard));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Profile'));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('profile_account_menu')), findsOneWidget);
+    expect(find.byType(DashboardBottomNavigation), findsOneWidget);
+    expect(
+      tester
+          .widget<DashboardBottomNavigation>(
+            find.byType(DashboardBottomNavigation),
+          )
+          .selectedIndex,
+      4,
+    );
+
+    await tester.ensureVisible(find.text('My Policies'));
+    await tester.tap(find.text('My Policies'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('My Policies'), findsOneWidget);
+    expect(
+      tester
+          .widget<DashboardBottomNavigation>(
+            find.byType(DashboardBottomNavigation),
+          )
+          .selectedIndex,
+      1,
+    );
+
+    await tester.tap(find.text('Profile'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('My Claims'));
+    await tester.tap(find.text('My Claims'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('My Claims'), findsOneWidget);
+    expect(
+      tester
+          .widget<DashboardBottomNavigation>(
+            find.byType(DashboardBottomNavigation),
+          )
+          .selectedIndex,
+      3,
+    );
+  });
+
+  testWidgets(
+    'Personal Information saves editable address and keeps identity locked',
+    (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(800, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(const InsureXApp());
+      final NavigatorState navigator = tester.state<NavigatorState>(
+        find.byType(Navigator),
+      );
+      unawaited(navigator.pushNamed(AppRoutes.dashboard));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Profile'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('profile_personal_information')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Personal Information'), findsOneWidget);
+      expect(find.byType(DashboardBottomNavigation), findsNothing);
+      expect(
+        tester
+            .widget<EditableText>(
+              find.descendant(
+                of: find.byKey(const Key('edit_profile_name')),
+                matching: find.byType(EditableText),
+              ),
+            )
+            .readOnly,
+        isTrue,
+      );
+      expect(
+        tester
+            .widget<EditableText>(
+              find.descendant(
+                of: find.byKey(const Key('edit_profile_name')),
+                matching: find.byType(EditableText),
+              ),
+            )
+            .controller
+            .text,
+        'Saim Ahmad',
+      );
+
+      final Finder addressField = find.descendant(
+        of: find.byKey(const Key('edit_profile_address')),
+        matching: find.byType(TextFormField),
+      );
+      await tester.ensureVisible(addressField);
+      await tester.enterText(addressField, 'Apartment 12, Blue Area');
+      await tester.drag(find.byType(ListView), const Offset(0, -1200));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('save_profile_button')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Saim Ahmad'), findsOneWidget);
+      expect(find.byType(DashboardBottomNavigation), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('profile_personal_information')));
+      await tester.pumpAndSettle();
+      final Finder reopenedAddressField = find.descendant(
+        of: find.byKey(const Key('edit_profile_address')),
+        matching: find.byType(TextFormField),
+      );
+      expect(
+        tester.widget<TextFormField>(reopenedAddressField).controller?.text,
+        'Apartment 12, Blue Area',
+      );
+      await tester.enterText(reopenedAddressField, 'Unsaved Address');
+      await tester.tap(find.byKey(const Key('profile_page_back_button')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Saim Ahmad'), findsOneWidget);
+      expect(find.text('Unsaved Address'), findsNothing);
+      expect(find.byType(DashboardBottomNavigation), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'Identity Verification opens and system back returns to Profile',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(const InsureXApp());
+      final NavigatorState navigator = tester.state<NavigatorState>(
+        find.byType(Navigator),
+      );
+      unawaited(navigator.pushNamed(AppRoutes.dashboard));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Profile'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('profile_identity_verification')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Identity Verification'), findsOneWidget);
+      expect(find.text('*****-*******-3'), findsOneWidget);
+      expect(find.text('Identity Verified'), findsOneWidget);
+      expect(find.byType(DashboardBottomNavigation), findsNothing);
+
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('profile_account_menu')), findsOneWidget);
+      expect(find.text('Identity Verified'), findsOneWidget);
+      expect(find.byType(DashboardBottomNavigation), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'successful Change Password returns through Security to Profile',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(const InsureXApp());
+      final NavigatorState navigator = tester.state<NavigatorState>(
+        find.byType(Navigator),
+      );
+      unawaited(navigator.pushNamed(AppRoutes.dashboard));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Profile'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('profile_settings_button')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('change_password_setting')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Change Password'), findsWidgets);
+      await tester.enterText(
+        find.descendant(
+          of: find.byKey(const Key('current_password_field')),
+          matching: find.byType(TextFormField),
+        ),
+        'Current@123',
+      );
+      await tester.enterText(
+        find.descendant(
+          of: find.byKey(const Key('new_password_field')),
+          matching: find.byType(TextFormField),
+        ),
+        'NewSecure1',
+      );
+      await tester.enterText(
+        find.descendant(
+          of: find.byKey(const Key('confirm_password_field')),
+          matching: find.byType(TextFormField),
+        ),
+        'NewSecure1',
+      );
+      final Finder action = find.byKey(const Key('change_password_button'));
+      await tester.ensureVisible(action);
+      await tester.tap(action);
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('profile_account_menu')), findsOneWidget);
+      expect(find.byType(DashboardBottomNavigation), findsOneWidget);
+      expect(find.text('Password changed successfully.'), findsOneWidget);
+      expect(find.byKey(const Key('change_password_button')), findsNothing);
+    },
+  );
+
+  testWidgets('Profile Payments opens the existing payments history route', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const InsureXApp());
+    final NavigatorState navigator = tester.state<NavigatorState>(
+      find.byType(Navigator),
+    );
+    unawaited(navigator.pushNamed(AppRoutes.dashboard));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Profile'));
+    await tester.pumpAndSettle();
+    await tester.drag(find.byType(ListView), const Offset(0, -300));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Payments'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Payment Processing'), findsOneWidget);
+    expect(find.byType(DashboardBottomNavigation), findsNothing);
+
+    navigator.pop();
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('profile_account_menu')), findsOneWidget);
+    expect(find.byType(DashboardBottomNavigation), findsOneWidget);
+  });
+
+  testWidgets('Profile logout clears authenticated navigation history', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const InsureXApp());
+    final NavigatorState navigator = tester.state<NavigatorState>(
+      find.byType(Navigator),
+    );
+    unawaited(navigator.pushNamed(AppRoutes.dashboard));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Profile'));
+    await tester.pumpAndSettle();
+    await tester.drag(find.byType(ListView), const Offset(0, -1000));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('profile_logout')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Are you sure you want to log out?'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('confirm_logout_button')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Welcome Back!'), findsOneWidget);
+    expect(find.byType(DashboardBottomNavigation), findsNothing);
+    expect(navigator.canPop(), isFalse);
   });
 }
 
