@@ -5,6 +5,8 @@ enum EvidenceClassification {
   inconclusive,
 }
 
+enum AiAnalysisStatus { pending, analysing, completed, failed }
+
 class AiVerificationResult {
   const AiVerificationResult({
     required this.classification,
@@ -14,6 +16,7 @@ class AiVerificationResult {
     required this.requiresManualReview,
     required this.modelVersion,
     required this.analysisTimestamp,
+    this.analysedImageCount = 0,
   }) : assert(fraudRiskScore >= 0 && fraudRiskScore <= 100),
        assert(confidenceScore >= 0 && confidenceScore <= 100);
 
@@ -24,4 +27,5 @@ class AiVerificationResult {
   final bool requiresManualReview;
   final String modelVersion;
   final DateTime analysisTimestamp;
+  final int analysedImageCount;
 }

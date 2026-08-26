@@ -11,14 +11,12 @@ class ClaimSubmittedPage extends StatelessWidget {
   const ClaimSubmittedPage({
     required this.result,
     required this.onTrackClaim,
-    required this.onViewDetails,
     required this.onReturnToDashboard,
     super.key,
   });
 
   final ClaimSubmissionResult result;
   final VoidCallback onTrackClaim;
-  final VoidCallback onViewDetails;
   final VoidCallback onReturnToDashboard;
 
   @override
@@ -111,21 +109,14 @@ class ClaimSubmittedPage extends StatelessWidget {
                     GlassActionButton(
                       label: 'Track Claim',
                       onPressed: onTrackClaim,
-                      variant: GlassButtonVariant.secondary,
                       icon: Icons.timeline_rounded,
-                    ),
-                    const SizedBox(height: 11),
-                    GlassActionButton(
-                      label: 'View Claim Details',
-                      onPressed: onViewDetails,
-                      variant: GlassButtonVariant.secondary,
-                      icon: Icons.description_outlined,
                     ),
                     const SizedBox(height: 11),
                     GlassActionButton(
                       key: const Key('return_to_dashboard_button'),
                       label: 'Return to Dashboard',
                       onPressed: onReturnToDashboard,
+                      variant: GlassButtonVariant.secondary,
                       icon: Icons.home_rounded,
                     ),
                   ],

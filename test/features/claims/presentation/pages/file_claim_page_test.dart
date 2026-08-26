@@ -206,7 +206,6 @@ void main() {
         home: ClaimSubmittedPage(
           result: submittedResult!,
           onTrackClaim: () {},
-          onViewDetails: () {},
           onReturnToDashboard: () {},
         ),
       ),
@@ -215,7 +214,9 @@ void main() {
 
     expect(find.byKey(const Key('claim_submitted_title')), findsOneWidget);
     expect(find.text('CLM-2026-00124'), findsOneWidget);
-    expect(find.text('Pending Review'), findsOneWidget);
+    expect(find.text('Under Review'), findsOneWidget);
+    expect(find.text('Track Claim'), findsOneWidget);
+    expect(find.text('Return to Dashboard'), findsOneWidget);
   });
 }
 
@@ -308,7 +309,7 @@ ClaimSubmissionResult _submissionResult() {
   return ClaimSubmissionResult(
     claimId: 'CLM-2026-00124',
     submittedAt: DateTime(2026, 8, 26, 12),
-    status: ClaimStatus.pendingReview,
+    status: ClaimStatus.underReview,
     aiVerificationCompleted: true,
     blockchainRecordStatus: 'Pending Integration',
   );
