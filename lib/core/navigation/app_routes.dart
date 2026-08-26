@@ -17,6 +17,8 @@ abstract final class AppRoutes {
 
   static const String myPolicies = '/my-policies';
 
+  static const String myClaims = '/my-claims';
+
   static const String policyDetails = '/policy-details';
 
   static const String fileClaim = '/file-claim';
@@ -24,4 +26,8 @@ abstract final class AppRoutes {
   static const String claimSubmitted = '/claim-submitted';
 
   static const String claimStatus = '/claim-status';
+
+  static const String claimPayout = '/claim-payout';
+
+  static const String paymentsHistory = '/payments';
 }

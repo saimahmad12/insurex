@@ -174,7 +174,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('claim_decision_card')), findsOneWidget);
     expect(find.byKey(const Key('claim_payment_status_card')), findsOneWidget);
-    expect(find.text('View Decision'), findsOneWidget);
+    expect(find.text('Receive Payment'), findsOneWidget);
     expect(find.text('Rs. 105,000'), findsWidgets);
 
     await _pumpPage(

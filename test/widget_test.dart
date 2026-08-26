@@ -6,6 +6,7 @@ import 'package:insurancex/app.dart';
 import 'package:insurancex/core/navigation/app_routes.dart';
 import 'package:insurancex/core/theme/app_theme.dart';
 import 'package:insurancex/features/claims/application/controllers/my_claims_controller.dart';
+import 'package:insurancex/features/claims/data/repositories/mock_claim_status_repository.dart';
 import 'package:insurancex/features/claims/domain/entities/claim_submission_result.dart';
 import 'package:insurancex/features/claims/domain/entities/claim_filter.dart';
 import 'package:insurancex/features/claims/domain/entities/insurance_claim.dart';
@@ -254,6 +255,61 @@ void main() {
 
     expect(find.text('Claim Status'), findsOneWidget);
     expect(find.text('CLM-2026-00124'), findsOneWidget);
+  });
+
+  testWidgets('approved Claim Status opens the Receive Payment flow', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const InsureXApp());
+    final NavigatorState navigator = tester.state<NavigatorState>(
+      find.byType(Navigator),
+    );
+    unawaited(
+      navigator.pushNamed(
+        AppRoutes.claimStatus,
+        arguments: MockClaimStatusRepository.approvedClaimId,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final Finder receivePayment = find.byKey(
+      const Key('claim_status_contextual_action'),
+    );
+    expect(receivePayment, findsOneWidget);
+    await tester.ensureVisible(receivePayment);
+    await tester.pumpAndSettle();
+    await tester.tap(receivePayment);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Receive Payment'), findsOneWidget);
+    expect(find.text('Saved Payout Methods'), findsOneWidget);
+    expect(find.text('Rs. 105,000'), findsOneWidget);
+  });
+
+  testWidgets('Dashboard Payments opens history and an existing payout', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const InsureXApp());
+    final NavigatorState navigator = tester.state<NavigatorState>(
+      find.byType(Navigator),
+    );
+    unawaited(navigator.pushNamed(AppRoutes.dashboard));
+    await tester.pumpAndSettle();
+
+    final Finder payments = find.text('Payments');
+    await tester.ensureVisible(payments);
+    await tester.tap(payments);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Payment Processing'), findsOneWidget);
+    final Finder payoutCard = find.byKey(
+      const ValueKey<String>('payout_history_payout-processing-001'),
+    );
+    await tester.tap(payoutCard);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('payout_status_card')), findsOneWidget);
+    expect(find.text('Payment Processing'), findsOneWidget);
   });
 }
 
