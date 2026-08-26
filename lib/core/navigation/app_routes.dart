@@ -22,4 +22,6 @@ abstract final class AppRoutes {
   static const String fileClaim = '/file-claim';
 
   static const String claimSubmitted = '/claim-submitted';
+
+  static const String claimStatus = '/claim-status';
 }

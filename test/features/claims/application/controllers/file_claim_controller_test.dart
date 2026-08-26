@@ -186,7 +186,7 @@ ClaimSubmissionResult _submissionResult() {
   return ClaimSubmissionResult(
     claimId: 'CLM-2026-00124',
     submittedAt: DateTime(2026, 8, 26, 12),
-    status: ClaimStatus.pendingReview,
+    status: ClaimStatus.underReview,
     aiVerificationCompleted: true,
     blockchainRecordStatus: 'Pending Integration',
   );
