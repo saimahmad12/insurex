@@ -196,6 +196,47 @@ void main() {
       expect(find.text('Verification Pending'), findsOneWidget);
     },
   );
+
+  testWidgets(
+    'verified identity refreshes the canonical account name immediately',
+    (WidgetTester tester) async {
+      final UserProfile base = (await MockProfileRepository(
+        delay: Duration.zero,
+      ).getProfile())!;
+      final IdentityVerification verified = IdentityVerification(
+        status: IdentityVerificationStatus.verified,
+        maskedIdentityNumber: '*****-*******-3',
+        verifiedAt: DateTime(2026, 8, 28),
+      );
+      final UserProfile before = base.copyWith(
+        fullName: 'Saim Ahmad',
+        identityVerification: const IdentityVerification(
+          status: IdentityVerificationStatus.notStarted,
+          maskedIdentityNumber: '*****-*******-*',
+        ),
+      );
+      final UserProfile after = before.copyWith(
+        fullName: 'Muhammad Saim Ahmad',
+        identityVerification: verified,
+      );
+      int profileReads = 0;
+      await _pumpProfile(
+        tester,
+        profileRepository: _TestProfileRepository(() async {
+          profileReads++;
+          return profileReads == 1 ? before : after;
+        }),
+        onIdentityVerification: () async => verified,
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('profile_identity_verification')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Muhammad Saim Ahmad'), findsOneWidget);
+      expect(find.text('Identity Verified'), findsOneWidget);
+    },
+  );
 }
 
 Future<void> _pumpProfile(

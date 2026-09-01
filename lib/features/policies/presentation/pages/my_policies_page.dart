@@ -22,25 +22,22 @@ class MyPoliciesPage extends StatefulWidget {
 
   final VoidCallback onBack;
 
-  final ValueChanged<InsurancePolicy>
-  onPolicyPressed;
+  final ValueChanged<InsurancePolicy> onPolicyPressed;
 
   final VoidCallback onBuyPolicy;
 
   final VoidCallback onSearch;
 
   @override
-  State<MyPoliciesPage> createState() =>
-      _MyPoliciesPageState();
+  State<MyPoliciesPage> createState() => _MyPoliciesPageState();
 }
 
-class _MyPoliciesPageState
-    extends State<MyPoliciesPage> {
+class _MyPoliciesPageState extends State<MyPoliciesPage> {
   @override
   void initState() {
     super.initState();
 
-    widget.controller.loadPolicies();
+    widget.controller.initialize();
   }
 
   @override
@@ -57,30 +54,17 @@ class _MyPoliciesPageState
         child: SafeArea(
           child: AnimatedBuilder(
             animation: widget.controller,
-            builder: (
-                BuildContext context,
-                Widget? child,
-                ) {
+            builder: (BuildContext context, Widget? child) {
               return RefreshIndicator(
                 onRefresh: widget.controller.refresh,
                 child: SingleChildScrollView(
-                  physics:
-                  const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(
-                    18,
-                    16,
-                    18,
-                    30,
-                  ),
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(18, 16, 18, 30),
                   child: Center(
                     child: ConstrainedBox(
-                      constraints:
-                      const BoxConstraints(
-                        maxWidth: 430,
-                      ),
+                      constraints: const BoxConstraints(maxWidth: 430),
                       child: Column(
-                        crossAxisAlignment:
-                        CrossAxisAlignment.stretch,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
                           PoliciesHeader(
                             onBack: widget.onBack,
@@ -90,12 +74,8 @@ class _MyPoliciesPageState
                           const SizedBox(height: 24),
 
                           PolicyFilterTabs(
-                            selectedFilter:
-                            widget.controller
-                                .selectedFilter,
-                            onFilterChanged:
-                            widget.controller
-                                .changeFilter,
+                            selectedFilter: widget.controller.selectedFilter,
+                            onFilterChanged: widget.controller.changeFilter,
                           ),
 
                           const SizedBox(height: 24),
@@ -104,10 +84,7 @@ class _MyPoliciesPageState
 
                           const SizedBox(height: 26),
 
-                          BuyPolicyButton(
-                            onPressed:
-                            widget.onBuyPolicy,
-                          ),
+                          BuyPolicyButton(onPressed: widget.onBuyPolicy),
                         ],
                       ),
                     ),
@@ -122,58 +99,39 @@ class _MyPoliciesPageState
   }
 
   Widget _buildContent() {
-    if (widget.controller.isLoading &&
-        widget.controller.policies.isEmpty) {
+    if (widget.controller.isLoading && widget.controller.policies.isEmpty) {
       return const Padding(
-        padding: EdgeInsets.symmetric(
-          vertical: 80,
-        ),
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
+        padding: EdgeInsets.symmetric(vertical: 80),
+        child: Center(child: CircularProgressIndicator()),
       );
     }
 
-    if (widget.controller.status ==
-        PoliciesStatus.failure &&
+    if (widget.controller.status == PoliciesStatus.failure &&
         widget.controller.policies.isEmpty) {
       return _PoliciesError(
-        message:
-        widget.controller.errorMessage ??
-            'Something went wrong.',
-        onRetry:
-        widget.controller.loadPolicies,
+        message: widget.controller.errorMessage ?? 'Something went wrong.',
+        onRetry: widget.controller.loadPolicies,
       );
     }
 
-    final List<InsurancePolicy> policies =
-        widget.controller.filteredPolicies;
+    final List<InsurancePolicy> policies = widget.controller.filteredPolicies;
 
     if (policies.isEmpty) {
       return const _EmptyPolicies();
     }
 
     return Column(
-      children: policies
-          .map(
-            (InsurancePolicy policy) {
-          return Padding(
-            padding:
-            const EdgeInsets.only(
-              bottom: 14,
-            ),
-            child: PolicyCard(
-              policy: policy,
-              onTap: () {
-                widget.onPolicyPressed(
-                  policy,
-                );
-              },
-            ),
-          );
-        },
-      )
-          .toList(),
+      children: policies.map((InsurancePolicy policy) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 14),
+          child: PolicyCard(
+            policy: policy,
+            onTap: () {
+              widget.onPolicyPressed(policy);
+            },
+          ),
+        );
+      }).toList(),
     );
   }
 }
@@ -184,28 +142,19 @@ class _EmptyPolicies extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 70,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 70),
       child: Column(
         children: <Widget>[
           Container(
             width: 72,
             height: 72,
             decoration: BoxDecoration(
-              color:
-              Colors.white.withValues(
-                alpha: 0.05,
-              ),
-              borderRadius:
-              BorderRadius.circular(22),
+              color: Colors.white.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(22),
             ),
             child: Icon(
               Icons.description_outlined,
-              color:
-              Colors.white.withValues(
-                alpha: 0.5,
-              ),
+              color: Colors.white.withValues(alpha: 0.5),
               size: 32,
             ),
           ),
@@ -227,10 +176,7 @@ class _EmptyPolicies extends StatelessWidget {
             'There are no policies in this category.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color:
-              Colors.white.withValues(
-                alpha: 0.55,
-              ),
+              color: Colors.white.withValues(alpha: 0.55),
               fontSize: 13,
             ),
           ),
@@ -241,10 +187,7 @@ class _EmptyPolicies extends StatelessWidget {
 }
 
 class _PoliciesError extends StatelessWidget {
-  const _PoliciesError({
-    required this.message,
-    required this.onRetry,
-  });
+  const _PoliciesError({required this.message, required this.onRetry});
 
   final String message;
   final VoidCallback onRetry;
@@ -252,10 +195,7 @@ class _PoliciesError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:
-      const EdgeInsets.symmetric(
-        vertical: 60,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 60),
       child: Column(
         children: <Widget>[
           const Icon(
@@ -269,22 +209,12 @@ class _PoliciesError extends StatelessWidget {
           Text(
             message,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color:
-              Colors.white.withValues(
-                alpha: 0.7,
-              ),
-            ),
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
           ),
 
           const SizedBox(height: 16),
 
-          TextButton(
-            onPressed: onRetry,
-            child: const Text(
-              'Try Again',
-            ),
-          ),
+          TextButton(onPressed: onRetry, child: const Text('Try Again')),
         ],
       ),
     );

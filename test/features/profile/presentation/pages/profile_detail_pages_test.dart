@@ -315,7 +315,9 @@ void main() {
       );
       expect(find.text('*****-*******-3'), findsOneWidget);
       if (status == IdentityVerificationStatus.notStarted ||
-          status == IdentityVerificationStatus.rejected) {
+          status == IdentityVerificationStatus.capturing ||
+          status == IdentityVerificationStatus.rejected ||
+          status == IdentityVerificationStatus.expired) {
         expect(
           find.byKey(const Key('start_identity_verification_button')),
           findsOneWidget,
@@ -365,7 +367,8 @@ void main() {
       find.byKey(const Key('start_identity_verification_button')),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Verification Pending'), findsOneWidget);
+    expect(find.text('Before you continue'), findsOneWidget);
+    expect(find.byKey(const Key('identity_consent_checkbox')), findsOneWidget);
   });
 
   testWidgets('Identity system back returns the latest verification state', (
@@ -406,7 +409,7 @@ void main() {
     await tester.binding.handlePopRoute();
     await tester.pump();
 
-    expect(returned?.status, IdentityVerificationStatus.pending);
+    expect(returned?.status, IdentityVerificationStatus.capturing);
   });
 
   testWidgets('Security page shows settings and updates only biometric tile', (
@@ -640,8 +643,14 @@ Finder _editableField(String key) {
 String _identityStatusLabel(IdentityVerificationStatus status) {
   return switch (status) {
     IdentityVerificationStatus.notStarted => 'Not Verified',
+    IdentityVerificationStatus.capturing => 'Verification In Progress',
+    IdentityVerificationStatus.submitted ||
     IdentityVerificationStatus.pending => 'Verification Pending',
     IdentityVerificationStatus.verified => 'Identity Verified',
     IdentityVerificationStatus.rejected => 'Verification Rejected',
+    IdentityVerificationStatus.expired => 'Verification Expired',
+    IdentityVerificationStatus.additionalCaptureRequired =>
+      'Recapture Required',
+    IdentityVerificationStatus.technicalFailure => 'Verification Unavailable',
   };
 }

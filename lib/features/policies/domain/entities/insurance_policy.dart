@@ -1,13 +1,6 @@
-enum PolicyType {
-  vehicle,
-  health,
-  travel,
-}
+enum PolicyType { vehicle, health, travel, life, property }
 
-enum PolicyStatus {
-  active,
-  expired,
-}
+enum PolicyStatus { active, pending, expired }
 
 class InsurancePolicy {
   const InsurancePolicy({
@@ -18,6 +11,12 @@ class InsurancePolicy {
     required this.validTill,
     required this.premium,
     required this.status,
+    this.providerName,
+    this.coverageAmount,
+    this.startDate,
+    this.paymentReference,
+    this.documentReference,
+    this.blockchainRecordStatus,
   });
 
   final String id;
@@ -27,4 +26,10 @@ class InsurancePolicy {
   final DateTime validTill;
   final double premium;
   final PolicyStatus status;
+  final String? providerName;
+  final double? coverageAmount;
+  final DateTime? startDate;
+  final String? paymentReference;
+  final String? documentReference;
+  final String? blockchainRecordStatus;
 }

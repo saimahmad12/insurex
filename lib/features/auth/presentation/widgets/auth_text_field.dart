@@ -16,6 +16,7 @@ class AuthTextField extends StatefulWidget {
     this.onChanged,
     this.onSubmitted,
     this.autofillHints,
+    this.helperText,
   });
 
   final TextEditingController controller;
@@ -30,6 +31,7 @@ class AuthTextField extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
   final Iterable<String>? autofillHints;
+  final String? helperText;
 
   @override
   State<AuthTextField> createState() {
@@ -67,15 +69,16 @@ class _AuthTextFieldState extends State<AuthTextField> {
       decoration: InputDecoration(
         labelText: widget.label,
         hintText: widget.hintText,
+        helperText: widget.helperText,
         labelStyle: TextStyle(
-          color: AppColors.textSecondary.withValues(
-            alpha: 0.78,
-          ),
+          color: AppColors.textSecondary.withValues(alpha: 0.78),
         ),
         hintStyle: TextStyle(
-          color: AppColors.textSecondary.withValues(
-            alpha: 0.48,
-          ),
+          color: AppColors.textSecondary.withValues(alpha: 0.48),
+        ),
+        helperStyle: TextStyle(
+          color: AppColors.textSecondary.withValues(alpha: 0.7),
+          fontSize: 11.5,
         ),
         prefixIcon: Icon(
           widget.prefixIcon,
@@ -84,62 +87,42 @@ class _AuthTextFieldState extends State<AuthTextField> {
         ),
         suffixIcon: widget.obscureText
             ? IconButton(
-          tooltip: _isObscured
-              ? 'Show password'
-              : 'Hide password',
-          onPressed: () {
-            setState(() {
-              _isObscured = !_isObscured;
-            });
-          },
-          icon: Icon(
-            _isObscured
-                ? Icons.visibility_off_outlined
-                : Icons.visibility_outlined,
-            color: AppColors.textSecondary,
-          ),
-        )
+                tooltip: _isObscured ? 'Show password' : 'Hide password',
+                onPressed: () {
+                  setState(() {
+                    _isObscured = !_isObscured;
+                  });
+                },
+                icon: Icon(
+                  _isObscured
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  color: AppColors.textSecondary,
+                ),
+              )
             : null,
         filled: true,
-        fillColor: AppColors.white.withValues(
-          alpha: 0.075,
-        ),
+        fillColor: AppColors.white.withValues(alpha: 0.075),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 18,
           vertical: 18,
         ),
-        enabledBorder: _createBorder(
-          AppColors.white.withValues(alpha: 0.26),
-        ),
+        enabledBorder: _createBorder(AppColors.white.withValues(alpha: 0.26)),
         focusedBorder: _createBorder(
           AppColors.blue.withValues(alpha: 0.88),
           width: 1.35,
         ),
-        errorBorder: _createBorder(
-          const Color(0xFFFF8A9B),
-        ),
-        focusedErrorBorder: _createBorder(
-          const Color(0xFFFF8A9B),
-          width: 1.35,
-        ),
-        errorStyle: const TextStyle(
-          color: Color(0xFFFFB3BE),
-          fontSize: 11.5,
-        ),
+        errorBorder: _createBorder(const Color(0xFFFF8A9B)),
+        focusedErrorBorder: _createBorder(const Color(0xFFFF8A9B), width: 1.35),
+        errorStyle: const TextStyle(color: Color(0xFFFFB3BE), fontSize: 11.5),
       ),
     );
   }
 
-  OutlineInputBorder _createBorder(
-      Color color, {
-        double width = 1,
-      }) {
+  OutlineInputBorder _createBorder(Color color, {double width = 1}) {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(17),
-      borderSide: BorderSide(
-        color: color,
-        width: width,
-      ),
+      borderSide: BorderSide(color: color, width: width),
     );
   }
 }

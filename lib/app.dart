@@ -78,6 +78,7 @@ import 'features/profile/data/repositories/mock_profile_repository.dart';
 import 'features/profile/data/repositories/mock_security_repository.dart';
 import 'features/profile/domain/entities/identity_verification.dart';
 import 'features/profile/domain/entities/user_profile.dart';
+import 'features/profile/domain/repositories/profile_repository.dart';
 import 'features/profile/presentation/pages/change_password_page.dart';
 import 'features/profile/presentation/pages/edit_profile_page.dart';
 import 'features/profile/presentation/pages/help_support_page.dart';
@@ -109,8 +110,38 @@ import 'features/policies/domain/entities/insurance_policy.dart';
 
 import 'features/policies/presentation/pages/policy_details_page.dart';
 
+// ============================================================
+// INSURANCE MARKETPLACE & POLICY PURCHASE
+// ============================================================
+import 'features/insurance_marketplace/application/controllers/insurance_marketplace_controller.dart';
+import 'features/insurance_marketplace/application/controllers/insurance_product_controller.dart';
+import 'features/insurance_marketplace/data/repositories/mock_insurance_marketplace_repository.dart';
+import 'features/insurance_marketplace/domain/entities/insurance_product.dart';
+import 'features/insurance_marketplace/domain/repositories/insurance_marketplace_repository.dart';
+import 'features/insurance_marketplace/presentation/pages/insurance_comparison_page.dart';
+import 'features/insurance_marketplace/presentation/pages/insurance_marketplace_page.dart';
+import 'features/insurance_marketplace/presentation/pages/insurance_product_details_page.dart';
+import 'features/policy_purchase/application/controllers/policy_application_controller.dart';
+import 'features/policy_purchase/application/controllers/policy_purchase_controller.dart';
+import 'features/policy_purchase/application/controllers/policy_quote_controller.dart';
+import 'features/policy_purchase/application/controllers/premium_payment_controller.dart';
+import 'features/policy_purchase/data/repositories/mock_policy_application_repository.dart';
+import 'features/policy_purchase/data/repositories/mock_policy_purchase_repository.dart';
+import 'features/policy_purchase/data/repositories/mock_premium_payment_repository.dart';
+import 'features/policy_purchase/domain/entities/premium_payment.dart';
+import 'features/policy_purchase/domain/repositories/policy_application_repository.dart';
+import 'features/policy_purchase/domain/repositories/policy_purchase_repository.dart';
+import 'features/policy_purchase/domain/repositories/premium_payment_repository.dart';
+import 'features/policy_purchase/presentation/pages/policy_purchase_page.dart';
+import 'features/policy_purchase/presentation/pages/premium_payment_receipt_page.dart';
+
 class InsureXApp extends StatefulWidget {
-  const InsureXApp({super.key});
+  const InsureXApp({
+    this.initialVerificationStatus = IdentityVerificationStatus.notStarted,
+    super.key,
+  });
+
+  final IdentityVerificationStatus initialVerificationStatus;
 
   @override
   State<InsureXApp> createState() => _InsureXAppState();
@@ -124,6 +155,11 @@ class _InsureXAppState extends State<InsureXApp> {
   _notificationPreferencesRepository;
   late final MockSecurityRepository _securityRepository;
   late final MockAuthSessionRepository _authSessionRepository;
+  late final MockPoliciesRepository _policiesRepository;
+  late final MockInsuranceMarketplaceRepository _marketplaceRepository;
+  late final MockPolicyPurchaseRepository _policyPurchaseRepository;
+  late final MockPolicyApplicationRepository _policyApplicationRepository;
+  late final MockPremiumPaymentRepository _premiumPaymentRepository;
 
   @override
   void initState() {
@@ -132,11 +168,22 @@ class _InsureXAppState extends State<InsureXApp> {
     _payoutRepository = MockClaimPayoutRepository(
       claimsRepository: _claimsRepository,
     );
-    _profileRepository = MockProfileRepository();
+    _profileRepository = MockProfileRepository(
+      initialVerificationStatus: widget.initialVerificationStatus,
+      verificationOutcome: IdentityVerificationStatus.verified,
+    );
     _notificationPreferencesRepository =
         MockNotificationPreferencesRepository();
     _securityRepository = MockSecurityRepository();
     _authSessionRepository = MockAuthSessionRepository();
+    _policiesRepository = MockPoliciesRepository();
+    _marketplaceRepository = MockInsuranceMarketplaceRepository();
+    _policyPurchaseRepository = MockPolicyPurchaseRepository(
+      identityRepository: _profileRepository,
+      policiesRepository: _policiesRepository,
+    );
+    _policyApplicationRepository = MockPolicyApplicationRepository();
+    _premiumPaymentRepository = MockPremiumPaymentRepository();
   }
 
   @override
@@ -222,17 +269,36 @@ class _InsureXAppState extends State<InsureXApp> {
         // SIGN UP
         // ============================================================
         AppRoutes.signup: (BuildContext context) {
-          return SignupPage(
-            controller: SignupController(
-              repository: const MockSignupRepository(),
+          final SignupController signupController = SignupController(
+            repository: MockSignupRepository(
+              initializeAccountName:
+                  _profileRepository.initializeUnverifiedAccountName,
             ),
+            identityRepository: _profileRepository,
+          );
+          return SignupPage(
+            controller: signupController,
 
             onBack: () {
               Navigator.of(context).pop();
             },
 
-            onSignupSuccess: () {
-              Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+            onContinueToIdentityVerification: () async {
+              final Object? result = await Navigator.of(context).pushNamed(
+                AppRoutes.identityVerification,
+                arguments: IdentityVerificationEntryPoint.signup,
+              );
+              if (result is! IdentityVerification) {
+                return;
+              }
+              final bool completed = await signupController
+                  .completeVerifiedSignup();
+              if (completed && context.mounted) {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  AppRoutes.dashboard,
+                  (Route<dynamic> route) => false,
+                );
+              }
             },
 
             onLoginPressed: () {
@@ -471,6 +537,133 @@ class _InsureXAppState extends State<InsureXApp> {
         // ============================================================
         // FILE A CLAIM
         // ============================================================
+        AppRoutes.insuranceMarketplace: (BuildContext context) {
+          return _InsuranceMarketplaceRouteScope(
+            repository: _marketplaceRepository,
+            onBack: () => Navigator.of(context).pop(),
+            onProductPressed:
+                (
+                  InsuranceMarketplaceController marketplaceController,
+                  InsuranceProduct product,
+                ) async {
+                  final Object? result = await Navigator.of(context).pushNamed(
+                    AppRoutes.insuranceProductDetails,
+                    arguments: product.id,
+                  );
+                  if (result is _ProductDetailsAction) {
+                    marketplaceController.toggleComparison(result.productId);
+                  } else if (result is _MarketplaceExit && context.mounted) {
+                    Navigator.of(context).pop(result);
+                  }
+                },
+            onCompare: (List<InsuranceProduct> products) {
+              Navigator.of(
+                context,
+              ).pushNamed(AppRoutes.insuranceComparison, arguments: products);
+            },
+          );
+        },
+
+        AppRoutes.insuranceProductDetails: (BuildContext context) {
+          final Object? arguments = ModalRoute.of(context)?.settings.arguments;
+          final String productId = arguments is String ? arguments : '';
+          return _InsuranceProductDetailsRouteScope(
+            productId: productId,
+            repository: _marketplaceRepository,
+            onBack: () => Navigator.of(context).pop(),
+            onBuyNow: (InsuranceProduct product) async {
+              final Object? result = await Navigator.of(
+                context,
+              ).pushNamed(AppRoutes.policyPurchase, arguments: product.id);
+              if (result is _MarketplaceExit && context.mounted) {
+                Navigator.of(context).pop(result);
+              }
+            },
+            onCompare: (InsuranceProduct product) {
+              Navigator.of(
+                context,
+              ).pop(_ProductDetailsAction.compare(product.id));
+            },
+            onContactSupport: () {
+              _showMessage(
+                context,
+                'Marketplace support will be connected to the secure backend.',
+              );
+            },
+          );
+        },
+
+        AppRoutes.insuranceComparison: (BuildContext context) {
+          final Object? arguments = ModalRoute.of(context)?.settings.arguments;
+          final List<InsuranceProduct> products =
+              arguments is List<InsuranceProduct>
+              ? arguments
+              : const <InsuranceProduct>[];
+          return InsuranceComparisonPage(
+            products: products,
+            onBack: () => Navigator.of(context).pop(),
+            onProductPressed: (InsuranceProduct product) {
+              Navigator.of(context).pushNamed(
+                AppRoutes.insuranceProductDetails,
+                arguments: product.id,
+              );
+            },
+          );
+        },
+
+        AppRoutes.policyPurchase: (BuildContext context) {
+          final Object? arguments = ModalRoute.of(context)?.settings.arguments;
+          final String productId = arguments is String ? arguments : '';
+          return _PolicyPurchaseRouteScope(
+            productId: productId,
+            marketplaceRepository: _marketplaceRepository,
+            profileRepository: _profileRepository,
+            purchaseRepository: _policyPurchaseRepository,
+            applicationRepository: _policyApplicationRepository,
+            paymentRepository: _premiumPaymentRepository,
+            onBack: () => Navigator.of(context).pop(),
+            onVerifyIdentity: () async {
+              final Object? result = await Navigator.of(
+                context,
+              ).pushNamed(AppRoutes.purchaseIdentityVerification);
+              return result is IdentityVerification ? result : null;
+            },
+            onViewPolicy: (InsurancePolicy policy) {
+              Navigator.of(
+                context,
+              ).pushNamed(AppRoutes.policyDetails, arguments: policy);
+            },
+            onViewPaymentReceipt: (PremiumPayment payment) {
+              Navigator.of(
+                context,
+              ).pushNamed(AppRoutes.premiumPaymentReceipt, arguments: payment);
+            },
+            onMyPolicies: () {
+              Navigator.of(context).pop(_MarketplaceExit.myPolicies);
+            },
+            onDashboard: () {
+              Navigator.of(context).pop(_MarketplaceExit.dashboard);
+            },
+            onDownloadDocument: () {
+              _showMessage(
+                context,
+                'Secure policy-document download will be connected later.',
+              );
+            },
+          );
+        },
+
+        AppRoutes.premiumPaymentReceipt: (BuildContext context) {
+          final Object? arguments = ModalRoute.of(context)?.settings.arguments;
+          if (arguments is! PremiumPayment) {
+            return const SizedBox.shrink();
+          }
+          return PremiumPaymentReceiptPage(
+            payment: arguments,
+            onBack: () => Navigator.of(context).pop(),
+          );
+        },
+
         AppRoutes.fileClaim: (BuildContext context) {
           final Object? arguments = ModalRoute.of(context)?.settings.arguments;
           final InsurancePolicy? selectedPolicy = arguments is InsurancePolicy
@@ -684,9 +877,14 @@ class _InsureXAppState extends State<InsureXApp> {
                   context,
                 ).pushNamed(AppRoutes.identityVerification);
                 if (result is IdentityVerification && context.mounted) {
-                  Navigator.of(
-                    context,
-                  ).pop(arguments.copyWith(identityVerification: result));
+                  final UserProfile? refreshed = await _profileRepository
+                      .refreshProfile();
+                  if (context.mounted) {
+                    Navigator.of(context).pop(
+                      refreshed ??
+                          arguments.copyWith(identityVerification: result),
+                    );
+                  }
                 }
                 return;
               }
@@ -699,10 +897,30 @@ class _InsureXAppState extends State<InsureXApp> {
         },
 
         AppRoutes.identityVerification: (BuildContext context) {
+          final Object? arguments = ModalRoute.of(context)?.settings.arguments;
+          final IdentityVerificationEntryPoint entryPoint =
+              arguments is IdentityVerificationEntryPoint
+              ? arguments
+              : IdentityVerificationEntryPoint.account;
           return IdentityVerificationPage(
             controller: IdentityVerificationController(
               repository: _profileRepository,
             ),
+            startImmediately:
+                entryPoint == IdentityVerificationEntryPoint.signup,
+            entryPoint: entryPoint,
+            onBack: (IdentityVerification? verification) {
+              Navigator.of(context).pop(verification);
+            },
+          );
+        },
+
+        AppRoutes.purchaseIdentityVerification: (BuildContext context) {
+          return IdentityVerificationPage(
+            controller: IdentityVerificationController(
+              repository: _profileRepository,
+            ),
+            startImmediately: true,
             onBack: (IdentityVerification? verification) {
               Navigator.of(context).pop(verification);
             },
@@ -810,14 +1028,22 @@ class _InsureXAppState extends State<InsureXApp> {
   }) {
     final DashboardNavigationController navigationController =
         DashboardNavigationController(initialTab: initialTab);
+    final PoliciesController policiesController = PoliciesController(
+      repository: _policiesRepository,
+    );
+    final DashboardController dashboardController = DashboardController(
+      repository: MockDashboardRepository(
+        profileRepository: _profileRepository,
+      ),
+    );
+    final ProfileController profileController = ProfileController(
+      profileRepository: _profileRepository,
+      authSessionRepository: _authSessionRepository,
+    );
     return DashboardNavigationShell(
       navigationController: navigationController,
-      dashboardController: DashboardController(
-        repository: const MockDashboardRepository(),
-      ),
-      policiesController: PoliciesController(
-        repository: const MockPoliciesRepository(),
-      ),
+      dashboardController: dashboardController,
+      policiesController: policiesController,
       myClaimsController: MyClaimsController(repository: _claimsRepository),
       onFileClaim: () {
         _openFileClaim(context);
@@ -837,10 +1063,7 @@ class _InsureXAppState extends State<InsureXApp> {
         Navigator.of(context).pushNamed(AppRoutes.notificationSettings);
       },
       profilePage: ProfilePage(
-        controller: ProfileController(
-          profileRepository: _profileRepository,
-          authSessionRepository: _authSessionRepository,
-        ),
+        controller: profileController,
         onEditProfile: (UserProfile profile) async {
           final Object? result = await Navigator.of(
             context,
@@ -851,7 +1074,13 @@ class _InsureXAppState extends State<InsureXApp> {
           final Object? result = await Navigator.of(
             context,
           ).pushNamed(AppRoutes.identityVerification);
-          return result is IdentityVerification ? result : null;
+          if (result is! IdentityVerification) {
+            return null;
+          }
+          if (result.status == IdentityVerificationStatus.verified) {
+            await dashboardController.refreshDashboard();
+          }
+          return result;
         },
         onMyPolicies: navigationController.showPolicies,
         onMyClaims: navigationController.showClaims,
@@ -880,16 +1109,32 @@ class _InsureXAppState extends State<InsureXApp> {
           _logoutToLogin(context);
         },
       ),
-      onPolicySearch: () {
-        _showMessage(context, 'Policy search will be added later.');
+      onPolicySearch: () async {
+        final Object? result = await Navigator.of(
+          context,
+        ).pushNamed(AppRoutes.insuranceMarketplace);
+        if (result == _MarketplaceExit.myPolicies) {
+          await policiesController.refresh();
+          navigationController.showPolicies();
+        } else if (result == _MarketplaceExit.dashboard) {
+          navigationController.showHome();
+        }
       },
       onPolicyPressed: (InsurancePolicy policy) {
         Navigator.of(
           context,
         ).pushNamed(AppRoutes.policyDetails, arguments: policy);
       },
-      onBuyPolicy: () {
-        _showMessage(context, 'Buy New Policy screen will be added later.');
+      onBuyPolicy: () async {
+        final Object? result = await Navigator.of(
+          context,
+        ).pushNamed(AppRoutes.insuranceMarketplace);
+        if (result == _MarketplaceExit.myPolicies) {
+          await policiesController.refresh();
+          navigationController.showPolicies();
+        } else if (result == _MarketplaceExit.dashboard) {
+          navigationController.showHome();
+        }
       },
     );
   }
@@ -961,6 +1206,185 @@ class _InsureXAppState extends State<InsureXApp> {
       ..showSnackBar(
         SnackBar(content: Text(message), behavior: SnackBarBehavior.floating),
       );
+  }
+}
+
+enum _MarketplaceExit { myPolicies, dashboard }
+
+class _ProductDetailsAction {
+  const _ProductDetailsAction.compare(this.productId);
+
+  final String productId;
+}
+
+class _InsuranceMarketplaceRouteScope extends StatefulWidget {
+  const _InsuranceMarketplaceRouteScope({
+    required this.repository,
+    required this.onBack,
+    required this.onProductPressed,
+    required this.onCompare,
+  });
+
+  final InsuranceMarketplaceRepository repository;
+  final VoidCallback onBack;
+  final Future<void> Function(
+    InsuranceMarketplaceController controller,
+    InsuranceProduct product,
+  )
+  onProductPressed;
+  final ValueChanged<List<InsuranceProduct>> onCompare;
+
+  @override
+  State<_InsuranceMarketplaceRouteScope> createState() =>
+      _InsuranceMarketplaceRouteScopeState();
+}
+
+class _InsuranceMarketplaceRouteScopeState
+    extends State<_InsuranceMarketplaceRouteScope> {
+  late final InsuranceMarketplaceController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = InsuranceMarketplaceController(repository: widget.repository);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InsuranceMarketplacePage(
+      controller: _controller,
+      onBack: widget.onBack,
+      onProductPressed: (InsuranceProduct product) =>
+          widget.onProductPressed(_controller, product),
+      onCompare: widget.onCompare,
+    );
+  }
+}
+
+class _InsuranceProductDetailsRouteScope extends StatefulWidget {
+  const _InsuranceProductDetailsRouteScope({
+    required this.productId,
+    required this.repository,
+    required this.onBack,
+    required this.onBuyNow,
+    required this.onCompare,
+    required this.onContactSupport,
+  });
+
+  final String productId;
+  final InsuranceMarketplaceRepository repository;
+  final VoidCallback onBack;
+  final ValueChanged<InsuranceProduct> onBuyNow;
+  final ValueChanged<InsuranceProduct> onCompare;
+  final VoidCallback onContactSupport;
+
+  @override
+  State<_InsuranceProductDetailsRouteScope> createState() =>
+      _InsuranceProductDetailsRouteScopeState();
+}
+
+class _InsuranceProductDetailsRouteScopeState
+    extends State<_InsuranceProductDetailsRouteScope> {
+  late final InsuranceProductController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = InsuranceProductController(
+      productId: widget.productId,
+      repository: widget.repository,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InsuranceProductDetailsPage(
+      controller: _controller,
+      onBack: widget.onBack,
+      onBuyNow: widget.onBuyNow,
+      onCompare: widget.onCompare,
+      onContactSupport: widget.onContactSupport,
+    );
+  }
+}
+
+class _PolicyPurchaseRouteScope extends StatefulWidget {
+  const _PolicyPurchaseRouteScope({
+    required this.productId,
+    required this.marketplaceRepository,
+    required this.profileRepository,
+    required this.purchaseRepository,
+    required this.applicationRepository,
+    required this.paymentRepository,
+    required this.onBack,
+    required this.onVerifyIdentity,
+    required this.onViewPolicy,
+    required this.onViewPaymentReceipt,
+    required this.onMyPolicies,
+    required this.onDashboard,
+    required this.onDownloadDocument,
+  });
+
+  final String productId;
+  final InsuranceMarketplaceRepository marketplaceRepository;
+  final ProfileRepository profileRepository;
+  final PolicyPurchaseRepository purchaseRepository;
+  final PolicyApplicationRepository applicationRepository;
+  final PremiumPaymentRepository paymentRepository;
+  final VoidCallback onBack;
+  final Future<IdentityVerification?> Function() onVerifyIdentity;
+  final ValueChanged<InsurancePolicy> onViewPolicy;
+  final ValueChanged<PremiumPayment> onViewPaymentReceipt;
+  final VoidCallback onMyPolicies;
+  final VoidCallback onDashboard;
+  final VoidCallback onDownloadDocument;
+
+  @override
+  State<_PolicyPurchaseRouteScope> createState() =>
+      _PolicyPurchaseRouteScopeState();
+}
+
+class _PolicyPurchaseRouteScopeState extends State<_PolicyPurchaseRouteScope> {
+  late final PolicyPurchaseController _purchaseController;
+  late final PolicyQuoteController _quoteController;
+  late final PolicyApplicationController _applicationController;
+  late final PremiumPaymentController _paymentController;
+
+  @override
+  void initState() {
+    super.initState();
+    _purchaseController = PolicyPurchaseController(
+      marketplaceRepository: widget.marketplaceRepository,
+      profileRepository: widget.profileRepository,
+      purchaseRepository: widget.purchaseRepository,
+      productId: widget.productId,
+    );
+    _quoteController = PolicyQuoteController(
+      repository: widget.purchaseRepository,
+    );
+    _applicationController = PolicyApplicationController(
+      repository: widget.applicationRepository,
+    );
+    _paymentController = PremiumPaymentController(
+      repository: widget.paymentRepository,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PolicyPurchasePage(
+      purchaseController: _purchaseController,
+      quoteController: _quoteController,
+      applicationController: _applicationController,
+      paymentController: _paymentController,
+      onBack: widget.onBack,
+      onVerifyIdentity: widget.onVerifyIdentity,
+      onViewPolicy: widget.onViewPolicy,
+      onViewPaymentReceipt: widget.onViewPaymentReceipt,
+      onMyPolicies: widget.onMyPolicies,
+      onDashboard: widget.onDashboard,
+      onDownloadDocument: widget.onDownloadDocument,
+    );
   }
 }
 

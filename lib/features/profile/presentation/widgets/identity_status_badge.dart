@@ -41,17 +41,30 @@ class IdentityStatusBadge extends StatelessWidget {
 String identityStatusLabel(IdentityVerificationStatus status) {
   return switch (status) {
     IdentityVerificationStatus.notStarted => 'Not Verified',
+    IdentityVerificationStatus.capturing => 'Verification In Progress',
+    IdentityVerificationStatus.submitted ||
     IdentityVerificationStatus.pending => 'Verification Pending',
     IdentityVerificationStatus.verified => 'Identity Verified',
     IdentityVerificationStatus.rejected => 'Verification Rejected',
+    IdentityVerificationStatus.expired => 'Verification Expired',
+    IdentityVerificationStatus.additionalCaptureRequired =>
+      'Recapture Required',
+    IdentityVerificationStatus.technicalFailure => 'Verification Unavailable',
   };
 }
 
 Color identityStatusColor(IdentityVerificationStatus status) {
   return switch (status) {
     IdentityVerificationStatus.verified => const Color(0xFF49E6A4),
-    IdentityVerificationStatus.pending => const Color(0xFFFFB84A),
-    IdentityVerificationStatus.rejected => const Color(0xFFFF718A),
+    IdentityVerificationStatus.capturing ||
+    IdentityVerificationStatus.submitted ||
+    IdentityVerificationStatus.pending ||
+    IdentityVerificationStatus.additionalCaptureRequired => const Color(
+      0xFFFFB84A,
+    ),
+    IdentityVerificationStatus.rejected ||
+    IdentityVerificationStatus.expired ||
+    IdentityVerificationStatus.technicalFailure => const Color(0xFFFF718A),
     IdentityVerificationStatus.notStarted => AppColors.textSecondary,
   };
 }
@@ -59,8 +72,14 @@ Color identityStatusColor(IdentityVerificationStatus status) {
 IconData identityStatusIcon(IdentityVerificationStatus status) {
   return switch (status) {
     IdentityVerificationStatus.verified => Icons.verified_user_outlined,
+    IdentityVerificationStatus.capturing => Icons.camera_alt_outlined,
+    IdentityVerificationStatus.submitted ||
     IdentityVerificationStatus.pending => Icons.schedule_rounded,
-    IdentityVerificationStatus.rejected => Icons.error_outline_rounded,
+    IdentityVerificationStatus.rejected ||
+    IdentityVerificationStatus.expired ||
+    IdentityVerificationStatus.technicalFailure => Icons.error_outline_rounded,
+    IdentityVerificationStatus.additionalCaptureRequired =>
+      Icons.add_a_photo_outlined,
     IdentityVerificationStatus.notStarted => Icons.shield_outlined,
   };
 }
