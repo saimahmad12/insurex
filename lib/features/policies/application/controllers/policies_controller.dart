@@ -3,23 +3,13 @@ import 'package:flutter/foundation.dart';
 import '../../domain/entities/insurance_policy.dart';
 import '../../domain/repositories/policies_repository.dart';
 
-enum PoliciesStatus {
-  initial,
-  loading,
-  success,
-  failure,
-}
+enum PoliciesStatus { initial, loading, success, failure }
 
-enum PolicyFilter {
-  active,
-  expired,
-  all,
-}
+enum PolicyFilter { active, expired, all }
 
 class PoliciesController extends ChangeNotifier {
-  PoliciesController({
-    required PoliciesRepository repository,
-  }) : _repository = repository;
+  PoliciesController({required PoliciesRepository repository})
+    : _repository = repository;
 
   final PoliciesRepository _repository;
 
@@ -30,6 +20,8 @@ class PoliciesController extends ChangeNotifier {
   PolicyFilter _selectedFilter = PolicyFilter.active;
 
   String? _errorMessage;
+  bool _initialized = false;
+  bool _loadInProgress = false;
 
   PoliciesStatus get status => _status;
 
@@ -46,17 +38,15 @@ class PoliciesController extends ChangeNotifier {
       case PolicyFilter.active:
         return _policies
             .where(
-              (InsurancePolicy policy) =>
-          policy.status == PolicyStatus.active,
-        )
+              (InsurancePolicy policy) => policy.status == PolicyStatus.active,
+            )
             .toList();
 
       case PolicyFilter.expired:
         return _policies
             .where(
-              (InsurancePolicy policy) =>
-          policy.status == PolicyStatus.expired,
-        )
+              (InsurancePolicy policy) => policy.status == PolicyStatus.expired,
+            )
             .toList();
 
       case PolicyFilter.all:
@@ -64,11 +54,20 @@ class PoliciesController extends ChangeNotifier {
     }
   }
 
+  Future<void> initialize() async {
+    if (_initialized) {
+      return;
+    }
+    _initialized = true;
+    await loadPolicies();
+  }
+
   Future<void> loadPolicies() async {
-    if (isLoading) {
+    if (_loadInProgress) {
       return;
     }
 
+    _loadInProgress = true;
     _status = PoliciesStatus.loading;
     _errorMessage = null;
 
@@ -80,11 +79,11 @@ class PoliciesController extends ChangeNotifier {
       _status = PoliciesStatus.success;
     } catch (_) {
       _status = PoliciesStatus.failure;
-      _errorMessage =
-      'Unable to load your policies. Please try again.';
+      _errorMessage = 'Unable to load your policies. Please try again.';
+    } finally {
+      _loadInProgress = false;
+      notifyListeners();
     }
-
-    notifyListeners();
   }
 
   void changeFilter(PolicyFilter filter) {

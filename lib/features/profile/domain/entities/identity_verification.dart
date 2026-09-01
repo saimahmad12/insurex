@@ -1,4 +1,16 @@
-enum IdentityVerificationStatus { notStarted, pending, verified, rejected }
+import 'identity_verification_draft.dart';
+
+enum IdentityVerificationStatus {
+  notStarted,
+  capturing,
+  submitted,
+  pending,
+  verified,
+  rejected,
+  expired,
+  additionalCaptureRequired,
+  technicalFailure,
+}
 
 class IdentityVerification {
   const IdentityVerification({
@@ -7,6 +19,10 @@ class IdentityVerification {
     this.submittedAt,
     this.verifiedAt,
     this.rejectionReason,
+    this.expiresAt,
+    this.additionalCaptureSide,
+    this.providerReference,
+    this.proofRecordHash,
   });
 
   final IdentityVerificationStatus status;
@@ -14,6 +30,10 @@ class IdentityVerification {
   final DateTime? submittedAt;
   final DateTime? verifiedAt;
   final String? rejectionReason;
+  final DateTime? expiresAt;
+  final IdentityCaptureSide? additionalCaptureSide;
+  final String? providerReference;
+  final String? proofRecordHash;
 
   IdentityVerification copyWith({
     IdentityVerificationStatus? status,
@@ -21,6 +41,10 @@ class IdentityVerification {
     DateTime? submittedAt,
     DateTime? verifiedAt,
     String? rejectionReason,
+    DateTime? expiresAt,
+    IdentityCaptureSide? additionalCaptureSide,
+    String? providerReference,
+    String? proofRecordHash,
     bool clearVerifiedAt = false,
     bool clearRejectionReason = false,
   }) {
@@ -32,6 +56,11 @@ class IdentityVerification {
       rejectionReason: clearRejectionReason
           ? null
           : rejectionReason ?? this.rejectionReason,
+      expiresAt: expiresAt ?? this.expiresAt,
+      additionalCaptureSide:
+          additionalCaptureSide ?? this.additionalCaptureSide,
+      providerReference: providerReference ?? this.providerReference,
+      proofRecordHash: proofRecordHash ?? this.proofRecordHash,
     );
   }
 }

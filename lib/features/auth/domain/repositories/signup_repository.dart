@@ -1,5 +1,7 @@
 import '../entities/signup_request.dart';
 
 abstract interface class SignupRepository {
-  Future<bool> signup(SignupRequest request);
+  Future<bool> prepareSignup(SignupRequest request);
+
+  Future<bool> completeSignup(SignupRequest request);
 }

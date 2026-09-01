@@ -21,6 +21,18 @@ abstract final class AppRoutes {
 
   static const String policyDetails = '/policy-details';
 
+  static const String insuranceMarketplace = '/insurance-marketplace';
+
+  static const String insuranceProductDetails =
+      '/insurance-marketplace/product';
+
+  static const String insuranceComparison = '/insurance-marketplace/comparison';
+
+  static const String policyPurchase = '/policy-purchase';
+
+  static const String premiumPaymentReceipt =
+      '/policy-purchase/payment-receipt';
+
   static const String fileClaim = '/file-claim';
 
   static const String claimSubmitted = '/claim-submitted';
@@ -34,6 +46,9 @@ abstract final class AppRoutes {
   static const String editProfile = '/profile/edit';
 
   static const String identityVerification = '/profile/identity-verification';
+
+  static const String purchaseIdentityVerification =
+      '/policy-purchase/identity-verification';
 
   static const String securitySettings = '/profile/security';
 

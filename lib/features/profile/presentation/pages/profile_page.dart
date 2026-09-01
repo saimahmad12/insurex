@@ -280,7 +280,11 @@ class _ProfilePageState extends State<ProfilePage> {
       final IdentityVerification? updated = await widget
           .onIdentityVerification();
       if (updated != null && mounted) {
-        widget.controller.applyIdentityVerification(updated);
+        if (updated.status == IdentityVerificationStatus.verified) {
+          await widget.controller.refresh();
+        } else {
+          widget.controller.applyIdentityVerification(updated);
+        }
       }
     } finally {
       _isOpeningIdentityVerification = false;

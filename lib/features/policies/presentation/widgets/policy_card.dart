@@ -4,20 +4,13 @@ import '../../../../core/widgets/glass_container.dart';
 import '../../domain/entities/insurance_policy.dart';
 
 class PolicyCard extends StatelessWidget {
-  const PolicyCard({
-    required this.policy,
-    required this.onTap,
-    super.key,
-  });
+  const PolicyCard({required this.policy, required this.onTap, super.key});
 
   final InsurancePolicy policy;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final bool isActive =
-        policy.status == PolicyStatus.active;
-
     return GestureDetector(
       onTap: onTap,
       child: GlassContainer(
@@ -28,16 +21,13 @@ class PolicyCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                _PolicyIcon(
-                  type: policy.type,
-                ),
+                _PolicyIcon(type: policy.type),
 
                 const SizedBox(width: 14),
 
                 Expanded(
                   child: Column(
-                    crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
                         policy.title,
@@ -53,9 +43,7 @@ class PolicyCard extends StatelessWidget {
                       Text(
                         _typeSubtitle(policy.type),
                         style: TextStyle(
-                          color: Colors.white.withValues(
-                            alpha: 0.55,
-                          ),
+                          color: Colors.white.withValues(alpha: 0.55),
                           fontSize: 12,
                         ),
                       ),
@@ -63,18 +51,13 @@ class PolicyCard extends StatelessWidget {
                   ),
                 ),
 
-                _StatusBadge(
-                  isActive: isActive,
-                ),
+                _StatusBadge(status: policy.status),
               ],
             ),
 
             const SizedBox(height: 20),
 
-            _InformationRow(
-              label: 'Policy No.',
-              value: policy.policyNumber,
-            ),
+            _InformationRow(label: 'Policy No.', value: policy.policyNumber),
 
             const SizedBox(height: 13),
 
@@ -87,17 +70,13 @@ class PolicyCard extends StatelessWidget {
 
             _InformationRow(
               label: 'Premium',
-              value:
-              'Rs. ${_formatAmount(policy.premium)}',
+              value: 'Rs. ${_formatAmount(policy.premium)}',
               highlightValue: true,
             ),
 
             const SizedBox(height: 16),
 
-            Divider(
-              color: Colors.white.withValues(alpha: 0.07),
-              height: 1,
-            ),
+            Divider(color: Colors.white.withValues(alpha: 0.07), height: 1),
 
             const SizedBox(height: 13),
 
@@ -106,9 +85,7 @@ class PolicyCard extends StatelessWidget {
                 Text(
                   'View Policy Details',
                   style: TextStyle(
-                    color: Colors.white.withValues(
-                      alpha: 0.7,
-                    ),
+                    color: Colors.white.withValues(alpha: 0.7),
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                   ),
@@ -129,9 +106,7 @@ class PolicyCard extends StatelessWidget {
     );
   }
 
-  static String _typeSubtitle(
-      PolicyType type,
-      ) {
+  static String _typeSubtitle(PolicyType type) {
     switch (type) {
       case PolicyType.vehicle:
         return 'Vehicle Protection';
@@ -141,12 +116,16 @@ class PolicyCard extends StatelessWidget {
 
       case PolicyType.travel:
         return 'Travel Protection';
+
+      case PolicyType.life:
+        return 'Life Protection';
+
+      case PolicyType.property:
+        return 'Property Protection';
     }
   }
 
-  static String _formatDate(
-      DateTime date,
-      ) {
+  static String _formatDate(DateTime date) {
     const List<String> months = <String>[
       'Jan',
       'Feb',
@@ -167,23 +146,18 @@ class PolicyCard extends StatelessWidget {
         '${date.year}';
   }
 
-  static String _formatAmount(
-      double amount,
-      ) {
-    final String value =
-    amount.toStringAsFixed(0);
+  static String _formatAmount(double amount) {
+    final String value = amount.toStringAsFixed(0);
 
     return value.replaceAllMapped(
       RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
-          (Match match) => '${match[1]},',
+      (Match match) => '${match[1]},',
     );
   }
 }
 
 class _PolicyIcon extends StatelessWidget {
-  const _PolicyIcon({
-    required this.type,
-  });
+  const _PolicyIcon({required this.type});
 
   final PolicyType type;
 
@@ -201,25 +175,17 @@ class _PolicyIcon extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: _gradientColors(type)
-                .last
-                .withValues(alpha: 0.25),
+            color: _gradientColors(type).last.withValues(alpha: 0.25),
             blurRadius: 18,
             offset: const Offset(0, 7),
           ),
         ],
       ),
-      child: Icon(
-        _iconForType(type),
-        color: Colors.white,
-        size: 25,
-      ),
+      child: Icon(_iconForType(type), color: Colors.white, size: 25),
     );
   }
 
-  static IconData _iconForType(
-      PolicyType type,
-      ) {
+  static IconData _iconForType(PolicyType type) {
     switch (type) {
       case PolicyType.vehicle:
         return Icons.directions_car_outlined;
@@ -229,58 +195,54 @@ class _PolicyIcon extends StatelessWidget {
 
       case PolicyType.travel:
         return Icons.flight_takeoff_rounded;
+
+      case PolicyType.life:
+        return Icons.volunteer_activism_outlined;
+
+      case PolicyType.property:
+        return Icons.home_work_outlined;
     }
   }
 
-  static List<Color> _gradientColors(
-      PolicyType type,
-      ) {
+  static List<Color> _gradientColors(PolicyType type) {
     switch (type) {
       case PolicyType.vehicle:
-        return const <Color>[
-          Color(0xFF42B8FF),
-          Color(0xFF4F74FF),
-        ];
+        return const <Color>[Color(0xFF42B8FF), Color(0xFF4F74FF)];
 
       case PolicyType.health:
-        return const <Color>[
-          Color(0xFFFF638C),
-          Color(0xFFE25AF5),
-        ];
+        return const <Color>[Color(0xFFFF638C), Color(0xFFE25AF5)];
 
       case PolicyType.travel:
-        return const <Color>[
-          Color(0xFF815CFF),
-          Color(0xFFE25AF5),
-        ];
+        return const <Color>[Color(0xFF815CFF), Color(0xFFE25AF5)];
+
+      case PolicyType.life:
+        return const <Color>[Color(0xFFFF638C), Color(0xFF815CFF)];
+
+      case PolicyType.property:
+        return const <Color>[Color(0xFF49E6A4), Color(0xFF42B8FF)];
     }
   }
 }
 
 class _StatusBadge extends StatelessWidget {
-  const _StatusBadge({
-    required this.isActive,
-  });
+  const _StatusBadge({required this.status});
 
-  final bool isActive;
+  final PolicyStatus status;
 
   @override
   Widget build(BuildContext context) {
-    final Color color = isActive
-        ? const Color(0xFF49E6A4)
-        : const Color(0xFFFF718A);
+    final Color color = switch (status) {
+      PolicyStatus.active => const Color(0xFF49E6A4),
+      PolicyStatus.pending => const Color(0xFFFFC857),
+      PolicyStatus.expired => const Color(0xFFFF718A),
+    };
 
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 6,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: color.withValues(alpha: 0.25),
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -288,16 +250,17 @@ class _StatusBadge extends StatelessWidget {
           Container(
             width: 6,
             height: 6,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: color,
-            ),
+            decoration: BoxDecoration(shape: BoxShape.circle, color: color),
           ),
 
           const SizedBox(width: 6),
 
           Text(
-            isActive ? 'Active' : 'Expired',
+            switch (status) {
+              PolicyStatus.active => 'Active',
+              PolicyStatus.pending => 'Pending',
+              PolicyStatus.expired => 'Expired',
+            },
             style: TextStyle(
               color: color,
               fontSize: 11,

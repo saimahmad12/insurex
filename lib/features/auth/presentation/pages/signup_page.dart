@@ -17,7 +17,7 @@ class SignupPage extends StatefulWidget {
   const SignupPage({
     required this.controller,
     required this.onBack,
-    required this.onSignupSuccess,
+    required this.onContinueToIdentityVerification,
     required this.onLoginPressed,
     super.key,
     this.onGoogleSignup,
@@ -29,7 +29,7 @@ class SignupPage extends StatefulWidget {
   final SignupController controller;
 
   final VoidCallback onBack;
-  final VoidCallback onSignupSuccess;
+  final Future<void> Function() onContinueToIdentityVerification;
   final VoidCallback onLoginPressed;
 
   final VoidCallback? onGoogleSignup;
@@ -44,24 +44,21 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _fullNameController =
-  TextEditingController();
+  final TextEditingController _fullNameController = TextEditingController();
 
-  final TextEditingController _emailController =
-  TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
-  final TextEditingController _mobileController =
-  TextEditingController();
+  final TextEditingController _mobileController = TextEditingController();
 
-  final TextEditingController _passwordController =
-  TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   final TextEditingController _confirmPasswordController =
-  TextEditingController();
+      TextEditingController();
 
   bool _acceptedTerms = false;
   bool _showTermsError = false;
   String _passwordValue = '';
+  bool _isOpeningIdentityVerification = false;
 
   @override
   void dispose() {
@@ -76,10 +73,12 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   Future<void> _submitSignup() async {
+    if (_isOpeningIdentityVerification || widget.controller.isLoading) {
+      return;
+    }
     FocusManager.instance.primaryFocus?.unfocus();
 
-    final bool isFormValid =
-        _formKey.currentState?.validate() ?? false;
+    final bool isFormValid = _formKey.currentState?.validate() ?? false;
 
     setState(() {
       _showTermsError = !_acceptedTerms;
@@ -89,18 +88,21 @@ class _SignupPageState extends State<SignupPage> {
       return;
     }
 
-    final bool registered = await widget.controller.signup(
-      fullName: _fullNameController.text,
-      email: _emailController.text,
-      mobileNumber: _mobileController.text,
-      password: _passwordController.text,
-    );
-
-    if (!mounted || !registered) {
-      return;
+    _isOpeningIdentityVerification = true;
+    try {
+      final bool prepared = await widget.controller.prepareAccountDetails(
+        fullName: _fullNameController.text,
+        email: _emailController.text,
+        mobileNumber: _mobileController.text,
+        password: _passwordController.text,
+      );
+      if (!mounted || !prepared) {
+        return;
+      }
+      await widget.onContinueToIdentityVerification();
+    } finally {
+      _isOpeningIdentityVerification = false;
     }
-
-    widget.onSignupSuccess();
   }
 
   void _clearControllerError() {
@@ -114,12 +116,8 @@ class _SignupPageState extends State<SignupPage> {
       body: GlassBackground(
         child: SafeArea(
           child: LayoutBuilder(
-            builder: (
-                BuildContext context,
-                BoxConstraints constraints,
-                ) {
-              final double logoSize =
-              (constraints.maxHeight * 0.19).clamp(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              final double logoSize = (constraints.maxHeight * 0.19).clamp(
                 135.0,
                 175.0,
               );
@@ -130,9 +128,7 @@ class _SignupPageState extends State<SignupPage> {
                   22,
                   12,
                   22,
-                  24 +
-                      MediaQuery.viewInsetsOf(context).bottom *
-                          0.12,
+                  24 + MediaQuery.viewInsetsOf(context).bottom * 0.12,
                 ),
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
@@ -140,27 +136,17 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   child: Center(
                     child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        maxWidth: 430,
-                      ),
+                      constraints: const BoxConstraints(maxWidth: 430),
                       child: AnimatedBuilder(
                         animation: widget.controller,
-                        builder: (
-                            BuildContext context,
-                            Widget? child,
-                            ) {
+                        builder: (BuildContext context, Widget? child) {
                           return Column(
                             children: <Widget>[
-                              _BackButton(
-                                onPressed: widget.onBack,
-                              ),
+                              _BackButton(onPressed: widget.onBack),
 
                               const SizedBox(height: 2),
 
-                              SignupLogo(
-                                width: logoSize,
-                                height: logoSize,
-                              ),
+                              SignupLogo(width: logoSize, height: logoSize),
 
                               const SizedBox(height: 8),
 
@@ -179,11 +165,10 @@ class _SignupPageState extends State<SignupPage> {
 
                               Text(
                                 'Join InsureX and manage your '
-                                    'insurance securely',
+                                'insurance securely',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color: AppColors.textSecondary
-                                      .withValues(
+                                  color: AppColors.textSecondary.withValues(
                                     alpha: 0.78,
                                   ),
                                   fontSize: 13.5,
@@ -194,8 +179,7 @@ class _SignupPageState extends State<SignupPage> {
 
                               GlassContainer(
                                 width: double.infinity,
-                                padding:
-                                const EdgeInsets.fromLTRB(
+                                padding: const EdgeInsets.fromLTRB(
                                   18,
                                   22,
                                   18,
@@ -207,27 +191,26 @@ class _SignupPageState extends State<SignupPage> {
                                     child: Column(
                                       children: <Widget>[
                                         AuthTextField(
-                                          controller:
-                                          _fullNameController,
-                                          label: 'Full name',
+                                          key: const Key(
+                                            'signup_full_name_field',
+                                          ),
+                                          controller: _fullNameController,
+                                          label:
+                                              'Full name as shown on your CNIC',
                                           hintText:
-                                          'Enter your full name',
-                                          prefixIcon: Icons
-                                              .person_outline_rounded,
-                                          keyboardType:
-                                          TextInputType.name,
-                                          textInputAction:
-                                          TextInputAction.next,
-                                          autofillHints:
-                                          const <String>[
+                                              'Enter your name as shown on your CNIC',
+                                          helperText:
+                                              'This name will be confirmed during identity verification.',
+                                          prefixIcon:
+                                              Icons.person_outline_rounded,
+                                          keyboardType: TextInputType.name,
+                                          textInputAction: TextInputAction.next,
+                                          autofillHints: const <String>[
                                             AutofillHints.name,
                                           ],
-                                          validator:
-                                          SignupFormValidator
+                                          validator: SignupFormValidator
                                               .validateFullName,
-                                          onChanged: (
-                                              String value,
-                                              ) {
+                                          onChanged: (String value) {
                                             _clearControllerError();
                                           },
                                         ),
@@ -235,28 +218,20 @@ class _SignupPageState extends State<SignupPage> {
                                         const SizedBox(height: 14),
 
                                         AuthTextField(
-                                          controller:
-                                          _emailController,
+                                          key: const Key('signup_email_field'),
+                                          controller: _emailController,
                                           label: 'Email address',
-                                          hintText:
-                                          'example@email.com',
-                                          prefixIcon:
-                                          Icons.email_outlined,
+                                          hintText: 'example@email.com',
+                                          prefixIcon: Icons.email_outlined,
                                           keyboardType:
-                                          TextInputType
-                                              .emailAddress,
-                                          textInputAction:
-                                          TextInputAction.next,
-                                          autofillHints:
-                                          const <String>[
+                                              TextInputType.emailAddress,
+                                          textInputAction: TextInputAction.next,
+                                          autofillHints: const <String>[
                                             AutofillHints.email,
                                           ],
                                           validator:
-                                          SignupFormValidator
-                                              .validateEmail,
-                                          onChanged: (
-                                              String value,
-                                              ) {
+                                              SignupFormValidator.validateEmail,
+                                          onChanged: (String value) {
                                             _clearControllerError();
                                           },
                                         ),
@@ -264,28 +239,19 @@ class _SignupPageState extends State<SignupPage> {
                                         const SizedBox(height: 14),
 
                                         AuthTextField(
-                                          controller:
-                                          _mobileController,
+                                          key: const Key('signup_mobile_field'),
+                                          controller: _mobileController,
                                           label: 'Mobile number',
-                                          hintText:
-                                          '+92 300 1234567',
-                                          prefixIcon:
-                                          Icons.phone_outlined,
-                                          keyboardType:
-                                          TextInputType.phone,
-                                          textInputAction:
-                                          TextInputAction.next,
-                                          autofillHints:
-                                          const <String>[
-                                            AutofillHints
-                                                .telephoneNumber,
+                                          hintText: '+92 300 1234567',
+                                          prefixIcon: Icons.phone_outlined,
+                                          keyboardType: TextInputType.phone,
+                                          textInputAction: TextInputAction.next,
+                                          autofillHints: const <String>[
+                                            AutofillHints.telephoneNumber,
                                           ],
-                                          validator:
-                                          SignupFormValidator
+                                          validator: SignupFormValidator
                                               .validateMobileNumber,
-                                          onChanged: (
-                                              String value,
-                                              ) {
+                                          onChanged: (String value) {
                                             _clearControllerError();
                                           },
                                         ),
@@ -293,30 +259,24 @@ class _SignupPageState extends State<SignupPage> {
                                         const SizedBox(height: 14),
 
                                         AuthTextField(
-                                          controller:
-                                          _passwordController,
+                                          key: const Key(
+                                            'signup_password_field',
+                                          ),
+                                          controller: _passwordController,
                                           label: 'Password',
-                                          hintText:
-                                          'Create a strong password',
-                                          prefixIcon: Icons
-                                              .lock_outline_rounded,
+                                          hintText: 'Create a strong password',
+                                          prefixIcon:
+                                              Icons.lock_outline_rounded,
                                           obscureText: true,
-                                          textInputAction:
-                                          TextInputAction.next,
-                                          autofillHints:
-                                          const <String>[
-                                            AutofillHints
-                                                .newPassword,
+                                          textInputAction: TextInputAction.next,
+                                          autofillHints: const <String>[
+                                            AutofillHints.newPassword,
                                           ],
-                                          validator:
-                                          SignupFormValidator
+                                          validator: SignupFormValidator
                                               .validatePassword,
-                                          onChanged: (
-                                              String value,
-                                              ) {
+                                          onChanged: (String value) {
                                             setState(() {
-                                              _passwordValue =
-                                                  value;
+                                              _passwordValue = value;
                                             });
 
                                             _clearControllerError();
@@ -332,39 +292,29 @@ class _SignupPageState extends State<SignupPage> {
                                         const SizedBox(height: 14),
 
                                         AuthTextField(
+                                          key: const Key(
+                                            'signup_confirm_password_field',
+                                          ),
                                           controller:
-                                          _confirmPasswordController,
+                                              _confirmPasswordController,
                                           label: 'Confirm password',
-                                          hintText:
-                                          'Enter password again',
-                                          prefixIcon:
-                                          Icons.lock_reset_rounded,
+                                          hintText: 'Enter password again',
+                                          prefixIcon: Icons.lock_reset_rounded,
                                           obscureText: true,
-                                          textInputAction:
-                                          TextInputAction.done,
-                                          autofillHints:
-                                          const <String>[
-                                            AutofillHints
-                                                .newPassword,
+                                          textInputAction: TextInputAction.done,
+                                          autofillHints: const <String>[
+                                            AutofillHints.newPassword,
                                           ],
-                                          validator: (
-                                              String? value,
-                                              ) {
-                                            return SignupFormValidator
-                                                .validateConfirmPassword(
+                                          validator: (String? value) {
+                                            return SignupFormValidator.validateConfirmPassword(
                                               value,
-                                              _passwordController
-                                                  .text,
+                                              _passwordController.text,
                                             );
                                           },
-                                          onChanged: (
-                                              String value,
-                                              ) {
+                                          onChanged: (String value) {
                                             _clearControllerError();
                                           },
-                                          onSubmitted: (
-                                              String value,
-                                              ) {
+                                          onSubmitted: (String value) {
                                             _submitSignup();
                                           },
                                         ),
@@ -373,49 +323,38 @@ class _SignupPageState extends State<SignupPage> {
 
                                         TermsAgreement(
                                           value: _acceptedTerms,
-                                          showError:
-                                          _showTermsError,
-                                          onTermsPressed:
-                                          widget.onTermsPressed,
+                                          showError: _showTermsError,
+                                          onTermsPressed: widget.onTermsPressed,
                                           onPrivacyPressed:
-                                          widget
-                                              .onPrivacyPressed,
-                                          onChanged: (
-                                              bool value,
-                                              ) {
+                                              widget.onPrivacyPressed,
+                                          onChanged: (bool value) {
                                             setState(() {
-                                              _acceptedTerms =
-                                                  value;
-                                              _showTermsError =
-                                              false;
+                                              _acceptedTerms = value;
+                                              _showTermsError = false;
                                             });
                                           },
                                         ),
 
-                                        if (widget.controller
-                                            .errorMessage !=
+                                        if (widget.controller.errorMessage !=
                                             null) ...<Widget>[
-                                          const SizedBox(
-                                            height: 12,
-                                          ),
+                                          const SizedBox(height: 12),
                                           _SignupErrorMessage(
-                                            message: widget
-                                                .controller
-                                                .errorMessage!,
+                                            message:
+                                                widget.controller.errorMessage!,
                                           ),
                                         ],
 
                                         const SizedBox(height: 16),
 
                                         GlassActionButton(
-                                          label: 'Create Account',
-                                          icon: Icons
-                                              .person_add_alt_1_rounded,
-                                          isLoading: widget
-                                              .controller.isLoading,
-                                          onPressed: widget
-                                              .controller
-                                              .isLoading
+                                          key: const Key(
+                                            'signup_continue_button',
+                                          ),
+                                          label: 'Continue',
+                                          icon: Icons.person_add_alt_1_rounded,
+                                          isLoading:
+                                              widget.controller.isLoading,
+                                          onPressed: widget.controller.isLoading
                                               ? null
                                               : _submitSignup,
                                         ),
@@ -432,18 +371,13 @@ class _SignupPageState extends State<SignupPage> {
                               const SizedBox(height: 17),
 
                               _SocialSignupSection(
-                                onGoogleSignup:
-                                widget.onGoogleSignup,
-                                onAppleSignup:
-                                widget.onAppleSignup,
+                                onGoogleSignup: widget.onGoogleSignup,
+                                onAppleSignup: widget.onAppleSignup,
                               ),
 
                               const SizedBox(height: 19),
 
-                              _LoginLink(
-                                onLoginPressed:
-                                widget.onLoginPressed,
-                              ),
+                              _LoginLink(onLoginPressed: widget.onLoginPressed),
                             ],
                           );
                         },
@@ -461,9 +395,7 @@ class _SignupPageState extends State<SignupPage> {
 }
 
 class _BackButton extends StatelessWidget {
-  const _BackButton({
-    required this.onPressed,
-  });
+  const _BackButton({required this.onPressed});
 
   final VoidCallback onPressed;
 
@@ -475,19 +407,10 @@ class _BackButton extends StatelessWidget {
         tooltip: 'Back',
         onPressed: onPressed,
         style: IconButton.styleFrom(
-          backgroundColor: AppColors.white.withValues(
-            alpha: 0.09,
-          ),
-          side: BorderSide(
-            color: AppColors.white.withValues(
-              alpha: 0.20,
-            ),
-          ),
+          backgroundColor: AppColors.white.withValues(alpha: 0.09),
+          side: BorderSide(color: AppColors.white.withValues(alpha: 0.20)),
         ),
-        icon: const Icon(
-          Icons.arrow_back_rounded,
-          color: AppColors.white,
-        ),
+        icon: const Icon(Icons.arrow_back_rounded, color: AppColors.white),
       ),
     );
   }
@@ -510,9 +433,7 @@ class _SocialSignupSection extends StatelessWidget {
         SocialLoginButton(
           tooltip: 'Sign up with Google',
           onPressed: onGoogleSignup,
-          child: const GoogleLogo(
-            size: 27,
-          ),
+          child: const GoogleLogo(size: 27),
         ),
         const SizedBox(width: 13),
         SocialLoginButton(
@@ -530,9 +451,7 @@ class _SocialSignupSection extends StatelessWidget {
 }
 
 class _LoginLink extends StatelessWidget {
-  const _LoginLink({
-    required this.onLoginPressed,
-  });
+  const _LoginLink({required this.onLoginPressed});
 
   final VoidCallback onLoginPressed;
 
@@ -544,9 +463,7 @@ class _LoginLink extends StatelessWidget {
         Text(
           'Already have an account?',
           style: TextStyle(
-            color: AppColors.textSecondary.withValues(
-              alpha: 0.76,
-            ),
+            color: AppColors.textSecondary.withValues(alpha: 0.76),
             fontSize: 13,
           ),
         ),
@@ -566,9 +483,7 @@ class _LoginLink extends StatelessWidget {
 }
 
 class _SignupErrorMessage extends StatelessWidget {
-  const _SignupErrorMessage({
-    required this.message,
-  });
+  const _SignupErrorMessage({required this.message});
 
   final String message;
 
@@ -576,19 +491,12 @@ class _SignupErrorMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 13,
-        vertical: 11,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
       decoration: BoxDecoration(
-        color: const Color(0xFFFF6680).withValues(
-          alpha: 0.13,
-        ),
+        color: const Color(0xFFFF6680).withValues(alpha: 0.13),
         borderRadius: BorderRadius.circular(13),
         border: Border.all(
-          color: const Color(0xFFFF8A9B).withValues(
-            alpha: 0.50,
-          ),
+          color: const Color(0xFFFF8A9B).withValues(alpha: 0.50),
         ),
       ),
       child: Row(
@@ -602,10 +510,7 @@ class _SignupErrorMessage extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: const TextStyle(
-                color: Color(0xFFFFD6DC),
-                fontSize: 12.5,
-              ),
+              style: const TextStyle(color: Color(0xFFFFD6DC), fontSize: 12.5),
             ),
           ),
         ],
@@ -622,32 +527,20 @@ class _SignupDivider extends StatelessWidget {
     return Row(
       children: <Widget>[
         Expanded(
-          child: Divider(
-            color: AppColors.white.withValues(
-              alpha: 0.20,
-            ),
-          ),
+          child: Divider(color: AppColors.white.withValues(alpha: 0.20)),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 13,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 13),
           child: Text(
             'or sign up with',
             style: TextStyle(
-              color: AppColors.textSecondary.withValues(
-                alpha: 0.64,
-              ),
+              color: AppColors.textSecondary.withValues(alpha: 0.64),
               fontSize: 12,
             ),
           ),
         ),
         Expanded(
-          child: Divider(
-            color: AppColors.white.withValues(
-              alpha: 0.20,
-            ),
-          ),
+          child: Divider(color: AppColors.white.withValues(alpha: 0.20)),
         ),
       ],
     );

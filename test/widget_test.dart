@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:insurancex/app.dart';
 import 'package:insurancex/core/navigation/app_routes.dart';
 import 'package:insurancex/core/theme/app_theme.dart';
+import 'package:insurancex/core/widgets/glass_action_button.dart';
 import 'package:insurancex/features/claims/application/controllers/my_claims_controller.dart';
 import 'package:insurancex/features/claims/data/repositories/mock_claim_status_repository.dart';
 import 'package:insurancex/features/claims/domain/entities/claim_submission_result.dart';
@@ -21,6 +22,7 @@ import 'package:insurancex/features/dashboard/presentation/widgets/dashboard_bot
 import 'package:insurancex/features/policies/application/controllers/policies_controller.dart';
 import 'package:insurancex/features/policies/domain/entities/insurance_policy.dart';
 import 'package:insurancex/features/policies/domain/repositories/policies_repository.dart';
+import 'package:insurancex/features/profile/domain/entities/identity_verification.dart';
 
 void main() {
   testWidgets('Splash screen displays primary content', (
@@ -196,6 +198,105 @@ void main() {
       await tester.tap(find.byKey(const Key('claim_status_back_button')));
       await tester.pumpAndSettle();
       expect(find.byType(DashboardBottomNavigation), findsOneWidget);
+    },
+  );
+
+  testWidgets('Buy New Policy opens marketplace above the persistent shell', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const InsureXApp());
+    final NavigatorState navigator = tester.state<NavigatorState>(
+      find.byType(Navigator),
+    );
+    unawaited(navigator.pushNamed(AppRoutes.dashboard));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Policies'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Buy New Policy'));
+    await tester.tap(find.text('Buy New Policy'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Insurance Marketplace'), findsOneWidget);
+    expect(find.byType(DashboardBottomNavigation), findsNothing);
+
+    await tester.tap(find.byKey(const Key('profile_page_back_button')));
+    await tester.pumpAndSettle();
+    expect(find.byType(DashboardBottomNavigation), findsOneWidget);
+    expect(find.text('My Policies'), findsOneWidget);
+  });
+
+  testWidgets(
+    'Buy Now requires canonical CNIC verification for an unverified user',
+    (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(800, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(const InsureXApp());
+      final NavigatorState navigator = tester.state<NavigatorState>(
+        find.byType(Navigator),
+      );
+      unawaited(navigator.pushNamed(AppRoutes.dashboard));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Policies'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Buy New Policy'));
+      await tester.tap(find.text('Buy New Policy'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Worldwide Travel Protect'));
+      await tester.pumpAndSettle();
+      await tester.fling(find.byType(ListView), const Offset(0, -2400), 1200);
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(
+        find.byKey(const Key('product_buy_now_button')),
+      );
+      await tester.tap(find.byKey(const Key('product_buy_now_button')));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(
+        find.byKey(const Key('configure_buy_now_button')),
+      );
+      await tester.tap(find.byKey(const Key('configure_buy_now_button')));
+      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Identity Verification'), findsOneWidget);
+      expect(find.text('Before you continue'), findsOneWidget);
+      expect(
+        tester
+            .widget<CheckboxListTile>(
+              find.byKey(const Key('identity_consent_checkbox')),
+            )
+            .value,
+        isFalse,
+      );
+      expect(
+        tester
+            .widget<GlassActionButton>(
+              find.byKey(const Key('identity_intro_continue_button')),
+            )
+            .onPressed,
+        isNull,
+      );
+      expect(find.byType(DashboardBottomNavigation), findsNothing);
+
+      await tester.tap(find.byKey(const Key('profile_page_back_button')));
+      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
+      expect(find.text('Configure Coverage'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('profile_page_back_button')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('product_buy_now_button')), findsOneWidget);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.text('Insurance Marketplace'), findsOneWidget);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.byType(DashboardBottomNavigation), findsOneWidget);
+      expect(find.text('My Policies'), findsOneWidget);
     },
   );
 
@@ -400,7 +501,11 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
-      await tester.pumpWidget(const InsureXApp());
+      await tester.pumpWidget(
+        const InsureXApp(
+          initialVerificationStatus: IdentityVerificationStatus.verified,
+        ),
+      );
       final NavigatorState navigator = tester.state<NavigatorState>(
         find.byType(Navigator),
       );
@@ -475,7 +580,11 @@ void main() {
   testWidgets(
     'Identity Verification opens and system back returns to Profile',
     (WidgetTester tester) async {
-      await tester.pumpWidget(const InsureXApp());
+      await tester.pumpWidget(
+        const InsureXApp(
+          initialVerificationStatus: IdentityVerificationStatus.verified,
+        ),
+      );
       final NavigatorState navigator = tester.state<NavigatorState>(
         find.byType(Navigator),
       );
@@ -620,6 +729,12 @@ class _TestDashboardRepository implements DashboardRepository {
 
 class _TestPoliciesRepository implements PoliciesRepository {
   int getPoliciesCallCount = 0;
+  final List<InsurancePolicy> issuedPolicies = <InsurancePolicy>[];
+
+  @override
+  Future<void> addIssuedPolicy(InsurancePolicy policy) async {
+    issuedPolicies.add(policy);
+  }
 
   @override
   Future<List<InsurancePolicy>> getPolicies() async {

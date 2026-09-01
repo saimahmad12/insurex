@@ -1,7 +1,8 @@
 import 'identity_verification.dart';
+import 'profile_gender.dart';
 import 'user_address.dart';
 
-enum ProfileGender { female, male, other, preferNotToSay }
+export 'profile_gender.dart';
 
 class UserProfile {
   const UserProfile({
