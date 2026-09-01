@@ -394,9 +394,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
         .identityVerification
         .status) {
       IdentityVerificationStatus.notStarted => 'Identity verification',
+      IdentityVerificationStatus.capturing => 'Verification in progress',
+      IdentityVerificationStatus.submitted ||
       IdentityVerificationStatus.pending => 'Verification pending',
       IdentityVerificationStatus.verified => 'Verified',
       IdentityVerificationStatus.rejected => 'Use Identity Verification',
+      IdentityVerificationStatus.expired => 'Re-verification required',
+      IdentityVerificationStatus.additionalCaptureRequired =>
+        'Additional capture required',
+      IdentityVerificationStatus.technicalFailure => 'Verification unavailable',
     };
   }
 
@@ -407,7 +413,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
         .identityVerification
         .status) {
       IdentityVerificationStatus.notStarted => 'Verify Identity',
-      IdentityVerificationStatus.rejected => 'Retry Verification',
+      IdentityVerificationStatus.capturing => 'Resume Verification',
+      IdentityVerificationStatus.rejected ||
+      IdentityVerificationStatus.expired ||
+      IdentityVerificationStatus.additionalCaptureRequired ||
+      IdentityVerificationStatus.technicalFailure => 'Retry Verification',
+      IdentityVerificationStatus.submitted ||
       IdentityVerificationStatus.pending ||
       IdentityVerificationStatus.verified => 'Contact Support',
     };

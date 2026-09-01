@@ -2,17 +2,12 @@ import '../../domain/entities/insurance_policy.dart';
 import '../../domain/entities/policy_details.dart';
 import '../../domain/repositories/policy_details_repository.dart';
 
-class MockPolicyDetailsRepository
-    implements PolicyDetailsRepository {
+class MockPolicyDetailsRepository implements PolicyDetailsRepository {
   const MockPolicyDetailsRepository();
 
   @override
-  Future<PolicyDetails> getPolicyDetails(
-      InsurancePolicy policy,
-      ) async {
-    await Future<void>.delayed(
-      const Duration(milliseconds: 600),
-    );
+  Future<PolicyDetails> getPolicyDetails(InsurancePolicy policy) async {
+    await Future<void>.delayed(const Duration(milliseconds: 600));
 
     switch (policy.type) {
       case PolicyType.vehicle:
@@ -26,8 +21,7 @@ class MockPolicyDetailsRepository
           tertiaryLabel: 'Chassis No.',
           tertiaryValue: 'JTDBR32E9N1234567',
           isStoredOnBlockchain: true,
-          transactionHash:
-          '0xA23F91BC83A4D72918F126C84591BC',
+          transactionHash: '0xA23F91BC83A4D72918F126C84591BC',
         );
 
       case PolicyType.health:
@@ -41,8 +35,7 @@ class MockPolicyDetailsRepository
           tertiaryLabel: 'Hospital Network',
           tertiaryValue: 'Premium Network',
           isStoredOnBlockchain: true,
-          transactionHash:
-          '0xB841CA7629D472165FC2308712A09D',
+          transactionHash: '0xB841CA7629D472165FC2308712A09D',
         );
 
       case PolicyType.travel:
@@ -56,9 +49,41 @@ class MockPolicyDetailsRepository
           tertiaryLabel: 'Coverage Type',
           tertiaryValue: 'International',
           isStoredOnBlockchain: true,
-          transactionHash:
-          '0xC728DE126E932816AF2719246DD123',
+          transactionHash: '0xC728DE126E932816AF2719246DD123',
+        );
+
+      case PolicyType.life:
+        return PolicyDetails(
+          policy: policy,
+          coverage: 'Life Protection Coverage',
+          primaryLabel: 'Provider',
+          primaryValue: policy.providerName ?? 'Insurance Provider',
+          secondaryLabel: 'Coverage Amount',
+          secondaryValue: _coverageValue(policy),
+          tertiaryLabel: 'Document Reference',
+          tertiaryValue: policy.documentReference ?? 'Pending',
+          isStoredOnBlockchain: policy.blockchainRecordStatus == 'Recorded',
+          transactionHash: policy.blockchainRecordStatus ?? 'Pending',
+        );
+
+      case PolicyType.property:
+        return PolicyDetails(
+          policy: policy,
+          coverage: 'Property Protection Coverage',
+          primaryLabel: 'Provider',
+          primaryValue: policy.providerName ?? 'Insurance Provider',
+          secondaryLabel: 'Coverage Amount',
+          secondaryValue: _coverageValue(policy),
+          tertiaryLabel: 'Document Reference',
+          tertiaryValue: policy.documentReference ?? 'Pending',
+          isStoredOnBlockchain: policy.blockchainRecordStatus == 'Recorded',
+          transactionHash: policy.blockchainRecordStatus ?? 'Pending',
         );
     }
+  }
+
+  static String _coverageValue(InsurancePolicy policy) {
+    final String value = (policy.coverageAmount ?? 0).toStringAsFixed(0);
+    return 'PKR ${value.replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match match) => '${match[1]},')}';
   }
 }
