@@ -1,4 +1,5 @@
 import '../../domain/entities/identity_verification_draft.dart';
+import '../../domain/entities/profile_gender.dart';
 import '../validators/profile_validator.dart';
 
 abstract final class IdentityVerificationValidator {
@@ -51,6 +52,27 @@ abstract final class IdentityVerificationValidator {
     return null;
   }
 
+  static String? validateDateOfBirth(DateTime? value, {DateTime? today}) {
+    final String? error = ProfileValidator.validateDateOfBirth(
+      value,
+      today: today,
+    );
+    if (error != null) {
+      return error;
+    }
+    if (value!.year < 1900) {
+      return 'Enter a realistic date of birth.';
+    }
+    return null;
+  }
+
+  static String? validateGender(ProfileGender? value) {
+    if (value == null) {
+      return 'Select your gender.';
+    }
+    return null;
+  }
+
   static Map<String, String> validateLegalDetails(
     IdentityLegalDetails details,
   ) {
@@ -66,10 +88,7 @@ abstract final class IdentityVerificationValidator {
       ProfileValidator.validateFullName(details.fullLegalName),
     );
     add('cnicNumber', validateCnic(details.cnicNumber));
-    add(
-      'dateOfBirth',
-      ProfileValidator.validateDateOfBirth(details.dateOfBirth),
-    );
+    add('dateOfBirth', validateDateOfBirth(details.dateOfBirth));
     add('cnicExpiryDate', validateExpiryDate(details.cnicExpiryDate));
     return errors;
   }
