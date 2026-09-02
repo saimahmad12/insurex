@@ -8,6 +8,7 @@ import '../../application/controllers/otp_verification_controller.dart';
 import '../validators/otp_validator.dart';
 import '../widgets/forgot_password_logo.dart';
 import '../widgets/otp_code_field.dart';
+import '../widgets/password_recovery_progress.dart';
 
 class OtpVerificationPage extends StatefulWidget {
   const OtpVerificationPage({
@@ -141,7 +142,14 @@ class _OtpVerificationPageState
                                 size: logoSize,
                               ),
 
-                              const SizedBox(height: 14),
+                              const SizedBox(height: 12),
+
+                              const PasswordRecoveryProgress(
+                                currentStep:
+                                PasswordRecoveryStep.code,
+                              ),
+
+                              const SizedBox(height: 24),
 
                               const Text(
                                 'Verify Your Code',

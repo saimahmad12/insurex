@@ -7,6 +7,37 @@ import 'package:insurancex/features/profile/domain/entities/user_profile.dart';
 
 void main() {
   group('IdentityVerificationController', () {
+    test('verification copyWith preserves omitted outcome fields', () {
+      final DateTime submittedAt = DateTime(2026, 8, 30);
+      final DateTime verifiedAt = DateTime(2026, 9, 1);
+      final DateTime expiresAt = DateTime(2029, 9, 1);
+      final IdentityVerification original = IdentityVerification(
+        status: IdentityVerificationStatus.verified,
+        maskedIdentityNumber: '*****-*******-*',
+        submittedAt: submittedAt,
+        verifiedAt: verifiedAt,
+        rejectionReason: 'Synthetic reason',
+        expiresAt: expiresAt,
+        additionalCaptureSide: IdentityCaptureSide.back,
+        providerReference: 'synthetic-provider-reference',
+        proofRecordHash: 'synthetic-proof-hash',
+      );
+
+      final IdentityVerification changed = original.copyWith(
+        status: IdentityVerificationStatus.capturing,
+      );
+
+      expect(changed.status, IdentityVerificationStatus.capturing);
+      expect(changed.maskedIdentityNumber, original.maskedIdentityNumber);
+      expect(changed.submittedAt, submittedAt);
+      expect(changed.verifiedAt, verifiedAt);
+      expect(changed.rejectionReason, original.rejectionReason);
+      expect(changed.expiresAt, expiresAt);
+      expect(changed.additionalCaptureSide, IdentityCaptureSide.back);
+      expect(changed.providerReference, original.providerReference);
+      expect(changed.proofRecordHash, original.proofRecordHash);
+    });
+
     test('initializes once and loads only masked identity data', () async {
       final MockProfileRepository repository = MockProfileRepository(
         delay: Duration.zero,

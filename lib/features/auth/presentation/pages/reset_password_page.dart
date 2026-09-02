@@ -7,6 +7,7 @@ import '../../../../core/widgets/glass_container.dart';
 import '../../application/controllers/reset_password_controller.dart';
 import '../validators/reset_password_validator.dart';
 import '../widgets/forgot_password_logo.dart';
+import '../widgets/password_recovery_progress.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({
@@ -156,7 +157,10 @@ class _ResetPasswordPageState
                                 height: 12,
                               ),
 
-                              const _ProgressIndicator(),
+                              const PasswordRecoveryProgress(
+                                currentStep:
+                                PasswordRecoveryStep.password,
+                              ),
 
                               const SizedBox(
                                 height: 24,
@@ -647,160 +651,6 @@ class _RequirementItem
           ),
         ),
       ],
-    );
-  }
-}
-
-class _ProgressIndicator
-    extends StatelessWidget {
-  const _ProgressIndicator();
-
-  @override
-  Widget build(BuildContext context) {
-    return GlassContainer(
-      width: double.infinity,
-      padding:
-      const EdgeInsets.symmetric(
-        horizontal: 17,
-        vertical: 15,
-      ),
-      child: const Row(
-        children: <Widget>[
-          Expanded(
-            child: _ProgressStep(
-              text: 'Email',
-              completed: true,
-            ),
-          ),
-
-          _ProgressLine(),
-
-          Expanded(
-            child: _ProgressStep(
-              text: 'OTP',
-              completed: true,
-            ),
-          ),
-
-          _ProgressLine(),
-
-          Expanded(
-            child: _ProgressStep(
-              text: 'Password',
-              completed: false,
-              active: true,
-              number: '3',
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ProgressStep
-    extends StatelessWidget {
-  const _ProgressStep({
-    required this.text,
-    required this.completed,
-    this.active = false,
-    this.number,
-  });
-
-  final String text;
-  final bool completed;
-  final bool active;
-  final String? number;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Container(
-          width: 31,
-          height: 31,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: completed
-                ? const LinearGradient(
-              colors: <Color>[
-                AppColors.blue,
-                AppColors.electricBlue,
-              ],
-            )
-                : null,
-            color: active
-                ? AppColors.white.withValues(
-              alpha: 0.08,
-            )
-                : null,
-            border: active
-                ? Border.all(
-              color:
-              AppColors.blue,
-              width: 2,
-            )
-                : null,
-          ),
-          alignment: Alignment.center,
-          child: completed
-              ? const Icon(
-            Icons.check_rounded,
-            color: AppColors.white,
-            size: 18,
-          )
-              : Text(
-            number ?? '',
-            style:
-            const TextStyle(
-              color:
-              AppColors.white,
-              fontWeight:
-              FontWeight.w800,
-            ),
-          ),
-        ),
-
-        const SizedBox(height: 6),
-
-        Text(
-          text,
-          style: TextStyle(
-            color: active || completed
-                ? AppColors.white
-                : AppColors
-                .textSecondary,
-            fontSize: 10.5,
-            fontWeight:
-            FontWeight.w700,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ProgressLine
-    extends StatelessWidget {
-  const _ProgressLine();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 28,
-      height: 2,
-      margin:
-      const EdgeInsets.only(
-        bottom: 18,
-      ),
-      decoration: BoxDecoration(
-        color:
-        AppColors.blue.withValues(
-          alpha: 0.8,
-        ),
-        borderRadius:
-        BorderRadius.circular(100),
-      ),
     );
   }
 }
