@@ -514,8 +514,11 @@ class _LegalDetailsStepState extends State<_LegalDetailsStep> {
   final FocusNode _cnicFocusNode = FocusNode();
   DateTime? _birthDate;
   DateTime? _expiryDate;
-  ProfileGender _gender = ProfileGender.preferNotToSay;
+  ProfileGender? _gender;
   String? _localCnicError;
+  String? _localBirthDateError;
+  String? _localGenderError;
+  String? _localExpiryDateError;
   bool _showControllerCnicError = false;
 
   @override
@@ -528,7 +531,7 @@ class _LegalDetailsStepState extends State<_LegalDetailsStep> {
     );
     _birthDate = initialDetails?.dateOfBirth;
     _expiryDate = initialDetails?.cnicExpiryDate;
-    _gender = initialDetails?.gender ?? ProfileGender.preferNotToSay;
+    _gender = initialDetails?.gender;
     _cnicFocusNode.addListener(_validateCnicAfterFocusLoss);
   }
 
@@ -588,15 +591,20 @@ class _LegalDetailsStepState extends State<_LegalDetailsStep> {
       ),
       const SizedBox(height: 12),
       _DateTile(
+        key: const Key('verification_date_of_birth_field'),
         label: 'Date of birth',
         value: _birthDate,
-        error: widget.errors['dateOfBirth'],
+        error: _localBirthDateError ?? widget.errors['dateOfBirth'],
         onTap: () => _pickDate(isExpiry: false),
       ),
       const SizedBox(height: 12),
       DropdownButtonFormField<ProfileGender>(
+        key: const Key('verification_gender_field'),
         initialValue: _gender,
-        decoration: const InputDecoration(labelText: 'Gender'),
+        decoration: InputDecoration(
+          labelText: 'Gender',
+          errorText: _localGenderError,
+        ),
         items: ProfileGender.values
             .map(
               (ProfileGender value) => DropdownMenuItem<ProfileGender>(
@@ -606,14 +614,21 @@ class _LegalDetailsStepState extends State<_LegalDetailsStep> {
             )
             .toList(),
         onChanged: (ProfileGender? value) {
-          if (value != null) setState(() => _gender = value);
+          if (value == null) {
+            return;
+          }
+          setState(() {
+            _gender = value;
+            _localGenderError = null;
+          });
         },
       ),
       const SizedBox(height: 12),
       _DateTile(
+        key: const Key('verification_cnic_expiry_field'),
         label: 'CNIC expiry date',
         value: _expiryDate,
-        error: widget.errors['cnicExpiryDate'],
+        error: _localExpiryDateError ?? widget.errors['cnicExpiryDate'],
         onTap: () => _pickDate(isExpiry: true),
       ),
       const SizedBox(height: 20),
@@ -626,18 +641,33 @@ class _LegalDetailsStepState extends State<_LegalDetailsStep> {
   );
 
   Future<void> _continue() async {
-    final DateTime now = DateTime.now();
+    final String? birthDateError =
+        IdentityVerificationValidator.validateDateOfBirth(_birthDate);
+    final String? genderError = IdentityVerificationValidator.validateGender(
+      _gender,
+    );
+    final String? expiryDateError =
+        IdentityVerificationValidator.validateExpiryDate(_expiryDate);
     setState(() {
       _showControllerCnicError = true;
       _localCnicError = IdentityVerificationValidator.validateCnic(_cnic.text);
+      _localBirthDateError = birthDateError;
+      _localGenderError = genderError;
+      _localExpiryDateError = expiryDateError;
     });
+    if (_localCnicError != null ||
+        birthDateError != null ||
+        genderError != null ||
+        expiryDateError != null) {
+      return;
+    }
     await widget.onContinue(
       IdentityLegalDetails(
         fullLegalName: _name.text,
         cnicNumber: _cnic.text,
-        dateOfBirth: _birthDate ?? now.add(const Duration(days: 1)),
-        gender: _gender,
-        cnicExpiryDate: _expiryDate ?? now.subtract(const Duration(days: 1)),
+        dateOfBirth: _birthDate!,
+        gender: _gender!,
+        cnicExpiryDate: _expiryDate!,
       ),
     );
   }
@@ -667,21 +697,31 @@ class _LegalDetailsStepState extends State<_LegalDetailsStep> {
 
   Future<void> _pickDate({required bool isExpiry}) async {
     final DateTime now = DateTime.now();
+    final DateTime currentDate = DateTime(now.year, now.month, now.day);
     final DateTime? value = await showDatePicker(
       context: context,
-      initialDate: isExpiry ? DateTime(now.year + 5) : DateTime(now.year - 25),
-      firstDate: isExpiry ? now : DateTime(1900),
-      lastDate: isExpiry ? DateTime(now.year + 30) : now,
+      initialDate: isExpiry
+          ? _expiryDate ?? DateTime(now.year + 5, now.month, now.day)
+          : _birthDate ?? DateTime(now.year - 25, now.month, now.day),
+      firstDate: isExpiry ? currentDate : DateTime(1900),
+      lastDate: isExpiry
+          ? DateTime(now.year + 30, now.month, now.day)
+          : currentDate,
     );
-    if (value != null) {
-      setState(() {
-        if (isExpiry) {
-          _expiryDate = value;
-        } else {
-          _birthDate = value;
-        }
-      });
+    if (value == null || !mounted) {
+      return;
     }
+    setState(() {
+      if (isExpiry) {
+        _expiryDate = value;
+        _localExpiryDateError =
+            IdentityVerificationValidator.validateExpiryDate(value);
+      } else {
+        _birthDate = value;
+        _localBirthDateError =
+            IdentityVerificationValidator.validateDateOfBirth(value);
+      }
+    });
   }
 }
 
@@ -709,6 +749,7 @@ class _DateTile extends StatelessWidget {
     required this.value,
     required this.onTap,
     this.error,
+    super.key,
   });
   final String label;
   final DateTime? value;

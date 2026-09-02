@@ -24,6 +24,219 @@ void main() {
     expect(IdentityVerificationValidator.validateCnic('12345'), isNotNull);
   });
 
+  test('legal date and gender validation remains field-specific', () {
+    final DateTime today = DateTime(2026, 9, 2);
+
+    expect(
+      IdentityVerificationValidator.validateDateOfBirth(null, today: today),
+      'Select your date of birth.',
+    );
+    expect(
+      IdentityVerificationValidator.validateDateOfBirth(
+        DateTime(2026, 9, 3),
+        today: today,
+      ),
+      'Date of birth cannot be in the future.',
+    );
+    expect(
+      IdentityVerificationValidator.validateDateOfBirth(
+        DateTime(1899, 12, 31),
+        today: today,
+      ),
+      'Enter a realistic date of birth.',
+    );
+    expect(
+      IdentityVerificationValidator.validateExpiryDate(null, today: today),
+      'Select the CNIC expiry date.',
+    );
+    expect(
+      IdentityVerificationValidator.validateExpiryDate(today, today: today),
+      'CNIC must not be expired.',
+    );
+    expect(
+      IdentityVerificationValidator.validateGender(null),
+      'Select your gender.',
+    );
+  });
+
+  testWidgets(
+    'legal fields stay local, preserve consent, and progress only when valid',
+    (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final MockProfileRepository repository = await _notStartedRepository();
+      final IdentityVerificationController controller =
+          IdentityVerificationController(repository: repository);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.darkTheme,
+          home: IdentityVerificationPage(
+            controller: controller,
+            startImmediately: true,
+            onBack: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await _openLegalDetails(tester);
+
+      final Finder nameField = find.byKey(
+        const Key('verification_full_name_field'),
+      );
+      final Finder cnicField = find.byKey(const Key('verification_cnic_field'));
+      await tester.enterText(nameField, 'Synthetic Policyholder');
+      await tester.enterText(cnicField, _syntheticIdentityNumber());
+      await tester.ensureVisible(
+        find.byKey(const Key('legal_details_continue_button')),
+      );
+      await tester.tap(find.byKey(const Key('legal_details_continue_button')));
+      await tester.pump();
+
+      expect(find.text('Select your date of birth.'), findsOneWidget);
+      expect(find.text('Select your gender.'), findsOneWidget);
+      expect(find.text('Select the CNIC expiry date.'), findsOneWidget);
+      expect(find.text('Verification unavailable'), findsNothing);
+      expect(controller.flowStep, IdentityVerificationFlowStep.legalDetails);
+      expect(controller.consentConfirmed, isTrue);
+      expect(repository.identityLoadCallCount, 1);
+      expect(repository.verificationCallCount, 1);
+      expect(repository.verificationSubmissionCallCount, 0);
+
+      final DateTime now = DateTime.now();
+      final DateTime selectedBirthDate = await _selectDate(
+        tester,
+        fieldKey: const Key('verification_date_of_birth_field'),
+        day: 15,
+        expectedYear: now.year - 25,
+      );
+      await _selectGender(tester, 'Female');
+      final DateTime selectedExpiryDate = await _selectDate(
+        tester,
+        fieldKey: const Key('verification_cnic_expiry_field'),
+        day: 16,
+        expectedYear: now.year + 5,
+      );
+
+      expect(_fieldText(tester, nameField), 'Synthetic Policyholder');
+      expect(_fieldText(tester, cnicField), _syntheticIdentityNumber());
+      expect(controller.consentConfirmed, isTrue);
+      expect(controller.flowStep, IdentityVerificationFlowStep.legalDetails);
+      expect(controller.submissionStatus, IdentitySubmissionStatus.idle);
+      expect(repository.identityLoadCallCount, 1);
+      expect(repository.verificationCallCount, 1);
+      expect(repository.verificationSubmissionCallCount, 0);
+      expect(find.byKey(const Key('identity_initial_loading')), findsNothing);
+      expect(find.text('Verification unavailable'), findsNothing);
+
+      await tester.ensureVisible(
+        find.byKey(const Key('verification_date_of_birth_field')),
+      );
+      await tester.tap(
+        find.byKey(const Key('verification_date_of_birth_field')),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('verification_date_of_birth_field')),
+          matching: find.text(_displayDate(selectedBirthDate)),
+        ),
+        findsOneWidget,
+      );
+      expect(_fieldText(tester, nameField), 'Synthetic Policyholder');
+      expect(_fieldText(tester, cnicField), _syntheticIdentityNumber());
+      expect(find.text('Verification unavailable'), findsNothing);
+
+      await tester.ensureVisible(
+        find.byKey(const Key('legal_details_continue_button')),
+      );
+      await tester.tap(find.byKey(const Key('legal_details_continue_button')));
+      await tester.pump();
+
+      expect(controller.flowStep, IdentityVerificationFlowStep.frontCapture);
+      expect(controller.legalDetails?.fullLegalName, 'Synthetic Policyholder');
+      expect(controller.legalDetails?.cnicNumber, _syntheticIdentityNumber());
+      expect(controller.legalDetails?.dateOfBirth, selectedBirthDate);
+      expect(controller.legalDetails?.gender, ProfileGender.female);
+      expect(controller.legalDetails?.cnicExpiryDate, selectedExpiryDate);
+      expect(controller.consentConfirmed, isTrue);
+      expect(repository.verificationSubmissionCallCount, 0);
+      expect(repository.identityLoadCallCount, 1);
+    },
+  );
+
+  testWidgets('invalid dates stay inline and preserve existing captures', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 1200);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final MockProfileRepository repository = await _notStartedRepository();
+    final IdentityUploadSession session = await repository
+        .createUploadSession();
+    final IdentityCaptureEvidence front = await repository.registerCapture(
+      session,
+      await _syntheticCapture(IdentityCaptureSide.front),
+    );
+    final IdentityCaptureEvidence back = await repository.registerCapture(
+      session,
+      await _syntheticCapture(IdentityCaptureSide.back),
+    );
+    final IdentityCaptureEvidence selfie = await repository.registerCapture(
+      session,
+      await _syntheticCapture(IdentityCaptureSide.selfie),
+    );
+    final DateTime today = DateTime.now();
+    await repository.saveVerificationProgress(
+      IdentityVerificationProgress(
+        consentConfirmed: true,
+        legalDetails: IdentityLegalDetails(
+          fullLegalName: 'Synthetic Policyholder',
+          cnicNumber: _syntheticIdentityNumber(),
+          dateOfBirth: today.add(const Duration(days: 1)),
+          gender: ProfileGender.female,
+          cnicExpiryDate: DateTime(today.year, today.month, today.day),
+        ),
+        front: front,
+        back: back,
+        selfie: selfie,
+      ),
+    );
+    final IdentityVerificationController controller =
+        IdentityVerificationController(repository: repository);
+    await controller.initialize(startImmediately: true);
+    controller.reviewLegalDetails();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.darkTheme,
+        home: IdentityVerificationPage(controller: controller, onBack: (_) {}),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await _selectGender(tester, 'Male');
+    await tester.ensureVisible(
+      find.byKey(const Key('legal_details_continue_button')),
+    );
+    await tester.tap(find.byKey(const Key('legal_details_continue_button')));
+    await tester.pump();
+
+    expect(find.text('Date of birth cannot be in the future.'), findsOneWidget);
+    expect(find.text('CNIC must not be expired.'), findsOneWidget);
+    expect(controller.flowStep, IdentityVerificationFlowStep.legalDetails);
+    expect(controller.frontCapture, same(front));
+    expect(controller.backCapture, same(back));
+    expect(controller.selfieCapture, same(selfie));
+    expect(controller.legalDetails?.gender, ProfileGender.female);
+    expect(repository.verificationSubmissionCallCount, 0);
+    expect(find.text('Verification unavailable'), findsNothing);
+  });
+
   testWidgets('introduction requires consent before legal details', (
     WidgetTester tester,
   ) async {
@@ -229,6 +442,72 @@ String _syntheticIdentityNumber() => <String>[
   List<String>.filled(7, '2').join(),
   '3',
 ].join('-');
+
+Future<MockProfileRepository> _notStartedRepository() async {
+  final UserProfile base = (await MockProfileRepository(
+    delay: Duration.zero,
+  ).getProfile())!;
+  return MockProfileRepository(
+    delay: Duration.zero,
+    verificationOutcome: IdentityVerificationStatus.verified,
+    initialProfile: base.copyWith(
+      identityVerification: const IdentityVerification(
+        status: IdentityVerificationStatus.notStarted,
+        maskedIdentityNumber: '*****-*******-*',
+      ),
+    ),
+  );
+}
+
+Future<void> _openLegalDetails(WidgetTester tester) async {
+  await tester.tap(find.byKey(const Key('identity_consent_checkbox')));
+  await tester.pump();
+  await tester.tap(find.byKey(const Key('identity_intro_continue_button')));
+  await tester.pump();
+  expect(find.text('Enter Legal Details'), findsOneWidget);
+}
+
+Future<DateTime> _selectDate(
+  WidgetTester tester, {
+  required Key fieldKey,
+  required int day,
+  required int expectedYear,
+}) async {
+  await tester.ensureVisible(find.byKey(fieldKey));
+  await tester.tap(find.byKey(fieldKey));
+  await tester.pumpAndSettle();
+  await tester.tap(find.text('$day').last);
+  await tester.tap(find.text('OK'));
+  await tester.pumpAndSettle();
+  final DateTime now = DateTime.now();
+  final DateTime selected = DateTime(expectedYear, now.month, day);
+  expect(
+    find.descendant(
+      of: find.byKey(fieldKey),
+      matching: find.text(_displayDate(selected)),
+    ),
+    findsOneWidget,
+  );
+  expect(find.text('Verification unavailable'), findsNothing);
+  return selected;
+}
+
+Future<void> _selectGender(WidgetTester tester, String label) async {
+  final Finder field = find.byKey(const Key('verification_gender_field'));
+  await tester.ensureVisible(field);
+  await tester.tap(field);
+  await tester.pumpAndSettle();
+  await tester.tap(find.text(label).last);
+  await tester.pumpAndSettle();
+  expect(find.text(label), findsOneWidget);
+  expect(find.text('Verification unavailable'), findsNothing);
+}
+
+String _fieldText(WidgetTester tester, Finder field) =>
+    tester.widget<TextField>(field).controller!.text;
+
+String _displayDate(DateTime value) =>
+    '${value.day}/${value.month}/${value.year}';
 
 class GlassActionButtonFinder {
   const GlassActionButtonFinder(this.finder);

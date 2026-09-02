@@ -8,6 +8,7 @@ import '../../application/controllers/forgot_password_controller.dart';
 import '../validators/forgot_password_validator.dart';
 import '../widgets/auth_text_field.dart';
 import '../widgets/forgot_password_logo.dart';
+import '../widgets/password_recovery_progress.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({
@@ -193,7 +194,13 @@ class _RequestContent extends StatelessWidget {
           size: logoSize,
         ),
 
-        const SizedBox(height: 13),
+        const SizedBox(height: 12),
+
+        const PasswordRecoveryProgress(
+          currentStep: PasswordRecoveryStep.email,
+        ),
+
+        const SizedBox(height: 24),
 
         //
         // TITLE

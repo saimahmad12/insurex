@@ -897,7 +897,7 @@ class _InsureXAppState extends State<InsureXApp> {
         },
 
         AppRoutes.identityVerification: (BuildContext context) {
-          final Object? arguments = ModalRoute.of(context)?.settings.arguments;
+          final Object? arguments = ModalRoute.settingsOf(context)?.arguments;
           final IdentityVerificationEntryPoint entryPoint =
               arguments is IdentityVerificationEntryPoint
               ? arguments
