@@ -5,7 +5,9 @@ import '../../../../core/widgets/glass_action_button.dart';
 import '../../../../core/widgets/glass_background.dart';
 import '../../../../core/widgets/glass_container.dart';
 import '../../application/controllers/signup_controller.dart';
+import '../../domain/entities/account_role.dart';
 import '../validators/signup_form_validator.dart';
+import '../widgets/account_role_selector.dart';
 import '../widgets/auth_text_field.dart';
 import '../widgets/google_logo.dart';
 import '../widgets/password_strength_indicator.dart';
@@ -22,6 +24,7 @@ class SignupPage extends StatefulWidget {
     super.key,
     this.onGoogleSignup,
     this.onAppleSignup,
+    this.onRoleSelected,
     this.onTermsPressed,
     this.onPrivacyPressed,
   });
@@ -34,6 +37,7 @@ class SignupPage extends StatefulWidget {
 
   final VoidCallback? onGoogleSignup;
   final VoidCallback? onAppleSignup;
+  final ValueChanged<AccountRole>? onRoleSelected;
   final VoidCallback? onTermsPressed;
   final VoidCallback? onPrivacyPressed;
 
@@ -190,6 +194,15 @@ class _SignupPageState extends State<SignupPage> {
                                     key: _formKey,
                                     child: Column(
                                       children: <Widget>[
+                                        AccountRoleSelector(
+                                          selectedRole: AccountRole.customer,
+                                          enabled: !widget.controller.isLoading,
+                                          onRoleSelected:
+                                              widget.onRoleSelected ?? (_) {},
+                                        ),
+
+                                        const SizedBox(height: 17),
+
                                         AuthTextField(
                                           key: const Key(
                                             'signup_full_name_field',

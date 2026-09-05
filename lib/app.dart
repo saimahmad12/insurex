@@ -10,7 +10,10 @@ import 'features/auth/application/controllers/forgot_password_controller.dart';
 import 'features/auth/application/controllers/login_controller.dart';
 import 'features/auth/application/controllers/otp_verification_controller.dart';
 import 'features/auth/application/controllers/reset_password_controller.dart';
+import 'features/auth/application/controllers/seller_login_controller.dart';
+import 'features/auth/application/controllers/seller_registration_controller.dart';
 import 'features/auth/application/controllers/signup_controller.dart';
+import 'features/auth/application/validators/seller_auth_validator.dart';
 
 // ============================================================
 // AUTH REPOSITORIES
@@ -19,7 +22,18 @@ import 'features/auth/data/repositories/mock_auth_repository.dart';
 import 'features/auth/data/repositories/mock_otp_verification_repository.dart';
 import 'features/auth/data/repositories/mock_password_recovery_repository.dart';
 import 'features/auth/data/repositories/mock_reset_password_repository.dart';
+import 'features/auth/data/repositories/mock_seller_auth_repository.dart';
+import 'features/auth/data/repositories/mock_seller_registration_repository.dart';
 import 'features/auth/data/repositories/mock_signup_repository.dart';
+
+// ============================================================
+// AUTH DOMAIN
+// ============================================================
+import 'features/auth/domain/entities/account_role.dart';
+import 'features/auth/domain/entities/seller_authentication.dart';
+import 'features/auth/domain/entities/seller_registration.dart';
+import 'features/auth/domain/repositories/seller_auth_repository.dart';
+import 'features/auth/domain/repositories/seller_registration_repository.dart';
 
 // ============================================================
 // AUTH PAGES
@@ -28,6 +42,11 @@ import 'features/auth/presentation/pages/forgot_password_page.dart';
 import 'features/auth/presentation/pages/login_page.dart';
 import 'features/auth/presentation/pages/otp_verification_page.dart';
 import 'features/auth/presentation/pages/reset_password_page.dart';
+import 'features/auth/presentation/pages/seller_account_status_page.dart';
+import 'features/auth/presentation/pages/seller_home_page.dart';
+import 'features/auth/presentation/pages/seller_login_page.dart';
+import 'features/auth/presentation/pages/seller_registration_page.dart';
+import 'features/auth/presentation/pages/seller_registration_submitted_page.dart';
 import 'features/auth/presentation/pages/signup_page.dart';
 
 // ============================================================
@@ -138,10 +157,14 @@ import 'features/policy_purchase/presentation/pages/premium_payment_receipt_page
 class InsureXApp extends StatefulWidget {
   const InsureXApp({
     this.initialVerificationStatus = IdentityVerificationStatus.notStarted,
+    this.sellerAuthRepository,
+    this.sellerRegistrationRepository,
     super.key,
   });
 
   final IdentityVerificationStatus initialVerificationStatus;
+  final SellerAuthRepository? sellerAuthRepository;
+  final SellerRegistrationRepository? sellerRegistrationRepository;
 
   @override
   State<InsureXApp> createState() => _InsureXAppState();
@@ -160,6 +183,8 @@ class _InsureXAppState extends State<InsureXApp> {
   late final MockPolicyPurchaseRepository _policyPurchaseRepository;
   late final MockPolicyApplicationRepository _policyApplicationRepository;
   late final MockPremiumPaymentRepository _premiumPaymentRepository;
+  late final SellerAuthRepository _sellerAuthRepository;
+  late final SellerRegistrationRepository _sellerRegistrationRepository;
 
   @override
   void initState() {
@@ -184,6 +209,11 @@ class _InsureXAppState extends State<InsureXApp> {
     );
     _policyApplicationRepository = MockPolicyApplicationRepository();
     _premiumPaymentRepository = MockPremiumPaymentRepository();
+    _sellerAuthRepository =
+        widget.sellerAuthRepository ?? MockSellerAuthRepository();
+    _sellerRegistrationRepository =
+        widget.sellerRegistrationRepository ??
+        MockSellerRegistrationRepository();
   }
 
   @override
@@ -240,6 +270,14 @@ class _InsureXAppState extends State<InsureXApp> {
 
             onSignUp: () {
               Navigator.of(context).pushNamed(AppRoutes.signup);
+            },
+
+            onRoleSelected: (AccountRole role) {
+              if (role == AccountRole.seller) {
+                Navigator.of(
+                  context,
+                ).pushReplacementNamed(AppRoutes.sellerLogin);
+              }
             },
 
             onGoogleLogin: () {
@@ -301,6 +339,14 @@ class _InsureXAppState extends State<InsureXApp> {
               }
             },
 
+            onRoleSelected: (AccountRole role) {
+              if (role == AccountRole.seller) {
+                Navigator.of(
+                  context,
+                ).pushReplacementNamed(AppRoutes.sellerSignup);
+              }
+            },
+
             onLoginPressed: () {
               Navigator.of(context).pushReplacementNamed(AppRoutes.login);
             },
@@ -322,6 +368,166 @@ class _InsureXAppState extends State<InsureXApp> {
 
             onPrivacyPressed: () {
               _showMessage(context, 'Privacy Policy will be added later.');
+            },
+          );
+        },
+
+        // ============================================================
+        // SELLER REGISTRATION
+        // ============================================================
+        AppRoutes.sellerSignup: (BuildContext context) {
+          return SellerRegistrationPage(
+            controller: SellerRegistrationController(
+              repository: _sellerRegistrationRepository,
+              validator: const SellerAuthValidator(),
+            ),
+            onBack: () {
+              Navigator.of(context).pop();
+            },
+            onRoleSelected: (AccountRole role) {
+              if (role == AccountRole.customer) {
+                Navigator.of(context).pushReplacementNamed(AppRoutes.signup);
+              }
+            },
+            onSubmitted: (SellerRegistrationResult result) {
+              Navigator.of(context).pushNamed(
+                AppRoutes.sellerRegistrationSubmitted,
+                arguments: result,
+              );
+            },
+            onLoginPressed: () {
+              Navigator.of(context).pushReplacementNamed(AppRoutes.sellerLogin);
+            },
+            onTermsPressed: () {
+              _showMessage(context, 'Terms of Service will be added later.');
+            },
+            onPrivacyPressed: () {
+              _showMessage(context, 'Privacy Policy will be added later.');
+            },
+          );
+        },
+
+        AppRoutes.sellerRegistrationSubmitted: (BuildContext context) {
+          final Object? arguments = ModalRoute.of(context)?.settings.arguments;
+          final SellerRegistrationResult result =
+              arguments is SellerRegistrationResult
+              ? arguments
+              : const SellerRegistrationResult(
+                  status: SellerRegistrationStatus.pendingApproval,
+                );
+          return SellerRegistrationSubmittedPage(
+            result: result,
+            onBack: () {
+              Navigator.of(context).pop();
+            },
+            onReturnToLogin: () {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                AppRoutes.sellerLogin,
+                (Route<dynamic> route) => false,
+              );
+            },
+            onContactSupport: () {
+              _showMessage(
+                context,
+                'Seller support will be connected through the secure support channel.',
+              );
+            },
+          );
+        },
+
+        // ============================================================
+        // SELLER LOGIN AND ACCOUNT STATUS
+        // ============================================================
+        AppRoutes.sellerLogin: (BuildContext context) {
+          return SellerLoginPage(
+            controller: SellerLoginController(
+              repository: _sellerAuthRepository,
+              validator: const SellerAuthValidator(),
+            ),
+            onBack: () {
+              Navigator.of(context).pop();
+            },
+            onRoleSelected: (AccountRole role) {
+              if (role == AccountRole.customer) {
+                Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+              }
+            },
+            onLoginResolved: (SellerAuthenticationResult result) {
+              final SellerAccount account = result.account!;
+              if (account.registrationStatus ==
+                  SellerRegistrationStatus.approved) {
+                Navigator.of(
+                  context,
+                ).pushNamed(AppRoutes.sellerHome, arguments: account);
+                return;
+              }
+              Navigator.of(
+                context,
+              ).pushNamed(AppRoutes.sellerAccountStatus, arguments: account);
+            },
+            onForgotPassword: () {
+              Navigator.of(context).pushNamed(AppRoutes.forgotPassword);
+            },
+            onSignupPressed: () {
+              Navigator.of(
+                context,
+              ).pushReplacementNamed(AppRoutes.sellerSignup);
+            },
+          );
+        },
+
+        AppRoutes.sellerAccountStatus: (BuildContext context) {
+          final Object? arguments = ModalRoute.of(context)?.settings.arguments;
+          final SellerAccount account = arguments is SellerAccount
+              ? arguments
+              : const SellerAccount(
+                  companyName: 'Insurance Company',
+                  businessEmail: '',
+                  authoritativeRole: AccountRole.seller,
+                  registrationStatus: SellerRegistrationStatus.technicalFailure,
+                );
+          return SellerAccountStatusPage(
+            account: account,
+            onBack: () {
+              Navigator.of(context).pop();
+            },
+            onRetryRegistration: () {
+              Navigator.of(
+                context,
+              ).pushReplacementNamed(AppRoutes.sellerSignup);
+            },
+            onContactSupport: () {
+              _showMessage(
+                context,
+                'Seller support will be connected through the secure support channel.',
+              );
+            },
+          );
+        },
+
+        AppRoutes.sellerHome: (BuildContext context) {
+          final Object? arguments = ModalRoute.of(context)?.settings.arguments;
+          final SellerAccount account = arguments is SellerAccount
+              ? arguments
+              : const SellerAccount(
+                  companyName: 'Insurance Company',
+                  businessEmail: '',
+                  authoritativeRole: AccountRole.seller,
+                  registrationStatus: SellerRegistrationStatus.approved,
+                );
+          return SellerHomePage(
+            account: account,
+            onReturnToLogin: () {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                AppRoutes.sellerLogin,
+                (Route<dynamic> route) => false,
+              );
+            },
+            onContactSupport: () {
+              _showMessage(
+                context,
+                'Seller support will be connected through the secure support channel.',
+              );
             },
           );
         },

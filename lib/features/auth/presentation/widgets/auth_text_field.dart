@@ -17,6 +17,8 @@ class AuthTextField extends StatefulWidget {
     this.onSubmitted,
     this.autofillHints,
     this.helperText,
+    this.errorText,
+    this.maxLines = 1,
   });
 
   final TextEditingController controller;
@@ -32,6 +34,8 @@ class AuthTextField extends StatefulWidget {
   final ValueChanged<String>? onSubmitted;
   final Iterable<String>? autofillHints;
   final String? helperText;
+  final String? errorText;
+  final int maxLines;
 
   @override
   State<AuthTextField> createState() {
@@ -57,6 +61,7 @@ class _AuthTextFieldState extends State<AuthTextField> {
       keyboardType: widget.keyboardType,
       textInputAction: widget.textInputAction,
       obscureText: _isObscured,
+      maxLines: widget.obscureText ? 1 : widget.maxLines,
       onChanged: widget.onChanged,
       onFieldSubmitted: widget.onSubmitted,
       autofillHints: widget.autofillHints,
@@ -70,6 +75,7 @@ class _AuthTextFieldState extends State<AuthTextField> {
         labelText: widget.label,
         hintText: widget.hintText,
         helperText: widget.helperText,
+        errorText: widget.errorText,
         labelStyle: TextStyle(
           color: AppColors.textSecondary.withValues(alpha: 0.78),
         ),
