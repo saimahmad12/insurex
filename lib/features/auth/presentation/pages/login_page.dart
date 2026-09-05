@@ -5,7 +5,9 @@ import '../../../../core/widgets/glass_action_button.dart';
 import '../../../../core/widgets/glass_background.dart';
 import '../../../../core/widgets/glass_container.dart';
 import '../../application/controllers/login_controller.dart';
+import '../../domain/entities/account_role.dart';
 import '../validators/login_form_validator.dart';
+import '../widgets/account_role_selector.dart';
 import '../widgets/auth_shield_logo.dart';
 import '../widgets/auth_text_field.dart';
 import '../widgets/social_login_button.dart';
@@ -22,6 +24,7 @@ class LoginPage extends StatefulWidget {
     this.onGoogleLogin,
     this.onAppleLogin,
     this.onBiometricLogin,
+    this.onRoleSelected,
   });
 
   final LoginController controller;
@@ -33,6 +36,7 @@ class LoginPage extends StatefulWidget {
   final VoidCallback? onGoogleLogin;
   final VoidCallback? onAppleLogin;
   final VoidCallback? onBiometricLogin;
+  final ValueChanged<AccountRole>? onRoleSelected;
 
   @override
   State<LoginPage> createState() {
@@ -41,14 +45,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final GlobalKey<FormState> _formKey =
-  GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _identityController =
-  TextEditingController();
+  final TextEditingController _identityController = TextEditingController();
 
-  final TextEditingController _passwordController =
-  TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   void dispose() {
@@ -62,15 +63,13 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _submitLogin() async {
     FocusManager.instance.primaryFocus?.unfocus();
 
-    final bool isFormValid =
-        _formKey.currentState?.validate() ?? false;
+    final bool isFormValid = _formKey.currentState?.validate() ?? false;
 
     if (!isFormValid) {
       return;
     }
 
-    final bool authenticated =
-    await widget.controller.login(
+    final bool authenticated = await widget.controller.login(
       identity: _identityController.text,
       password: _passwordController.text,
     );
@@ -89,20 +88,14 @@ class _LoginPageState extends State<LoginPage> {
       body: GlassBackground(
         child: SafeArea(
           child: LayoutBuilder(
-            builder: (
-                BuildContext context,
-                BoxConstraints constraints,
-                ) {
+            builder: (BuildContext context, BoxConstraints constraints) {
               return SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 padding: EdgeInsets.fromLTRB(
                   22,
                   12,
                   22,
-                  24 +
-                      MediaQuery.viewInsetsOf(context)
-                          .bottom *
-                          0.15,
+                  24 + MediaQuery.viewInsetsOf(context).bottom * 0.15,
                 ),
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
@@ -110,34 +103,24 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   child: Center(
                     child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        maxWidth: 430,
-                      ),
+                      constraints: const BoxConstraints(maxWidth: 430),
                       child: AnimatedBuilder(
                         animation: widget.controller,
-                        builder: (
-                            BuildContext context,
-                            Widget? child,
-                            ) {
+                        builder: (BuildContext context, Widget? child) {
                           return Column(
-                            mainAxisAlignment:
-                            MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               Align(
-                                alignment:
-                                Alignment.centerLeft,
+                                alignment: Alignment.centerLeft,
                                 child: IconButton(
                                   tooltip: 'Back',
                                   onPressed: widget.onBack,
                                   style: IconButton.styleFrom(
-                                    backgroundColor:
-                                    AppColors.white
-                                        .withValues(
+                                    backgroundColor: AppColors.white.withValues(
                                       alpha: 0.09,
                                     ),
                                     side: BorderSide(
-                                      color: AppColors.white
-                                          .withValues(
+                                      color: AppColors.white.withValues(
                                         alpha: 0.20,
                                       ),
                                     ),
@@ -171,8 +154,7 @@ class _LoginPageState extends State<LoginPage> {
                                 'Login to continue to your secure account',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color: AppColors.textSecondary
-                                      .withValues(
+                                  color: AppColors.textSecondary.withValues(
                                     alpha: 0.78,
                                   ),
                                   fontSize: 13.5,
@@ -183,8 +165,7 @@ class _LoginPageState extends State<LoginPage> {
 
                               GlassContainer(
                                 width: double.infinity,
-                                padding:
-                                const EdgeInsets.fromLTRB(
+                                padding: const EdgeInsets.fromLTRB(
                                   18,
                                   22,
                                   18,
@@ -195,71 +176,60 @@ class _LoginPageState extends State<LoginPage> {
                                     key: _formKey,
                                     child: Column(
                                       children: <Widget>[
+                                        AccountRoleSelector(
+                                          selectedRole: AccountRole.customer,
+                                          enabled: !widget.controller.isLoading,
+                                          onRoleSelected:
+                                              widget.onRoleSelected ?? (_) {},
+                                        ),
+
+                                        const SizedBox(height: 17),
+
                                         AuthTextField(
-                                          controller:
-                                          _identityController,
-                                          label:
-                                          'Mobile number or email',
-                                          hintText:
-                                          '+92 300 1234567',
+                                          key: const Key(
+                                            'login_identity_field',
+                                          ),
+                                          controller: _identityController,
+                                          label: 'Mobile number or email',
+                                          hintText: '+92 300 1234567',
                                           prefixIcon:
-                                          Icons
-                                              .person_outline_rounded,
-                                          keyboardType:
-                                          TextInputType.text,
-                                          textInputAction:
-                                          TextInputAction
-                                              .next,
-                                          autofillHints:
-                                          const <String>[
-                                            AutofillHints
-                                                .username,
+                                              Icons.person_outline_rounded,
+                                          keyboardType: TextInputType.text,
+                                          textInputAction: TextInputAction.next,
+                                          autofillHints: const <String>[
+                                            AutofillHints.username,
                                             AutofillHints.email,
-                                            AutofillHints
-                                                .telephoneNumber,
+                                            AutofillHints.telephoneNumber,
                                           ],
-                                          validator:
-                                          LoginFormValidator
+                                          validator: LoginFormValidator
                                               .validateIdentity,
-                                          onChanged: (
-                                              String value,
-                                              ) {
-                                            widget.controller
-                                                .clearError();
+                                          onChanged: (String value) {
+                                            widget.controller.clearError();
                                           },
                                         ),
 
                                         const SizedBox(height: 15),
 
                                         AuthTextField(
-                                          controller:
-                                          _passwordController,
+                                          key: const Key(
+                                            'login_password_field',
+                                          ),
+                                          controller: _passwordController,
                                           label: 'Password',
-                                          hintText:
-                                          'Enter your password',
-                                          prefixIcon: Icons
-                                              .lock_outline_rounded,
-                                          textInputAction:
-                                          TextInputAction
-                                              .done,
+                                          hintText: 'Enter your password',
+                                          prefixIcon:
+                                              Icons.lock_outline_rounded,
+                                          textInputAction: TextInputAction.done,
                                           obscureText: true,
-                                          autofillHints:
-                                          const <String>[
-                                            AutofillHints
-                                                .password,
+                                          autofillHints: const <String>[
+                                            AutofillHints.password,
                                           ],
-                                          validator:
-                                          LoginFormValidator
+                                          validator: LoginFormValidator
                                               .validatePassword,
-                                          onChanged: (
-                                              String value,
-                                              ) {
-                                            widget.controller
-                                                .clearError();
+                                          onChanged: (String value) {
+                                            widget.controller.clearError();
                                           },
-                                          onSubmitted: (
-                                              String value,
-                                              ) {
+                                          onSubmitted: (String value) {
                                             _submitLogin();
                                           },
                                         ),
@@ -267,46 +237,35 @@ class _LoginPageState extends State<LoginPage> {
                                         const SizedBox(height: 8),
 
                                         Align(
-                                          alignment:
-                                          Alignment.centerRight,
+                                          alignment: Alignment.centerRight,
                                           child: TextButton(
-                                            onPressed: widget
-                                                .onForgotPassword,
+                                            onPressed: widget.onForgotPassword,
                                             child: const Text(
                                               'Forgot Password?',
                                               style: TextStyle(
-                                                color:
-                                                AppColors.blue,
-                                                fontWeight:
-                                                FontWeight.w700,
+                                                color: AppColors.blue,
+                                                fontWeight: FontWeight.w700,
                                               ),
                                             ),
                                           ),
                                         ),
 
-                                        if (widget.controller
-                                            .errorMessage !=
+                                        if (widget.controller.errorMessage !=
                                             null) ...<Widget>[
                                           _LoginErrorMessage(
-                                            message: widget
-                                                .controller
-                                                .errorMessage!,
+                                            message:
+                                                widget.controller.errorMessage!,
                                           ),
-                                          const SizedBox(
-                                            height: 13,
-                                          ),
+                                          const SizedBox(height: 13),
                                         ],
 
                                         GlassActionButton(
+                                          key: const Key('login_button'),
                                           label: 'Login',
-                                          icon:
-                                          Icons.login_rounded,
-                                          isLoading: widget
-                                              .controller
-                                              .isLoading,
-                                          onPressed: widget
-                                              .controller
-                                              .isLoading
+                                          icon: Icons.login_rounded,
+                                          isLoading:
+                                              widget.controller.isLoading,
+                                          onPressed: widget.controller.isLoading
                                               ? null
                                               : _submitLogin,
                                         ),
@@ -328,9 +287,7 @@ class _LoginPageState extends State<LoginPage> {
                                   SocialLoginButton(
                                     tooltip: 'Continue with Google',
                                     onPressed: widget.onGoogleLogin,
-                                    child: const GoogleLogo(
-                                      size: 27,
-                                    ),
+                                    child: const GoogleLogo(size: 27),
                                   ),
 
                                   const SizedBox(width: 13),
@@ -362,29 +319,24 @@ class _LoginPageState extends State<LoginPage> {
                               const SizedBox(height: 20),
 
                               Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
                                   Text(
                                     "Don't have an account?",
                                     style: TextStyle(
-                                      color: AppColors
-                                          .textSecondary
-                                          .withValues(
+                                      color: AppColors.textSecondary.withValues(
                                         alpha: 0.76,
                                       ),
                                       fontSize: 13,
                                     ),
                                   ),
                                   TextButton(
-                                    onPressed:
-                                    widget.onSignUp,
+                                    onPressed: widget.onSignUp,
                                     child: const Text(
                                       'Sign Up',
                                       style: TextStyle(
                                         color: AppColors.pink,
-                                        fontWeight:
-                                        FontWeight.w800,
+                                        fontWeight: FontWeight.w800,
                                       ),
                                     ),
                                   ),
@@ -407,9 +359,7 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 class _LoginErrorMessage extends StatelessWidget {
-  const _LoginErrorMessage({
-    required this.message,
-  });
+  const _LoginErrorMessage({required this.message});
 
   final String message;
 
@@ -417,19 +367,12 @@ class _LoginErrorMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 13,
-        vertical: 11,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
       decoration: BoxDecoration(
-        color: const Color(0xFFFF6680).withValues(
-          alpha: 0.13,
-        ),
+        color: const Color(0xFFFF6680).withValues(alpha: 0.13),
         borderRadius: BorderRadius.circular(13),
         border: Border.all(
-          color: const Color(0xFFFF8A9B).withValues(
-            alpha: 0.50,
-          ),
+          color: const Color(0xFFFF8A9B).withValues(alpha: 0.50),
         ),
       ),
       child: Row(
@@ -443,10 +386,7 @@ class _LoginErrorMessage extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: const TextStyle(
-                color: Color(0xFFFFD6DC),
-                fontSize: 12.5,
-              ),
+              style: const TextStyle(color: Color(0xFFFFD6DC), fontSize: 12.5),
             ),
           ),
         ],
@@ -463,32 +403,20 @@ class _SocialDivider extends StatelessWidget {
     return Row(
       children: <Widget>[
         Expanded(
-          child: Divider(
-            color: AppColors.white.withValues(
-              alpha: 0.20,
-            ),
-          ),
+          child: Divider(color: AppColors.white.withValues(alpha: 0.20)),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 13,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 13),
           child: Text(
             'or continue with',
             style: TextStyle(
-              color: AppColors.textSecondary.withValues(
-                alpha: 0.64,
-              ),
+              color: AppColors.textSecondary.withValues(alpha: 0.64),
               fontSize: 12,
             ),
           ),
         ),
         Expanded(
-          child: Divider(
-            color: AppColors.white.withValues(
-              alpha: 0.20,
-            ),
-          ),
+          child: Divider(color: AppColors.white.withValues(alpha: 0.20)),
         ),
       ],
     );

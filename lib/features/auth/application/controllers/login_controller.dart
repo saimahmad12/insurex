@@ -1,19 +1,14 @@
 import 'package:flutter/foundation.dart';
 
+import '../../domain/entities/account_role.dart';
 import '../../domain/entities/login_credentials.dart';
 import '../../domain/repositories/auth_repository.dart';
 
-enum LoginStatus {
-  idle,
-  loading,
-  success,
-  failure,
-}
+enum LoginStatus { idle, loading, success, failure }
 
 class LoginController extends ChangeNotifier {
-  LoginController({
-    required AuthRepository repository,
-  }) : _repository = repository;
+  LoginController({required AuthRepository repository})
+    : _repository = repository;
 
   final AuthRepository _repository;
 
@@ -38,10 +33,10 @@ class LoginController extends ChangeNotifier {
       final LoginCredentials credentials = LoginCredentials(
         identity: identity.trim(),
         password: password,
+        role: AccountRole.customer,
       );
 
-      final bool authenticated =
-      await _repository.login(credentials);
+      final bool authenticated = await _repository.login(credentials);
 
       if (authenticated) {
         _status = LoginStatus.success;
@@ -51,16 +46,14 @@ class LoginController extends ChangeNotifier {
       }
 
       _status = LoginStatus.failure;
-      _errorMessage =
-      'Invalid mobile number, email, or password.';
+      _errorMessage = 'Invalid mobile number, email, or password.';
 
       notifyListeners();
 
       return false;
     } catch (_) {
       _status = LoginStatus.failure;
-      _errorMessage =
-      'Unable to sign in. Please try again.';
+      _errorMessage = 'Unable to sign in. Please try again.';
 
       notifyListeners();
 
