@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:insurancex/features/auth/data/repositories/mock_signup_repository.dart';
+import 'package:insurancex/features/auth/domain/entities/account_role.dart';
 import 'package:insurancex/features/auth/domain/entities/signup_request.dart';
 import 'package:insurancex/features/profile/data/repositories/mock_profile_repository.dart';
 import 'package:insurancex/features/profile/domain/entities/identity_verification.dart';
@@ -22,6 +23,7 @@ void main() {
         email: 'policyholder@example.test',
         mobileNumber: '+923001234567',
         password: 'synthetic-password',
+        role: AccountRole.customer,
       );
       final bool prepared = await signupRepository.prepareSignup(request);
 

@@ -7,6 +7,16 @@ abstract final class AppRoutes {
 
   static const String signup = '/signup';
 
+  static const String sellerLogin = '/login/seller';
+
+  static const String sellerSignup = '/signup/seller';
+
+  static const String sellerRegistrationSubmitted = '/signup/seller/submitted';
+
+  static const String sellerAccountStatus = '/login/seller/status';
+
+  static const String sellerHome = '/seller/home';
+
   static const String forgotPassword = '/forgot-password';
 
   static const String otpVerification = '/otp-verification';

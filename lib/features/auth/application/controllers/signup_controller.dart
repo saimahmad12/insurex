@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../../profile/domain/entities/identity_verification.dart';
 import '../../../profile/domain/repositories/identity_verification_repository.dart';
+import '../../domain/entities/account_role.dart';
 import '../../domain/entities/signup_request.dart';
 import '../../domain/repositories/signup_repository.dart';
 
@@ -52,6 +53,7 @@ class SignupController extends ChangeNotifier {
       email: email.trim(),
       mobileNumber: mobileNumber.trim(),
       password: password,
+      role: AccountRole.customer,
     );
     if (_prepareInProgress || _completionInProgress) {
       return false;
@@ -93,7 +95,8 @@ class SignupController extends ChangeNotifier {
     return current?.fullName == proposed.fullName &&
         current?.email == proposed.email &&
         current?.mobileNumber == proposed.mobileNumber &&
-        current?.password == proposed.password;
+        current?.password == proposed.password &&
+        current?.role == proposed.role;
   }
 
   Future<bool> completeVerifiedSignup() async {
@@ -110,7 +113,6 @@ class SignupController extends ChangeNotifier {
       notifyListeners();
       return false;
     }
-
     _completionInProgress = true;
     _status = SignupStatus.completing;
     _errorMessage = null;
