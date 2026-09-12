@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'core/navigation/app_routes.dart';
@@ -43,7 +45,6 @@ import 'features/auth/presentation/pages/login_page.dart';
 import 'features/auth/presentation/pages/otp_verification_page.dart';
 import 'features/auth/presentation/pages/reset_password_page.dart';
 import 'features/auth/presentation/pages/seller_account_status_page.dart';
-import 'features/auth/presentation/pages/seller_home_page.dart';
 import 'features/auth/presentation/pages/seller_login_page.dart';
 import 'features/auth/presentation/pages/seller_registration_page.dart';
 import 'features/auth/presentation/pages/seller_registration_submitted_page.dart';
@@ -117,6 +118,17 @@ import 'features/dashboard/data/repositories/mock_dashboard_repository.dart';
 import 'features/dashboard/presentation/pages/dashboard_navigation_shell.dart';
 
 // ============================================================
+// SELLER DASHBOARD
+// ============================================================
+import 'features/seller_dashboard/application/controllers/seller_dashboard_controller.dart';
+import 'features/seller_dashboard/application/controllers/seller_dashboard_navigation_controller.dart';
+import 'features/seller_dashboard/data/repositories/mock_seller_dashboard_repository.dart';
+import 'features/seller_dashboard/domain/entities/seller_dashboard.dart';
+import 'features/seller_dashboard/domain/repositories/seller_dashboard_repository.dart';
+import 'features/seller_dashboard/presentation/pages/seller_dashboard_navigation_shell.dart';
+import 'features/seller_dashboard/presentation/pages/seller_dashboard_page.dart';
+
+// ============================================================
 // POLICIES
 // ============================================================
 import 'features/policies/application/controllers/policies_controller.dart';
@@ -158,12 +170,14 @@ class InsureXApp extends StatefulWidget {
   const InsureXApp({
     this.initialVerificationStatus = IdentityVerificationStatus.notStarted,
     this.sellerAuthRepository,
+    this.sellerDashboardRepository,
     this.sellerRegistrationRepository,
     super.key,
   });
 
   final IdentityVerificationStatus initialVerificationStatus;
   final SellerAuthRepository? sellerAuthRepository;
+  final SellerDashboardRepository? sellerDashboardRepository;
   final SellerRegistrationRepository? sellerRegistrationRepository;
 
   @override
@@ -184,6 +198,7 @@ class _InsureXAppState extends State<InsureXApp> {
   late final MockPolicyApplicationRepository _policyApplicationRepository;
   late final MockPremiumPaymentRepository _premiumPaymentRepository;
   late final SellerAuthRepository _sellerAuthRepository;
+  late final SellerDashboardRepository _sellerDashboardRepository;
   late final SellerRegistrationRepository _sellerRegistrationRepository;
 
   @override
@@ -211,6 +226,8 @@ class _InsureXAppState extends State<InsureXApp> {
     _premiumPaymentRepository = MockPremiumPaymentRepository();
     _sellerAuthRepository =
         widget.sellerAuthRepository ?? MockSellerAuthRepository();
+    _sellerDashboardRepository =
+        widget.sellerDashboardRepository ?? MockSellerDashboardRepository();
     _sellerRegistrationRepository =
         widget.sellerRegistrationRepository ??
         MockSellerRegistrationRepository();
@@ -456,9 +473,11 @@ class _InsureXAppState extends State<InsureXApp> {
               final SellerAccount account = result.account!;
               if (account.registrationStatus ==
                   SellerRegistrationStatus.approved) {
-                Navigator.of(
-                  context,
-                ).pushNamed(AppRoutes.sellerHome, arguments: account);
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  AppRoutes.sellerDashboard,
+                  (Route<dynamic> route) => false,
+                  arguments: account,
+                );
                 return;
               }
               Navigator.of(
@@ -505,28 +524,44 @@ class _InsureXAppState extends State<InsureXApp> {
           );
         },
 
-        AppRoutes.sellerHome: (BuildContext context) {
+        AppRoutes.sellerDashboard: (BuildContext context) {
           final Object? arguments = ModalRoute.of(context)?.settings.arguments;
-          final SellerAccount account = arguments is SellerAccount
+          final SellerAccount? authenticatedAccount = arguments is SellerAccount
               ? arguments
-              : const SellerAccount(
-                  companyName: 'Insurance Company',
-                  businessEmail: '',
-                  authoritativeRole: AccountRole.seller,
-                  registrationStatus: SellerRegistrationStatus.approved,
+              : null;
+          final SellerDashboardAccount? dashboardAccount =
+              authenticatedAccount == null
+              ? null
+              : SellerDashboardAccount(
+                  companyName: authenticatedAccount.companyName,
+                  businessEmail: authenticatedAccount.businessEmail,
+                  status:
+                      authenticatedAccount.authoritativeRole ==
+                              AccountRole.seller &&
+                          authenticatedAccount.registrationStatus ==
+                              SellerRegistrationStatus.approved
+                      ? SellerDashboardAccountStatus.approved
+                      : SellerDashboardAccountStatus.notApproved,
                 );
-          return SellerHomePage(
-            account: account,
+          return _SellerDashboardRouteScope(
+            account: dashboardAccount,
+            repository: _sellerDashboardRepository,
+            onNotifications: () {
+              _showMessage(
+                context,
+                'Seller notifications will be available in the next module.',
+              );
+            },
+            onFeatureUnavailable: () {
+              _showMessage(
+                context,
+                'This feature will be available in the next module.',
+              );
+            },
             onReturnToLogin: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
                 AppRoutes.sellerLogin,
                 (Route<dynamic> route) => false,
-              );
-            },
-            onContactSupport: () {
-              _showMessage(
-                context,
-                'Seller support will be connected through the secure support channel.',
               );
             },
           );
@@ -1412,6 +1447,63 @@ class _InsureXAppState extends State<InsureXApp> {
       ..showSnackBar(
         SnackBar(content: Text(message), behavior: SnackBarBehavior.floating),
       );
+  }
+}
+
+class _SellerDashboardRouteScope extends StatefulWidget {
+  const _SellerDashboardRouteScope({
+    required this.account,
+    required this.repository,
+    required this.onNotifications,
+    required this.onFeatureUnavailable,
+    required this.onReturnToLogin,
+  });
+
+  final SellerDashboardAccount? account;
+  final SellerDashboardRepository repository;
+  final VoidCallback onNotifications;
+  final VoidCallback onFeatureUnavailable;
+  final VoidCallback onReturnToLogin;
+
+  @override
+  State<_SellerDashboardRouteScope> createState() =>
+      _SellerDashboardRouteScopeState();
+}
+
+class _SellerDashboardRouteScopeState
+    extends State<_SellerDashboardRouteScope> {
+  late final SellerDashboardController _controller;
+  late final SellerDashboardNavigationController _navigationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = SellerDashboardController(
+      repository: widget.repository,
+      account: widget.account,
+    );
+    _navigationController = SellerDashboardNavigationController();
+    unawaited(_controller.loadDashboard());
+  }
+
+  @override
+  void dispose() {
+    _navigationController.dispose();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SellerDashboardNavigationShell(
+      navigationController: _navigationController,
+      onUnavailableDestination: widget.onFeatureUnavailable,
+      home: SellerDashboardPage(
+        controller: _controller,
+        onNotifications: widget.onNotifications,
+        onReturnToLogin: widget.onReturnToLogin,
+      ),
+    );
   }
 }
 

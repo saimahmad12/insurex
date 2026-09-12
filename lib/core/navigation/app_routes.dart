@@ -15,7 +15,9 @@ abstract final class AppRoutes {
 
   static const String sellerAccountStatus = '/login/seller/status';
 
-  static const String sellerHome = '/seller/home';
+  static const String sellerDashboard = '/seller/dashboard';
+
+  static const String sellerHome = sellerDashboard;
 
   static const String forgotPassword = '/forgot-password';
 
