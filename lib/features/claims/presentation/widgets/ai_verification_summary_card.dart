@@ -34,7 +34,7 @@ class AiVerificationSummaryCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(14),
                   gradient: const LinearGradient(
-                    colors: <Color>[AppColors.violet, AppColors.blue],
+                    colors: <Color>[AppColors.blue, AppColors.blue],
                   ),
                 ),
                 child: const Icon(
@@ -48,7 +48,7 @@ class AiVerificationSummaryCard extends StatelessWidget {
                 child: Text(
                   'AI Image Analysis',
                   style: TextStyle(
-                    color: AppColors.white,
+                    color: Colors.black87,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
@@ -193,7 +193,7 @@ class _AnalysisRow extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                color: AppColors.textSecondary.withValues(alpha: 0.52),
+                color: AppColors.textSecondary,
                 fontSize: 11.5,
               ),
             ),
@@ -204,7 +204,7 @@ class _AnalysisRow extends StatelessWidget {
               value,
               textAlign: TextAlign.right,
               style: const TextStyle(
-                color: AppColors.white,
+                color: Colors.black87,
                 fontSize: 11.5,
                 fontWeight: FontWeight.w600,
               ),

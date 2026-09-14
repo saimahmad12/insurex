@@ -59,7 +59,7 @@ class PayoutReviewPage extends StatelessWidget {
                             const Text(
                               'Payout Details',
                               style: TextStyle(
-                                color: AppColors.white,
+                                color: Colors.black87,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w800,
                               ),
@@ -102,7 +102,7 @@ class PayoutReviewPage extends StatelessWidget {
                                 onConsentChanged(value ?? false);
                               },
                         controlAffinity: ListTileControlAffinity.leading,
-                        activeColor: AppColors.violet,
+                        activeColor: AppColors.blue,
                         contentPadding: EdgeInsets.zero,
                         title: const Text(
                           'I confirm that the payout details are correct and belong to me.',
@@ -120,7 +120,7 @@ class PayoutReviewPage extends StatelessWidget {
                           key: const Key('payout_submission_error'),
                           textAlign: TextAlign.center,
                           style: const TextStyle(
-                            color: Color(0xFFFFB3BE),
+                            color: Color(0xFFB3261E),
                             fontSize: 11,
                           ),
                         ),
@@ -173,7 +173,7 @@ class _ReviewRow extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                color: AppColors.textSecondary.withValues(alpha: 0.52),
+                color: AppColors.textSecondary,
                 fontSize: 11,
               ),
             ),
@@ -185,7 +185,7 @@ class _ReviewRow extends StatelessWidget {
               value,
               textAlign: TextAlign.right,
               style: const TextStyle(
-                color: AppColors.white,
+                color: Colors.black87,
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
               ),

@@ -31,7 +31,7 @@ class ProfileReadOnlyField extends StatelessWidget {
       showCursor: false,
       enableInteractiveSelection: false,
       style: const TextStyle(
-        color: AppColors.white,
+        color: Colors.black87,
         fontSize: 15,
         fontWeight: FontWeight.w500,
       ),

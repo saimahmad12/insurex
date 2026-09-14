@@ -156,7 +156,7 @@ class _PolicyPurchasePageState extends State<PolicyPurchasePage> {
         Text(
           product.name,
           style: const TextStyle(
-            color: AppColors.white,
+            color: Colors.black87,
             fontSize: 20,
             fontWeight: FontWeight.w800,
           ),
@@ -484,7 +484,7 @@ class _PolicyPurchasePageState extends State<PolicyPurchasePage> {
               const Text(
                 'Premium Payment',
                 style: TextStyle(
-                  color: AppColors.white,
+                  color: Colors.black87,
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
                 ),
@@ -493,7 +493,7 @@ class _PolicyPurchasePageState extends State<PolicyPurchasePage> {
               Text(
                 marketplaceMoney(quote.totalPremium),
                 style: const TextStyle(
-                  color: AppColors.white,
+                  color: Colors.black87,
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
                 ),
@@ -517,7 +517,7 @@ class _PolicyPurchasePageState extends State<PolicyPurchasePage> {
                         value: method,
                         title: Text(
                           _paymentMethod(method),
-                          style: const TextStyle(color: AppColors.white),
+                          style: const TextStyle(color: Colors.black87),
                         ),
                         subtitle: const Text(
                           'Secure provider-hosted integration placeholder',
@@ -601,7 +601,7 @@ class _PolicyPurchasePageState extends State<PolicyPurchasePage> {
           Text(
             'Issuing your policy securely…',
             style: TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -627,7 +627,7 @@ class _PolicyPurchasePageState extends State<PolicyPurchasePage> {
           'Policy Purchased Successfully',
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: AppColors.white,
+            color: Colors.black87,
             fontSize: 23,
             fontWeight: FontWeight.w800,
           ),
@@ -690,7 +690,7 @@ class _PolicyPurchasePageState extends State<PolicyPurchasePage> {
     onChanged: (bool? selected) => onChanged(selected ?? false),
     title: Text(
       text,
-      style: const TextStyle(color: AppColors.white, fontSize: 12),
+      style: const TextStyle(color: Colors.black87, fontSize: 12),
     ),
     controlAffinity: ListTileControlAffinity.leading,
   );
@@ -712,7 +712,7 @@ class _PolicyPurchasePageState extends State<PolicyPurchasePage> {
             title,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontSize: 20,
               fontWeight: FontWeight.w800,
             ),
@@ -742,7 +742,7 @@ class _PolicyPurchasePageState extends State<PolicyPurchasePage> {
     child: Text(
       message,
       textAlign: TextAlign.center,
-      style: const TextStyle(color: Color(0xFFFFB3BE)),
+      style: const TextStyle(color: Color(0xFFB3261E)),
     ),
   );
   Widget _notice(String message) => Padding(
@@ -799,7 +799,7 @@ class _QuoteCard extends StatelessWidget {
         Text(
           quote.productName,
           style: const TextStyle(
-            color: AppColors.white,
+            color: Colors.black87,
             fontSize: 20,
             fontWeight: FontWeight.w800,
           ),
@@ -850,7 +850,7 @@ class _ReviewCard extends StatelessWidget {
         const Text(
           'Application Review',
           style: TextStyle(
-            color: AppColors.white,
+            color: Colors.black87,
             fontSize: 19,
             fontWeight: FontWeight.w800,
           ),
@@ -898,7 +898,7 @@ Widget _row(String label, String value) => Padding(
           value,
           textAlign: TextAlign.right,
           style: const TextStyle(
-            color: AppColors.white,
+            color: Colors.black87,
             fontSize: 11,
             fontWeight: FontWeight.w600,
           ),

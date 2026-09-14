@@ -166,7 +166,7 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
                     key: const Key('security_setting_error'),
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                      color: Color(0xFFFFB3BE),
+                      color: Color(0xFFB3261E),
                       fontSize: 11,
                     ),
                   ),

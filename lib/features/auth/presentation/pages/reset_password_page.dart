@@ -172,7 +172,7 @@ class _ResetPasswordPageState
                                 TextAlign.center,
                                 style: TextStyle(
                                   color:
-                                  AppColors.white,
+                                  Colors.black87,
                                   fontSize: 29,
                                   fontWeight:
                                   FontWeight.w900,
@@ -351,7 +351,7 @@ class _ResetPasswordPageState
                                   'Back to Login',
                                   style: TextStyle(
                                     color:
-                                    AppColors.pink,
+                                    AppColors.blue,
                                     fontWeight:
                                     FontWeight
                                         .w800,
@@ -407,7 +407,7 @@ class _PasswordField extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
-            color: AppColors.white,
+            color: Colors.black87,
             fontSize: 13,
             fontWeight: FontWeight.w700,
           ),
@@ -427,7 +427,7 @@ class _PasswordField extends StatelessWidget {
           onChanged: onChanged,
           cursorColor: AppColors.blue,
           style: const TextStyle(
-            color: AppColors.white,
+            color: Colors.black87,
             fontSize: 14,
           ),
           decoration: InputDecoration(
@@ -551,7 +551,7 @@ class _PasswordRequirements
           const Text(
             'Password Requirements',
             style: TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontSize: 13.5,
               fontWeight: FontWeight.w800,
             ),
@@ -742,7 +742,7 @@ class _ErrorMessage
               style:
               const TextStyle(
                 color:
-                Color(0xFFFFD6DC),
+                Color(0xFFB3261E),
                 fontSize: 12.5,
               ),
             ),

@@ -147,7 +147,7 @@ class _SectionTitle extends StatelessWidget {
     return Text(
       title,
       style: const TextStyle(
-        color: AppColors.white,
+        color: Colors.black87,
         fontSize: 15,
         fontWeight: FontWeight.w700,
       ),
@@ -180,7 +180,7 @@ class _DashboardError extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.white),
+              style: const TextStyle(color: Colors.black87),
             ),
 
             const SizedBox(height: 14),

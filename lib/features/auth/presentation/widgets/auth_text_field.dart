@@ -67,7 +67,7 @@ class _AuthTextFieldState extends State<AuthTextField> {
       autofillHints: widget.autofillHints,
       cursorColor: AppColors.blue,
       style: const TextStyle(
-        color: AppColors.white,
+        color: Colors.black87,
         fontSize: 15,
         fontWeight: FontWeight.w500,
       ),
@@ -80,7 +80,7 @@ class _AuthTextFieldState extends State<AuthTextField> {
           color: AppColors.textSecondary.withValues(alpha: 0.78),
         ),
         hintStyle: TextStyle(
-          color: AppColors.textSecondary.withValues(alpha: 0.48),
+          color: AppColors.textSecondary,
         ),
         helperStyle: TextStyle(
           color: AppColors.textSecondary.withValues(alpha: 0.7),
@@ -120,7 +120,7 @@ class _AuthTextFieldState extends State<AuthTextField> {
         ),
         errorBorder: _createBorder(const Color(0xFFFF8A9B)),
         focusedErrorBorder: _createBorder(const Color(0xFFFF8A9B), width: 1.35),
-        errorStyle: const TextStyle(color: Color(0xFFFFB3BE), fontSize: 11.5),
+        errorStyle: const TextStyle(color: Color(0xFFB3261E), fontSize: 11.5),
       ),
     );
   }

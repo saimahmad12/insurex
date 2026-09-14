@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/glass_container.dart';
 import '../../domain/entities/policy_details.dart';
 
@@ -86,14 +87,13 @@ class _InformationRow extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: const Color(0xFF815CFF)
-                .withValues(alpha: 0.12),
+            color: AppColors.blue.withValues(alpha: 0.12),
             borderRadius:
             BorderRadius.circular(12),
           ),
           child: Icon(
             icon,
-            color: const Color(0xFF9A7CFF),
+            color: AppColors.blue,
             size: 20,
           ),
         ),
@@ -108,7 +108,7 @@ class _InformationRow extends StatelessWidget {
               Text(
                 label,
                 style: TextStyle(
-                  color: Colors.white
+                  color: Colors.black
                       .withValues(alpha: 0.48),
                   fontSize: 12,
                 ),
@@ -119,7 +119,7 @@ class _InformationRow extends StatelessWidget {
               Text(
                 value,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: Colors.black87,
                   fontSize: 14,
                   fontWeight:
                   FontWeight.w600,

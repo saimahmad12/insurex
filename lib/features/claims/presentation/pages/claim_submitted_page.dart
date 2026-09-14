@@ -62,7 +62,7 @@ class ClaimSubmittedPage extends StatelessWidget {
                       key: Key('claim_submitted_title'),
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: AppColors.white,
+                        color: Colors.black87,
                         fontSize: 25,
                         fontWeight: FontWeight.w900,
                         letterSpacing: -0.3,
@@ -163,7 +163,7 @@ class _ResultRow extends StatelessWidget {
                 value,
                 textAlign: TextAlign.right,
                 style: const TextStyle(
-                  color: AppColors.white,
+                  color: Colors.black87,
                   fontSize: 12.5,
                   fontWeight: FontWeight.w600,
                 ),

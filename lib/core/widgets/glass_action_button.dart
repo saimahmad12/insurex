@@ -63,8 +63,8 @@ class GlassActionButton extends StatelessWidget {
                       ? const LinearGradient(
                     colors: <Color>[
                       AppColors.blue,
-                      AppColors.violet,
-                      AppColors.pink,
+                      AppColors.blue,
+                      AppColors.blue,
                     ],
                   )
                       : LinearGradient(
@@ -80,7 +80,7 @@ class GlassActionButton extends StatelessWidget {
                   boxShadow: isPrimary
                       ? <BoxShadow>[
                     BoxShadow(
-                      color: AppColors.violet.withValues(
+                      color: AppColors.blue.withValues(
                         alpha: 0.40,
                       ),
                       blurRadius: 22,
@@ -107,8 +107,8 @@ class GlassActionButton extends StatelessWidget {
                       children: <Widget>[
                         Text(
                           label,
-                          style: const TextStyle(
-                            color: AppColors.white,
+                          style: TextStyle(
+                            color: isPrimary ? AppColors.white : AppColors.blue,
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                           ),

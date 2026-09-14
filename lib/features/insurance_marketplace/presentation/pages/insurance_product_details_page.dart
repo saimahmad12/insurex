@@ -82,7 +82,7 @@ class _InsuranceProductDetailsPageState
                         Text(
                           product.name,
                           style: const TextStyle(
-                            color: AppColors.white,
+                            color: Colors.black87,
                             fontSize: 24,
                             fontWeight: FontWeight.w800,
                           ),
@@ -233,7 +233,7 @@ class _DetailsSection extends StatelessWidget {
           Text(
             title,
             style: const TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontWeight: FontWeight.w700,
               fontSize: 16,
             ),
@@ -298,7 +298,7 @@ class _InformationSection extends StatelessWidget {
                     child: Text(
                       row.value,
                       style: const TextStyle(
-                        color: AppColors.white,
+                        color: Colors.black87,
                         fontSize: 12,
                         height: 1.4,
                       ),
@@ -329,7 +329,7 @@ class _Metric extends StatelessWidget {
       Text(
         value,
         style: const TextStyle(
-          color: AppColors.white,
+          color: Colors.black87,
           fontWeight: FontWeight.w700,
         ),
       ),

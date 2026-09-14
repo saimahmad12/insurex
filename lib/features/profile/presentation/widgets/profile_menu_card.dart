@@ -62,8 +62,8 @@ class ProfileMenuItem extends StatelessWidget {
                       title,
                       style: TextStyle(
                         color: destructive
-                            ? const Color(0xFFFFB3BE)
-                            : AppColors.white,
+                            ? const Color(0xFFB3261E)
+                            : Colors.black87,
                         fontSize: 12.5,
                         fontWeight: FontWeight.w600,
                       ),

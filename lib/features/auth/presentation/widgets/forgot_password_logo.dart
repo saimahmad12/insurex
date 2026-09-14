@@ -69,14 +69,14 @@ class _LogoGlow extends StatelessWidget {
             spreadRadius: 4,
           ),
           BoxShadow(
-            color: AppColors.violet.withValues(
+            color: AppColors.blue.withValues(
               alpha: 0.28,
             ),
             blurRadius: 55,
             spreadRadius: 3,
           ),
           BoxShadow(
-            color: AppColors.pink.withValues(
+            color: AppColors.blue.withValues(
               alpha: 0.16,
             ),
             blurRadius: 65,
@@ -102,8 +102,8 @@ class _LogoFallback extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: <Color>[
             AppColors.blue,
-            AppColors.violet,
-            AppColors.pink,
+            AppColors.blue,
+            AppColors.blue,
           ],
         ),
       ),

@@ -157,7 +157,7 @@ class _OtpVerificationPageState
                                 TextAlign.center,
                                 style: TextStyle(
                                   color:
-                                  AppColors.white,
+                                  Colors.black87,
                                   fontSize: 29,
                                   fontWeight:
                                   FontWeight.w900,
@@ -420,13 +420,13 @@ class _VerificationIcon extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: <Color>[
             AppColors.blue,
-            AppColors.violet,
-            AppColors.pink,
+            AppColors.blue,
+            AppColors.blue,
           ],
         ),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: AppColors.violet.withValues(
+            color: AppColors.blue.withValues(
               alpha: 0.33,
             ),
             blurRadius: 22,

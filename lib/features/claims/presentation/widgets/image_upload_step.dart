@@ -88,7 +88,7 @@ class ImageUploadStep extends StatelessWidget {
                 const Text(
                   'No incident images added',
                   style: TextStyle(
-                    color: AppColors.white,
+                    color: Colors.black87,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -138,7 +138,7 @@ class _SourceAction extends StatelessWidget {
               Text(
                 label,
                 style: const TextStyle(
-                  color: AppColors.white,
+                  color: Colors.black87,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -183,7 +183,7 @@ class _ImagePreviewCard extends StatelessWidget {
                   gradient: const LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: <Color>[AppColors.violet, AppColors.blue],
+                    colors: <Color>[AppColors.blue, AppColors.blue],
                   ),
                 ),
                 child: const Icon(
@@ -202,7 +202,7 @@ class _ImagePreviewCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        color: AppColors.white,
+                        color: Colors.black87,
                         fontSize: 13.5,
                         fontWeight: FontWeight.w600,
                       ),
@@ -237,7 +237,7 @@ class _ImagePreviewCard extends StatelessWidget {
               ),
               PopupMenuButton<String>(
                 color: const Color(0xFF151E42),
-                iconColor: AppColors.textSecondary,
+                iconColor: Colors.white70,
                 onSelected: (String value) {
                   if (value == 'replace') {
                     onReplace();
@@ -249,11 +249,17 @@ class _ImagePreviewCard extends StatelessWidget {
                     const <PopupMenuEntry<String>>[
                       PopupMenuItem<String>(
                         value: 'replace',
-                        child: Text('Replace image'),
+                        child: Text(
+                          'Replace image',
+                          style: TextStyle(color: AppColors.white),
+                        ),
                       ),
                       PopupMenuItem<String>(
                         value: 'remove',
-                        child: Text('Remove image'),
+                        child: Text(
+                          'Remove image',
+                          style: TextStyle(color: AppColors.white),
+                        ),
                       ),
                     ],
               ),
@@ -305,7 +311,7 @@ class _InlineError extends StatelessWidget {
       ),
       child: Text(
         message,
-        style: const TextStyle(color: Color(0xFFFFD6DC), fontSize: 12),
+        style: const TextStyle(color: Color(0xFFB3261E), fontSize: 12),
       ),
     );
   }

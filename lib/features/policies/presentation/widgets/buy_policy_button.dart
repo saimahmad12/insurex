@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_colors.dart';
+
 class BuyPolicyButton extends StatelessWidget {
   const BuyPolicyButton({
     required this.onPressed,
@@ -16,15 +18,14 @@ class BuyPolicyButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         gradient: const LinearGradient(
           colors: <Color>[
-            Color(0xFF4F74FF),
-            Color(0xFF815CFF),
-            Color(0xFFE25AF5),
+            AppColors.blue,
+            AppColors.blue,
+            AppColors.blue,
           ],
         ),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: const Color(0xFF815CFF)
-                .withValues(alpha: 0.3),
+            color: AppColors.blue.withValues(alpha: 0.3),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),

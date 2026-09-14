@@ -164,7 +164,7 @@ class _EmptyPolicies extends StatelessWidget {
           const Text(
             'No policies found',
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.black87,
               fontSize: 16,
               fontWeight: FontWeight.w700,
             ),
@@ -176,7 +176,7 @@ class _EmptyPolicies extends StatelessWidget {
             'There are no policies in this category.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.55),
+              color: Colors.black.withValues(alpha: 0.55),
               fontSize: 13,
             ),
           ),
@@ -209,7 +209,7 @@ class _PoliciesError extends StatelessWidget {
           Text(
             message,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+            style: TextStyle(color: Colors.black.withValues(alpha: 0.7)),
           ),
 
           const SizedBox(height: 16),

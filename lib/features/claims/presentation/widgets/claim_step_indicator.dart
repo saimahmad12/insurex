@@ -32,7 +32,7 @@ class ClaimStepIndicator extends StatelessWidget {
             minHeight: 5,
             value: currentStep / totalSteps,
             backgroundColor: AppColors.white.withValues(alpha: 0.09),
-            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.pink),
+            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.blue),
           ),
         ),
       ],

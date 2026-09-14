@@ -177,7 +177,7 @@ class _SectionTitle extends StatelessWidget {
     return Text(
       title,
       style: const TextStyle(
-        color: AppColors.white,
+        color: Colors.black87,
         fontSize: 15,
         fontWeight: FontWeight.w800,
       ),

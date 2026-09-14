@@ -34,7 +34,7 @@ class _BeneficiaryFormState extends State<BeneficiaryForm> {
         const Text(
           'Beneficiary Information',
           style: TextStyle(
-            color: AppColors.white,
+            color: Colors.black87,
             fontSize: 18,
             fontWeight: FontWeight.w800,
           ),
@@ -86,7 +86,7 @@ class _BeneficiaryFormState extends State<BeneficiaryForm> {
                 child: Text(
                   'Beneficiary ${index + 1}',
                   style: const TextStyle(
-                    color: AppColors.white,
+                    color: Colors.black87,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -126,7 +126,7 @@ class _BeneficiaryFormState extends State<BeneficiaryForm> {
                 entry.dateOfBirth == null
                     ? 'Select date'
                     : '${entry.dateOfBirth!.day}/${entry.dateOfBirth!.month}/${entry.dateOfBirth!.year}',
-                style: const TextStyle(color: AppColors.white),
+                style: const TextStyle(color: Colors.black87),
               ),
             ),
           ),

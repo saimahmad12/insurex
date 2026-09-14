@@ -209,7 +209,7 @@ class _RequestContent extends StatelessWidget {
           'Forgot Password?',
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: AppColors.white,
+            color: Colors.black87,
             fontSize: 30,
             fontWeight: FontWeight.w900,
             letterSpacing: -0.4,
@@ -340,7 +340,7 @@ class _RequestContent extends StatelessWidget {
           child: const Text(
             'Back to Login',
             style: TextStyle(
-              color: AppColors.pink,
+              color: AppColors.blue,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -368,14 +368,14 @@ class _RecoveryTitle extends StatelessWidget {
               end: Alignment.bottomRight,
               colors: <Color>[
                 AppColors.blue,
-                AppColors.violet,
-                AppColors.pink,
+                AppColors.blue,
+                AppColors.blue,
               ],
             ),
             boxShadow: <BoxShadow>[
               BoxShadow(
                 color:
-                AppColors.violet.withValues(
+                AppColors.blue.withValues(
                   alpha: 0.30,
                 ),
                 blurRadius: 18,
@@ -399,7 +399,7 @@ class _RecoveryTitle extends StatelessWidget {
               const Text(
                 'Recover your account',
                 style: TextStyle(
-                  color: AppColors.white,
+                  color: Colors.black87,
                   fontSize: 15,
                   fontWeight: FontWeight.w800,
                 ),
@@ -503,7 +503,7 @@ class _ForgotPasswordError
             child: Text(
               message,
               style: const TextStyle(
-                color: Color(0xFFFFD6DC),
+                color: Color(0xFFB3261E),
                 fontSize: 12.5,
               ),
             ),

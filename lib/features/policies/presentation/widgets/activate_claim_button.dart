@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_colors.dart';
+
 class ActivateClaimButton extends StatelessWidget {
   const ActivateClaimButton({
     required this.onPressed,
@@ -19,9 +21,9 @@ class ActivateClaimButton extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: <Color>[
-              Color(0xFF4F74FF),
-              Color(0xFF815CFF),
-              Color(0xFFE25AF5),
+              AppColors.blue,
+              AppColors.blue,
+              AppColors.blue,
             ],
           ),
           borderRadius:

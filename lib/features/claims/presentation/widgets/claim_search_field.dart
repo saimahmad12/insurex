@@ -23,11 +23,11 @@ class ClaimSearchField extends StatelessWidget {
       controller: controller,
       onChanged: onChanged,
       textInputAction: TextInputAction.search,
-      style: const TextStyle(color: AppColors.white, fontSize: 13),
+      style: const TextStyle(color: Colors.black87, fontSize: 13),
       decoration: InputDecoration(
         hintText: 'Search claims',
         hintStyle: TextStyle(
-          color: AppColors.textSecondary.withValues(alpha: 0.45),
+          color: AppColors.textSecondary,
         ),
         prefixIcon: Icon(
           Icons.search_rounded,

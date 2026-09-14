@@ -127,7 +127,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                               key: const Key('change_password_error'),
                               textAlign: TextAlign.center,
                               style: const TextStyle(
-                                color: Color(0xFFFFB3BE),
+                                color: Color(0xFFB3261E),
                                 fontSize: 11,
                               ),
                             ),

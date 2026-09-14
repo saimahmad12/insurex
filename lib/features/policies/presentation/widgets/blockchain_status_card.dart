@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/glass_container.dart';
 
 class BlockchainStatusCard extends StatelessWidget {
@@ -28,8 +29,8 @@ class BlockchainStatusCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: <Color>[
-                      Color(0xFF42B8FF),
-                      Color(0xFF815CFF),
+                      AppColors.blue,
+                      AppColors.blue,
                     ],
                   ),
                   borderRadius:
@@ -51,7 +52,7 @@ class BlockchainStatusCard extends StatelessWidget {
                     Text(
                       'Blockchain Status',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Colors.black87,
                         fontSize: 15,
                         fontWeight:
                         FontWeight.w700,
@@ -63,7 +64,7 @@ class BlockchainStatusCard extends StatelessWidget {
                     Text(
                       'Policy integrity verification',
                       style: TextStyle(
-                        color: Colors.white54,
+                        color: Colors.black54,
                         fontSize: 11,
                       ),
                     ),
@@ -128,9 +129,8 @@ class BlockchainStatusCard extends StatelessWidget {
 
           Text(
             'Transaction Hash',
-            style: TextStyle(
-              color:
-              Colors.white.withValues(alpha: 0.48),
+            style: const TextStyle(
+              color: AppColors.textSecondary,
               fontSize: 11,
             ),
           ),
@@ -140,7 +140,7 @@ class BlockchainStatusCard extends StatelessWidget {
           Text(
             transactionHash,
             style: const TextStyle(
-              color: Color(0xFF42B8FF),
+              color: AppColors.blue,
               fontSize: 11,
               fontWeight: FontWeight.w500,
             ),

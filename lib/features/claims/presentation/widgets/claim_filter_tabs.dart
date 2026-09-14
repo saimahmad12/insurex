@@ -37,9 +37,9 @@ class ClaimFilterTabs extends StatelessWidget {
                   gradient: selected
                       ? const LinearGradient(
                           colors: <Color>[
-                            AppColors.electricBlue,
-                            AppColors.violet,
-                            AppColors.pink,
+                            AppColors.blue,
+                            AppColors.blue,
+                            AppColors.blue,
                           ],
                         )
                       : null,
@@ -56,7 +56,7 @@ class ClaimFilterTabs extends StatelessWidget {
                   style: TextStyle(
                     color: selected
                         ? AppColors.white
-                        : AppColors.white.withValues(alpha: 0.65),
+                        : Colors.black.withValues(alpha: 0.65),
                     fontSize: 12,
                     fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                   ),

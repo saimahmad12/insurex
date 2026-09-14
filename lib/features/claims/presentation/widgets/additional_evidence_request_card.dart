@@ -34,7 +34,7 @@ class AdditionalEvidenceRequestCard extends StatelessWidget {
                 child: Text(
                   'Additional Evidence Required',
                   style: TextStyle(
-                    color: AppColors.white,
+                    color: Colors.black87,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
@@ -106,7 +106,7 @@ class _EvidenceDate extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                color: AppColors.textSecondary.withValues(alpha: 0.52),
+                color: AppColors.textSecondary,
                 fontSize: 11,
               ),
             ),
@@ -114,7 +114,7 @@ class _EvidenceDate extends StatelessWidget {
           Text(
             value,
             style: const TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontSize: 11,
               fontWeight: FontWeight.w600,
             ),

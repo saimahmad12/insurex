@@ -301,7 +301,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               key: const Key('edit_profile_save_error'),
                               textAlign: TextAlign.center,
                               style: const TextStyle(
-                                color: Color(0xFFFFB3BE),
+                                color: Color(0xFFB3261E),
                                 fontSize: 11,
                               ),
                             ),

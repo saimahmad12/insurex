@@ -38,7 +38,7 @@ class PayoutHistoryCard extends StatelessWidget {
                       child: Text(
                         payout.claimId,
                         style: const TextStyle(
-                          color: AppColors.white,
+                          color: Colors.black87,
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
                         ),
@@ -130,7 +130,7 @@ class _HistoryRow extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                color: AppColors.textSecondary.withValues(alpha: 0.5),
+                color: AppColors.textSecondary,
                 fontSize: 10.5,
               ),
             ),
@@ -140,7 +140,7 @@ class _HistoryRow extends StatelessWidget {
               value,
               textAlign: TextAlign.right,
               style: const TextStyle(
-                color: AppColors.white,
+                color: Colors.black87,
                 fontSize: 10.5,
                 fontWeight: FontWeight.w600,
               ),

@@ -160,7 +160,7 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
             const Text(
               'Before you continue',
               style: TextStyle(
-                color: AppColors.white,
+                color: Colors.black87,
                 fontSize: 21,
                 fontWeight: FontWeight.w800,
               ),
@@ -184,7 +184,7 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
                   widget.controller.updateConsent(value ?? false),
               title: const Text(
                 'I consent to continue with identity verification.',
-                style: TextStyle(color: AppColors.white, fontSize: 13),
+                style: TextStyle(color: Colors.black87, fontSize: 13),
               ),
               controlAffinity: ListTileControlAffinity.leading,
             ),
@@ -268,7 +268,7 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
                 : 'Ready to submit verification',
             textAlign: TextAlign.center,
             style: const TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontSize: 16,
               fontWeight: FontWeight.w700,
             ),
@@ -413,7 +413,7 @@ class _IdentityVerificationPageState extends State<IdentityVerificationPage> {
     child: Text(
       message,
       textAlign: TextAlign.center,
-      style: const TextStyle(color: Color(0xFFFFB3BE), fontSize: 11),
+      style: const TextStyle(color: Color(0xFFB3261E), fontSize: 11),
     ),
   );
 
@@ -553,7 +553,7 @@ class _LegalDetailsStepState extends State<_LegalDetailsStep> {
       const Text(
         'Enter Legal Details',
         style: TextStyle(
-          color: AppColors.white,
+          color: Colors.black87,
           fontSize: 22,
           fontWeight: FontWeight.w800,
         ),
@@ -769,7 +769,7 @@ class _DateTile extends StatelessWidget {
         value == null
             ? 'Select date'
             : '${value!.day}/${value!.month}/${value!.year}',
-        style: const TextStyle(color: AppColors.white),
+        style: const TextStyle(color: Colors.black87),
       ),
     ),
   );
@@ -801,7 +801,7 @@ class _IdentityRow extends StatelessWidget {
             value,
             textAlign: TextAlign.right,
             style: const TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontSize: 11,
               fontWeight: FontWeight.w600,
             ),

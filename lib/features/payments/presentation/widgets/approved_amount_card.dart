@@ -31,7 +31,7 @@ class ApprovedAmountCard extends StatelessWidget {
           Text(
             ClaimFormatters.amount(claim.approvedAmount ?? 0),
             style: const TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontSize: 25,
               fontWeight: FontWeight.w800,
             ),
@@ -84,7 +84,7 @@ class _DetailRow extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                color: AppColors.textSecondary.withValues(alpha: 0.52),
+                color: AppColors.textSecondary,
                 fontSize: 11,
               ),
             ),
@@ -94,7 +94,7 @@ class _DetailRow extends StatelessWidget {
               value,
               textAlign: TextAlign.right,
               style: const TextStyle(
-                color: AppColors.white,
+                color: Colors.black87,
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
               ),

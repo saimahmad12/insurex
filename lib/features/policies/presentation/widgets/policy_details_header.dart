@@ -38,7 +38,7 @@ class PolicyDetailsHeader extends StatelessWidget {
             'Policy Details',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.black87,
               fontSize: 20,
               fontWeight: FontWeight.w700,
             ),

@@ -33,7 +33,7 @@ class ClaimStatusHeader extends StatelessWidget {
             'Claim Status',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontSize: 20,
               fontWeight: FontWeight.w800,
             ),

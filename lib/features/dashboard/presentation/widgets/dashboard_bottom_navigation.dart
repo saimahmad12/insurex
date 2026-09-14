@@ -68,14 +68,14 @@ class DashboardBottomNavigation extends StatelessWidget {
                         gradient: const LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: <Color>[AppColors.violet, AppColors.blue],
+                          colors: <Color>[AppColors.blue, AppColors.blue],
                         ),
                         border: Border.all(
                           color: AppColors.white.withValues(alpha: 0.35),
                         ),
                         boxShadow: <BoxShadow>[
                           BoxShadow(
-                            color: AppColors.violet.withValues(alpha: 0.45),
+                            color: AppColors.blue.withValues(alpha: 0.45),
                             blurRadius: 20,
                           ),
                         ],
@@ -128,7 +128,7 @@ class _NavigationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color color = selected ? AppColors.pink : AppColors.textSecondary;
+    final Color color = selected ? AppColors.blue : Colors.white70;
 
     return Expanded(
       child: InkWell(

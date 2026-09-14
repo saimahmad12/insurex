@@ -140,7 +140,7 @@ class ReceivePaymentPage extends StatelessWidget {
                           key: const Key('payout_method_error'),
                           textAlign: TextAlign.center,
                           style: const TextStyle(
-                            color: Color(0xFFFFB3BE),
+                            color: Color(0xFFB3261E),
                             fontSize: 11,
                           ),
                         ),
@@ -176,7 +176,7 @@ class _SectionTitle extends StatelessWidget {
     return Text(
       title,
       style: const TextStyle(
-        color: AppColors.white,
+        color: Colors.black87,
         fontSize: 15,
         fontWeight: FontWeight.w700,
       ),

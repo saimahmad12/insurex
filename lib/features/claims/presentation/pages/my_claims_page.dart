@@ -240,7 +240,7 @@ class _MyClaimsHeader extends StatelessWidget {
             'My Claims',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontSize: 20,
               fontWeight: FontWeight.w700,
             ),
