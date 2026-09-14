@@ -199,7 +199,7 @@ class _LiveIdentityCaptureStepState extends State<LiveIdentityCaptureStep>
         Text(
           widget.title,
           style: const TextStyle(
-            color: AppColors.white,
+            color: Colors.black87,
             fontSize: 22,
             fontWeight: FontWeight.w800,
           ),
@@ -234,7 +234,7 @@ class _LiveIdentityCaptureStepState extends State<LiveIdentityCaptureStep>
                                     ? Icons.face_retouching_natural_rounded
                                     : Icons.badge_outlined,
                                 size: 54,
-                                color: AppColors.textSecondary,
+                                color: Colors.white70,
                               ),
                       ),
                     ),
@@ -273,7 +273,7 @@ class _LiveIdentityCaptureStepState extends State<LiveIdentityCaptureStep>
           Text(
             _cameraError!,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Color(0xFFFFB3BE)),
+            style: const TextStyle(color: Color(0xFFB3261E)),
           ),
         if (!isSelfie)
           const Padding(

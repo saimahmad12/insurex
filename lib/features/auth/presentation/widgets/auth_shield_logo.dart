@@ -23,7 +23,7 @@ class AuthShieldLogo extends StatelessWidget {
           shape: BoxShape.circle,
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color: AppColors.violet.withValues(
+              color: AppColors.blue.withValues(
                 alpha: 0.42,
               ),
               blurRadius: 38,

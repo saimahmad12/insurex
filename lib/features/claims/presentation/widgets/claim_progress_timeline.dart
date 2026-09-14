@@ -67,7 +67,7 @@ class _TimelineItem extends StatelessWidget {
                     boxShadow: current
                         ? <BoxShadow>[
                             BoxShadow(
-                              color: AppColors.violet.withValues(alpha: 0.45),
+                              color: AppColors.blue.withValues(alpha: 0.45),
                               blurRadius: 16,
                             ),
                           ]
@@ -103,10 +103,10 @@ class _TimelineItem extends StatelessWidget {
                     event.title,
                     style: TextStyle(
                       color: current
-                          ? AppColors.white
+                          ? Colors.black87
                           : completed
                           ? AppColors.textSecondary
-                          : AppColors.textSecondary.withValues(alpha: 0.42),
+                          : AppColors.textSecondary,
                       fontSize: 13,
                       fontWeight: current ? FontWeight.w700 : FontWeight.w600,
                     ),
@@ -116,7 +116,7 @@ class _TimelineItem extends StatelessWidget {
                     Text(
                       ClaimFormatters.dateTime(event.occurredAt!),
                       style: TextStyle(
-                        color: AppColors.textSecondary.withValues(alpha: 0.48),
+                        color: AppColors.textSecondary,
                         fontSize: 10.5,
                       ),
                     ),

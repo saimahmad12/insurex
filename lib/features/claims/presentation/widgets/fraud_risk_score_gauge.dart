@@ -44,7 +44,7 @@ class FraudRiskScoreGauge extends StatelessWidget {
               child: Text(
                 'Fraud Risk Score',
                 style: TextStyle(
-                  color: AppColors.white,
+                  color: Colors.black87,
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                 ),
@@ -75,7 +75,7 @@ class FraudRiskScoreGauge extends StatelessWidget {
                           Text(
                             scoreLabel,
                             style: const TextStyle(
-                              color: AppColors.white,
+                              color: Colors.black87,
                               fontSize: 29,
                               fontWeight: FontWeight.w900,
                             ),

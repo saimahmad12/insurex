@@ -305,7 +305,7 @@ class _SectionTitle extends StatelessWidget {
     return Text(
       title,
       style: const TextStyle(
-        color: AppColors.white,
+        color: Colors.black87,
         fontSize: 15,
         fontWeight: FontWeight.w700,
       ),
@@ -389,7 +389,7 @@ class _ClaimStatusMessage extends StatelessWidget {
                   title,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    color: AppColors.white,
+                    color: Colors.black87,
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                   ),

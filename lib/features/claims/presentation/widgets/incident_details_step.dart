@@ -117,7 +117,7 @@ class IncidentDetailsStep extends StatelessWidget {
                     child: Text(
                       dateError,
                       style: const TextStyle(
-                        color: Color(0xFFFFB3BE),
+                        color: Color(0xFFB3261E),
                         fontSize: 11.5,
                       ),
                     ),
@@ -283,7 +283,7 @@ class IncidentDetailsStep extends StatelessWidget {
       focusedBorder: border(AppColors.blue.withValues(alpha: 0.88), 1.35),
       errorBorder: border(const Color(0xFFFF8A9B)),
       focusedErrorBorder: border(const Color(0xFFFF8A9B), 1.35),
-      errorStyle: const TextStyle(color: Color(0xFFFFB3BE), fontSize: 11.5),
+      errorStyle: const TextStyle(color: Color(0xFFB3261E), fontSize: 11.5),
     );
   }
 }
@@ -342,7 +342,7 @@ class _DateTimeField extends StatelessWidget {
                     value,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      color: AppColors.white,
+                      color: Colors.black87,
                       fontSize: 12,
                     ),
                   ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/glass_container.dart';
 import '../../domain/entities/insurance_policy.dart';
 
@@ -32,7 +33,7 @@ class PolicyCard extends StatelessWidget {
                       Text(
                         policy.title,
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: Colors.black87,
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
@@ -43,7 +44,7 @@ class PolicyCard extends StatelessWidget {
                       Text(
                         _typeSubtitle(policy.type),
                         style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.55),
+                          color: Colors.black.withValues(alpha: 0.55),
                           fontSize: 12,
                         ),
                       ),
@@ -85,7 +86,7 @@ class PolicyCard extends StatelessWidget {
                 Text(
                   'View Policy Details',
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.7),
+                    color: Colors.black.withValues(alpha: 0.7),
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                   ),
@@ -95,7 +96,7 @@ class PolicyCard extends StatelessWidget {
 
                 const Icon(
                   Icons.arrow_forward_ios_rounded,
-                  color: Color(0xFF815CFF),
+                  color: AppColors.blue,
                   size: 15,
                 ),
               ],
@@ -291,8 +292,8 @@ class _InformationRow extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.5),
+            style: const TextStyle(
+              color: AppColors.textSecondary,
               fontSize: 13,
             ),
           ),
@@ -302,8 +303,8 @@ class _InformationRow extends StatelessWidget {
           value,
           style: TextStyle(
             color: highlightValue
-                ? const Color(0xFF42B8FF)
-                : Colors.white.withValues(alpha: 0.88),
+                ? AppColors.blue
+                : Colors.black.withValues(alpha: 0.88),
             fontSize: 13,
             fontWeight: FontWeight.w600,
           ),

@@ -41,7 +41,7 @@ class SecuritySettingTile extends StatelessWidget {
                     Text(
                       title,
                       style: const TextStyle(
-                        color: AppColors.white,
+                        color: Colors.black87,
                         fontSize: 12.5,
                         fontWeight: FontWeight.w600,
                       ),
@@ -72,7 +72,7 @@ class SecuritySettingTile extends StatelessWidget {
                 Switch(
                   value: toggleValue!,
                   activeThumbColor: AppColors.white,
-                  activeTrackColor: AppColors.violet,
+                  activeTrackColor: AppColors.blue,
                   onChanged: onToggle,
                 )
               else

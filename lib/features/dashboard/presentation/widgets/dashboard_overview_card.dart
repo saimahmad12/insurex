@@ -85,7 +85,7 @@ class _OverviewRow extends StatelessWidget {
           Text(
             value,
             style: const TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontSize: 15,
               fontWeight: FontWeight.w800,
             ),

@@ -31,7 +31,7 @@ class ClaimBlockchainStatusCard extends StatelessWidget {
                 child: Text(
                   'Blockchain Status',
                   style: TextStyle(
-                    color: AppColors.white,
+                    color: Colors.black87,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
@@ -58,7 +58,7 @@ class ClaimBlockchainStatusCard extends StatelessWidget {
             Text(
               'Transaction hash',
               style: TextStyle(
-                color: AppColors.textSecondary.withValues(alpha: 0.52),
+                color: AppColors.textSecondary,
                 fontSize: 11,
               ),
             ),
@@ -102,7 +102,7 @@ class ClaimBlockchainStatusCard extends StatelessWidget {
             Text(
               'This record secures claim data and evidence hashes. Original images are not stored on the blockchain.',
               style: TextStyle(
-                color: AppColors.textSecondary.withValues(alpha: 0.48),
+                color: AppColors.textSecondary,
                 fontSize: 10,
                 height: 1.4,
               ),
@@ -130,7 +130,7 @@ class _BlockchainRow extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                color: AppColors.textSecondary.withValues(alpha: 0.52),
+                color: AppColors.textSecondary,
                 fontSize: 11.5,
               ),
             ),
@@ -138,7 +138,7 @@ class _BlockchainRow extends StatelessWidget {
           Text(
             value,
             style: const TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontSize: 11.5,
               fontWeight: FontWeight.w600,
             ),

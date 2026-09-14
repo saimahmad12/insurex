@@ -127,7 +127,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                     key: const Key('notification_preference_update_error'),
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                      color: Color(0xFFFFB3BE),
+                      color: Color(0xFFB3261E),
                       fontSize: 11,
                     ),
                   ),

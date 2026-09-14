@@ -231,7 +231,7 @@ class _ClaimEvidencePreviewDialogState
                   Text(
                     '${_currentIndex + 1} of ${widget.images.length}',
                     style: const TextStyle(
-                      color: AppColors.textSecondary,
+                      color: Colors.white70,
                       fontSize: 12,
                     ),
                   ),
@@ -308,7 +308,7 @@ class _UnavailableImage extends StatelessWidget {
             children: <Widget>[
               const Icon(
                 Icons.image_not_supported_outlined,
-                color: AppColors.textSecondary,
+                color: Colors.white70,
                 size: 30,
               ),
               const SizedBox(height: 7),
@@ -316,7 +316,7 @@ class _UnavailableImage extends StatelessWidget {
                 message,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: AppColors.textSecondary.withValues(alpha: 0.58),
+                  color: AppColors.white.withValues(alpha: 0.58),
                   fontSize: 9.5,
                 ),
               ),

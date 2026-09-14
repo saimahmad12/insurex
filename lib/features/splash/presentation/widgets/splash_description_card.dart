@@ -22,7 +22,7 @@ class SplashDescriptionCard extends StatelessWidget {
             'Smarter Insurance for a Better Tomorrow',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontSize: 20,
               height: 1.25,
               fontWeight: FontWeight.w800,

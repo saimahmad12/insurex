@@ -20,7 +20,7 @@ class DashboardHeader extends StatelessWidget {
           child: Text(
             'Hello, $userName 👋',
             style: const TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontSize: 20,
               fontWeight: FontWeight.w700,
             ),
@@ -35,7 +35,7 @@ class DashboardHeader extends StatelessWidget {
               onPressed: onNotifications,
               icon: const Icon(
                 Icons.notifications_none_rounded,
-                color: AppColors.white,
+                color: AppColors.black,
                 size: 24,
               ),
               style: IconButton.styleFrom(

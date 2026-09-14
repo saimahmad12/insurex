@@ -117,7 +117,7 @@ class _SellerLoginPageState extends State<SellerLoginPage> {
                               const Text(
                                 'Company Portal',
                                 style: TextStyle(
-                                  color: AppColors.white,
+                                  color: Colors.black87,
                                   fontSize: 30,
                                   fontWeight: FontWeight.w900,
                                   letterSpacing: -0.4,
@@ -251,7 +251,7 @@ class _SellerLoginPageState extends State<SellerLoginPage> {
                                     child: const Text(
                                       'Register',
                                       style: TextStyle(
-                                        color: AppColors.pink,
+                                        color: AppColors.blue,
                                         fontWeight: FontWeight.w800,
                                       ),
                                     ),

@@ -37,7 +37,7 @@ class InsureXLogo extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: <BoxShadow>[
                   BoxShadow(
-                    color: AppColors.violet.withValues(
+                    color: AppColors.blue.withValues(
                       alpha: 0.42,
                     ),
                     blurRadius: 40,
@@ -125,7 +125,7 @@ class _OrbitIcon extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: <Color>[
             AppColors.white.withValues(alpha: 0.24),
-            AppColors.violet.withValues(alpha: 0.22),
+            AppColors.blue.withValues(alpha: 0.22),
           ],
         ),
         boxShadow: <BoxShadow>[
@@ -174,7 +174,7 @@ class _OrbitPainter extends CustomPainter {
     canvas.rotate(math.pi / 7);
 
     orbitPaint.color =
-        AppColors.pink.withValues(alpha: 0.24);
+        AppColors.blue.withValues(alpha: 0.24);
 
     canvas.drawOval(
       Rect.fromCenter(

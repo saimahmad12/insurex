@@ -119,7 +119,7 @@ class ClaimReviewStep extends StatelessWidget {
                           Text(
                             image.fileName,
                             style: const TextStyle(
-                              color: AppColors.white,
+                              color: Colors.black87,
                               fontSize: 11.5,
                             ),
                           ),
@@ -162,12 +162,12 @@ class ClaimReviewStep extends StatelessWidget {
                 value: declarationAccepted,
                 onChanged: (bool? value) =>
                     onDeclarationChanged(value ?? false),
-                activeColor: AppColors.violet,
+                activeColor: AppColors.blue,
                 contentPadding: EdgeInsets.zero,
                 controlAffinity: ListTileControlAffinity.leading,
                 title: const Text(
                   'I confirm that the information and images provided are accurate and relate to this incident.',
-                  style: TextStyle(color: AppColors.white, fontSize: 12.5),
+                  style: TextStyle(color: Colors.black87, fontSize: 12.5),
                 ),
               ),
               Divider(color: AppColors.white.withValues(alpha: 0.08)),
@@ -175,12 +175,12 @@ class ClaimReviewStep extends StatelessWidget {
                 key: const Key('claim_ai_consent_checkbox'),
                 value: aiConsentAccepted,
                 onChanged: (bool? value) => onAiConsentChanged(value ?? false),
-                activeColor: AppColors.violet,
+                activeColor: AppColors.blue,
                 contentPadding: EdgeInsets.zero,
                 controlAffinity: ListTileControlAffinity.leading,
                 title: const Text(
                   'I consent to AI image analysis and secure claim-record storage.',
-                  style: TextStyle(color: AppColors.white, fontSize: 12.5),
+                  style: TextStyle(color: Colors.black87, fontSize: 12.5),
                 ),
               ),
             ],
@@ -192,7 +192,7 @@ class ClaimReviewStep extends StatelessWidget {
             errorMessage!,
             key: const Key('submission_error'),
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Color(0xFFFFB3BE), fontSize: 12),
+            style: const TextStyle(color: Color(0xFFB3261E), fontSize: 12),
           ),
         ],
       ],
@@ -221,7 +221,7 @@ class _ReviewCard extends StatelessWidget {
                 child: Text(
                   title,
                   style: const TextStyle(
-                    color: AppColors.white,
+                    color: Colors.black87,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                   ),
@@ -267,7 +267,7 @@ class _ReviewValue extends StatelessWidget {
               value,
               textAlign: TextAlign.right,
               style: const TextStyle(
-                color: AppColors.white,
+                color: Colors.black87,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
               ),

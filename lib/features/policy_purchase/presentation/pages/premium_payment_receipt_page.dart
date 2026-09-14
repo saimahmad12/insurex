@@ -41,7 +41,7 @@ class PremiumPaymentReceiptPage extends StatelessWidget {
                     Text(
                       marketplaceMoney(payment.amount),
                       style: const TextStyle(
-                        color: AppColors.white,
+                        color: Colors.black87,
                         fontSize: 24,
                         fontWeight: FontWeight.w800,
                       ),
@@ -80,7 +80,7 @@ Widget _row(String label, String value) => Padding(
           value,
           textAlign: TextAlign.right,
           style: const TextStyle(
-            color: AppColors.white,
+            color: Colors.black87,
             fontSize: 11,
             fontWeight: FontWeight.w600,
           ),

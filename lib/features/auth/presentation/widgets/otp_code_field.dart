@@ -114,7 +114,7 @@ class _OtpCodeFieldState extends State<OtpCodeField> {
                 cursorColor: AppColors.blue,
 
                 style: const TextStyle(
-                  color: AppColors.white,
+                  color: Colors.black87,
                   fontSize: 21,
                   fontWeight: FontWeight.w800,
                 ),

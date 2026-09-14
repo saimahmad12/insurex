@@ -34,7 +34,7 @@ class GlassBackground extends StatelessWidget {
           left: -105,
           child: _GlowOrb(
             size: 310,
-            color: AppColors.violet,
+            color: AppColors.blue,
             opacity: 0.42,
           ),
         ),
@@ -43,7 +43,7 @@ class GlassBackground extends StatelessWidget {
           right: -115,
           child: _GlowOrb(
             size: 300,
-            color: AppColors.electricBlue,
+            color: AppColors.blue,
             opacity: 0.42,
           ),
         ),
@@ -52,7 +52,7 @@ class GlassBackground extends StatelessWidget {
           left: 35,
           child: _GlowOrb(
             size: 330,
-            color: AppColors.pink,
+            color: AppColors.blue,
             opacity: 0.36,
           ),
         ),

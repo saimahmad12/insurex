@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_colors.dart';
 import '../../application/controllers/policies_controller.dart';
 
 class PolicyFilterTabs extends StatelessWidget {
@@ -94,9 +95,9 @@ class _FilterItem extends StatelessWidget {
           gradient: selected
               ? const LinearGradient(
             colors: <Color>[
-              Color(0xFF4F74FF),
-              Color(0xFF815CFF),
-              Color(0xFFE25AF5),
+              AppColors.blue,
+              AppColors.blue,
+              AppColors.blue,
             ],
           )
               : null,
@@ -107,7 +108,7 @@ class _FilterItem extends StatelessWidget {
           style: TextStyle(
             color: selected
                 ? Colors.white
-                : Colors.white.withValues(alpha: 0.65),
+                : Colors.black.withValues(alpha: 0.65),
             fontSize: 14,
             fontWeight: selected
                 ? FontWeight.w700

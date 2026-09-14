@@ -63,7 +63,7 @@ class SavedPayoutMethodTile extends StatelessWidget {
                           child: Text(
                             method.displayName,
                             style: const TextStyle(
-                              color: AppColors.white,
+                              color: Colors.black87,
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                             ),
@@ -77,13 +77,13 @@ class SavedPayoutMethodTile extends StatelessWidget {
                               vertical: 3,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.violet.withValues(alpha: 0.14),
+                              color: AppColors.blue.withValues(alpha: 0.14),
                               borderRadius: BorderRadius.circular(999),
                             ),
                             child: const Text(
                               'Default',
                               style: TextStyle(
-                                color: AppColors.pink,
+                                color: AppColors.blue,
                                 fontSize: 8.5,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -140,7 +140,7 @@ class SavedPayoutMethodTile extends StatelessWidget {
                   onPressed: onRemove,
                   child: const Text(
                     'Remove',
-                    style: TextStyle(color: Color(0xFFFFB3BE)),
+                    style: TextStyle(color: Color(0xFFB3261E)),
                   ),
                 ),
               ],

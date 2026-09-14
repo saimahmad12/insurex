@@ -37,7 +37,7 @@ class ClaimStatusSummaryCard extends StatelessWidget {
                     Text(
                       claim.id,
                       style: const TextStyle(
-                        color: AppColors.white,
+                        color: Colors.black87,
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                       ),
@@ -115,7 +115,7 @@ class _SummaryRow extends StatelessWidget {
               value,
               textAlign: TextAlign.right,
               style: const TextStyle(
-                color: AppColors.white,
+                color: Colors.black87,
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
               ),

@@ -55,7 +55,7 @@ class SellerAccountStatusPage extends StatelessWidget {
                       content.title,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
-                        color: AppColors.white,
+                        color: Colors.black87,
                         fontSize: 28,
                         fontWeight: FontWeight.w900,
                       ),

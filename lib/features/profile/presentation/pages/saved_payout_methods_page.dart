@@ -101,7 +101,7 @@ class _SavedPayoutMethodsPageState extends State<SavedPayoutMethodsPage> {
                 const Text(
                   'Saved Methods',
                   style: TextStyle(
-                    color: AppColors.white,
+                    color: Colors.black87,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
@@ -122,7 +122,7 @@ class _SavedPayoutMethodsPageState extends State<SavedPayoutMethodsPage> {
                         Text(
                           'No saved payout methods',
                           style: TextStyle(
-                            color: AppColors.white,
+                            color: Colors.black87,
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
                           ),
@@ -165,7 +165,7 @@ class _SavedPayoutMethodsPageState extends State<SavedPayoutMethodsPage> {
                     key: const Key('saved_payout_method_operation_error'),
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                      color: Color(0xFFFFB3BE),
+                      color: Color(0xFFB3261E),
                       fontSize: 11,
                     ),
                   ),
@@ -174,7 +174,7 @@ class _SavedPayoutMethodsPageState extends State<SavedPayoutMethodsPage> {
                 const Text(
                   'Add a Payout Method',
                   style: TextStyle(
-                    color: AppColors.white,
+                    color: Colors.black87,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
@@ -241,7 +241,7 @@ class _SavedPayoutMethodsPageState extends State<SavedPayoutMethodsPage> {
           ),
           content: Text(
             'Remove ${method.displayName} ending ${method.maskedAccount.substring(method.maskedAccount.length - 4)}?',
-            style: const TextStyle(color: AppColors.textSecondary),
+            style: const TextStyle(color: Colors.white70),
           ),
           actions: <Widget>[
             TextButton(

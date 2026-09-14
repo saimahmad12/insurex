@@ -158,7 +158,7 @@ class _StatusRow extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                color: AppColors.textSecondary.withValues(alpha: 0.52),
+                color: AppColors.textSecondary,
                 fontSize: 11,
               ),
             ),
@@ -170,7 +170,7 @@ class _StatusRow extends StatelessWidget {
               value,
               textAlign: TextAlign.right,
               style: const TextStyle(
-                color: AppColors.white,
+                color: Colors.black87,
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
               ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/glass_action_button.dart';
 import '../../../../core/widgets/glass_container.dart';
 import '../../../policies/domain/entities/insurance_policy.dart';
@@ -315,7 +314,7 @@ class _FormCard extends StatelessWidget {
         Text(
           title,
           style: const TextStyle(
-            color: AppColors.white,
+            color: Colors.black87,
             fontSize: 18,
             fontWeight: FontWeight.w800,
           ),
@@ -367,7 +366,7 @@ Widget _personFields(
             child: Text(
               title,
               style: const TextStyle(
-                color: AppColors.white,
+                color: Colors.black87,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -414,7 +413,7 @@ Widget _date(String label, DateTime? value, ValueChanged<DateTime> onChanged) =>
               value == null
                   ? 'Select date'
                   : '${value.day}/${value.month}/${value.year}',
-              style: const TextStyle(color: AppColors.white),
+              style: const TextStyle(color: Colors.black87),
             ),
           ),
         ),

@@ -40,7 +40,7 @@ class PayoutMethodCard extends StatelessWidget {
                       Text(
                         method.displayName,
                         style: const TextStyle(
-                          color: AppColors.white,
+                          color: Colors.black87,
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
                         ),
@@ -63,7 +63,7 @@ class PayoutMethodCard extends StatelessWidget {
                   selected
                       ? Icons.radio_button_checked_rounded
                       : Icons.radio_button_off_rounded,
-                  color: selected ? AppColors.pink : AppColors.textSecondary,
+                  color: selected ? AppColors.blue : AppColors.textSecondary,
                 ),
               ],
             ),
@@ -112,7 +112,7 @@ class PayoutMethodTypeCard extends StatelessWidget {
               payoutMethodTypeLabel(type),
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: selected ? AppColors.white : AppColors.textSecondary,
+                color: selected ? AppColors.blue : AppColors.textSecondary,
                 fontSize: 10,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
               ),

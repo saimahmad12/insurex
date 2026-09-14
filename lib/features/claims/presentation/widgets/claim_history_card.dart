@@ -47,7 +47,7 @@ class ClaimHistoryCard extends StatelessWidget {
                           Text(
                             claim.id,
                             style: const TextStyle(
-                              color: AppColors.white,
+                              color: Colors.black87,
                               fontSize: 14,
                               fontWeight: FontWeight.w800,
                             ),
@@ -138,7 +138,7 @@ class ClaimHistoryCard extends StatelessWidget {
                     Text(
                       'Updated ${ClaimFormatters.date(claim.lastUpdatedAt)}',
                       style: TextStyle(
-                        color: AppColors.textSecondary.withValues(alpha: 0.48),
+                        color: AppColors.textSecondary,
                         fontSize: 10,
                       ),
                     ),
@@ -181,7 +181,7 @@ class _DetailRow extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                color: AppColors.textSecondary.withValues(alpha: 0.5),
+                color: AppColors.textSecondary,
                 fontSize: 10.5,
               ),
             ),
@@ -195,7 +195,7 @@ class _DetailRow extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.right,
               style: const TextStyle(
-                color: AppColors.white,
+                color: Colors.black87,
                 fontSize: 10.5,
                 fontWeight: FontWeight.w600,
               ),

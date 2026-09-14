@@ -57,7 +57,7 @@ class AuthDropdownField<T> extends StatelessWidget {
       dropdownColor: AppColors.backgroundMiddle,
       iconEnabledColor: AppColors.textSecondary,
       style: const TextStyle(
-        color: AppColors.white,
+        color: Colors.black87,
         fontSize: 15,
         fontWeight: FontWeight.w500,
       ),
@@ -69,7 +69,7 @@ class AuthDropdownField<T> extends StatelessWidget {
           color: AppColors.textSecondary.withValues(alpha: 0.78),
         ),
         hintStyle: TextStyle(
-          color: AppColors.textSecondary.withValues(alpha: 0.48),
+          color: AppColors.textSecondary,
         ),
         prefixIcon: Icon(prefixIcon, color: AppColors.textSecondary, size: 21),
         filled: true,
@@ -85,7 +85,7 @@ class AuthDropdownField<T> extends StatelessWidget {
         ),
         errorBorder: _border(const Color(0xFFFF8A9B)),
         focusedErrorBorder: _border(const Color(0xFFFF8A9B), width: 1.35),
-        errorStyle: const TextStyle(color: Color(0xFFFFB3BE), fontSize: 11.5),
+        errorStyle: const TextStyle(color: Color(0xFFB3261E), fontSize: 11.5),
       ),
       items: items
           .map(
@@ -143,7 +143,7 @@ class InsuranceCategorySelector extends StatelessWidget {
               label: Text(category.label),
               selected: selected,
               onSelected: enabled ? (_) => onToggle(category) : null,
-              selectedColor: AppColors.violet.withValues(alpha: 0.42),
+              selectedColor: AppColors.blue.withValues(alpha: 0.42),
               backgroundColor: AppColors.white.withValues(alpha: 0.075),
               checkmarkColor: AppColors.white,
               side: BorderSide(
@@ -152,7 +152,7 @@ class InsuranceCategorySelector extends StatelessWidget {
                     : AppColors.white.withValues(alpha: 0.24),
               ),
               labelStyle: TextStyle(
-                color: selected ? AppColors.white : AppColors.textSecondary,
+                color: selected ? AppColors.blue : AppColors.textSecondary,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
               ),
             );
@@ -163,7 +163,7 @@ class InsuranceCategorySelector extends StatelessWidget {
             padding: const EdgeInsets.only(top: 7, left: 12),
             child: Text(
               errorText!,
-              style: const TextStyle(color: Color(0xFFFFB3BE), fontSize: 11.5),
+              style: const TextStyle(color: Color(0xFFB3261E), fontSize: 11.5),
             ),
           ),
       ],
@@ -217,7 +217,7 @@ class SellerTermsDeclarations extends StatelessWidget {
           onChanged: (bool? value) {
             onDeclarationsChanged(value ?? false);
           },
-          activeColor: AppColors.violet,
+          activeColor: AppColors.blue,
           checkColor: AppColors.white,
           controlAffinity: ListTileControlAffinity.leading,
           contentPadding: EdgeInsets.zero,
@@ -242,7 +242,7 @@ class SellerTermsDeclarations extends StatelessWidget {
               child: Text(
                 declarationsError!,
                 style: const TextStyle(
-                  color: Color(0xFFFFB3BE),
+                  color: Color(0xFFB3261E),
                   fontSize: 11.5,
                 ),
               ),
@@ -286,7 +286,7 @@ class SellerAuthMessage extends StatelessWidget {
             child: Text(
               message,
               style: TextStyle(
-                color: isError ? const Color(0xFFFFD6DC) : AppColors.white,
+                color: isError ? const Color(0xFFB3261E) : AppColors.blue,
                 fontSize: 12.5,
               ),
             ),

@@ -51,7 +51,7 @@ class SellerDashboardStateView extends StatelessWidget {
                   title,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    color: AppColors.white,
+                    color: Colors.black87,
                     fontSize: 19,
                     fontWeight: FontWeight.w800,
                   ),
@@ -104,7 +104,7 @@ class SellerDashboardEmptyState extends StatelessWidget {
             'No dashboard activity yet',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontSize: 16,
               fontWeight: FontWeight.w800,
             ),

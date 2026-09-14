@@ -52,7 +52,7 @@ class QuickActionsGrid extends StatelessWidget {
         _QuickActionItem(
           label: 'Payments',
           icon:
-          Icons.currency_rupee_rounded,
+          Icons.money_rounded,
           onPressed: onPayments,
         ),
       ],
@@ -100,14 +100,14 @@ class _QuickActionItem extends StatelessWidget {
                     end:
                     Alignment.bottomRight,
                     colors: <Color>[
-                      AppColors.violet,
+                      AppColors.blue,
                       AppColors.blue,
                     ],
                   ),
                   boxShadow: <BoxShadow>[
                     BoxShadow(
                       color:
-                      AppColors.violet
+                      AppColors.blue
                           .withValues(
                         alpha: 0.30,
                       ),
@@ -128,7 +128,7 @@ class _QuickActionItem extends StatelessWidget {
                 label,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  color: AppColors.white,
+                  color: Colors.black87,
                   fontSize: 12,
                   fontWeight:
                   FontWeight.w600,

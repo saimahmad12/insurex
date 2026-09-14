@@ -141,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                               const Text(
                                 'Welcome Back!',
                                 style: TextStyle(
-                                  color: AppColors.white,
+                                  color: Colors.black87,
                                   fontSize: 30,
                                   fontWeight: FontWeight.w900,
                                   letterSpacing: -0.4,
@@ -297,7 +297,7 @@ class _LoginPageState extends State<LoginPage> {
                                     onPressed: widget.onAppleLogin,
                                     child: const Icon(
                                       Icons.apple_rounded,
-                                      color: AppColors.white,
+                                      color: AppColors.black,
                                       size: 27,
                                     ),
                                   ),
@@ -309,7 +309,7 @@ class _LoginPageState extends State<LoginPage> {
                                     onPressed: widget.onBiometricLogin,
                                     child: const Icon(
                                       Icons.fingerprint_rounded,
-                                      color: AppColors.white,
+                                      color: AppColors.black,
                                       size: 27,
                                     ),
                                   ),
@@ -335,7 +335,7 @@ class _LoginPageState extends State<LoginPage> {
                                     child: const Text(
                                       'Sign Up',
                                       style: TextStyle(
-                                        color: AppColors.pink,
+                                        color: AppColors.blue,
                                         fontWeight: FontWeight.w800,
                                       ),
                                     ),
@@ -386,7 +386,7 @@ class _LoginErrorMessage extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: const TextStyle(color: Color(0xFFFFD6DC), fontSize: 12.5),
+              style: const TextStyle(color: Color(0xFFB3261E), fontSize: 12.5),
             ),
           ),
         ],

@@ -30,7 +30,7 @@ class DashboardPlaceholderPage extends StatelessWidget {
                     Text(
                       'Login Successful',
                       style: TextStyle(
-                        color: AppColors.white,
+                        color: Colors.black87,
                         fontSize: 25,
                         fontWeight: FontWeight.w800,
                       ),

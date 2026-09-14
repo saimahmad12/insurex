@@ -47,7 +47,7 @@ class PolicySummaryCard extends StatelessWidget {
                     Text(
                       policy.title,
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: Colors.black87,
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
                       ),
@@ -58,7 +58,7 @@ class PolicySummaryCard extends StatelessWidget {
                     Text(
                       policy.policyNumber,
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.55),
+                        color: Colors.black.withValues(alpha: 0.55),
                         fontSize: 12,
                       ),
                     ),
@@ -206,8 +206,8 @@ class _SummaryItem extends StatelessWidget {
       children: <Widget>[
         Text(
           label,
-          style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.5),
+          style: const TextStyle(
+            color: Colors.black54,
             fontSize: 12,
           ),
         ),
@@ -218,7 +218,7 @@ class _SummaryItem extends StatelessWidget {
           value,
           textAlign: TextAlign.center,
           style: const TextStyle(
-            color: Colors.white,
+            color: Colors.black87,
             fontWeight: FontWeight.w600,
             fontSize: 13,
           ),

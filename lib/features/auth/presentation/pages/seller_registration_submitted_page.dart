@@ -51,11 +51,11 @@ class SellerRegistrationSubmittedPage extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: const LinearGradient(
-                          colors: <Color>[AppColors.blue, AppColors.violet],
+                          colors: <Color>[AppColors.blue, AppColors.blue],
                         ),
                         boxShadow: <BoxShadow>[
                           BoxShadow(
-                            color: AppColors.violet.withValues(alpha: 0.45),
+                            color: AppColors.blue.withValues(alpha: 0.45),
                             blurRadius: 28,
                           ),
                         ],
@@ -71,7 +71,7 @@ class SellerRegistrationSubmittedPage extends StatelessWidget {
                       'Seller Registration Submitted',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: AppColors.white,
+                        color: Colors.black87,
                         fontSize: 28,
                         fontWeight: FontWeight.w900,
                       ),
@@ -100,7 +100,7 @@ class SellerRegistrationSubmittedPage extends StatelessWidget {
                           const Text(
                             'What happens next?',
                             style: TextStyle(
-                              color: AppColors.white,
+                              color: Colors.black87,
                               fontSize: 17,
                               fontWeight: FontWeight.w800,
                             ),

@@ -153,7 +153,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       key: const Key('profile_refresh_error'),
                       textAlign: TextAlign.center,
                       style: const TextStyle(
-                        color: Color(0xFFFFB3BE),
+                        color: Color(0xFFB3261E),
                         fontSize: 11,
                       ),
                     ),

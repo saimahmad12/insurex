@@ -29,7 +29,7 @@ class ClaimPaymentStatusCard extends StatelessWidget {
               Text(
                 'Payment Status',
                 style: TextStyle(
-                  color: AppColors.white,
+                  color: Colors.black87,
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                 ),
@@ -97,7 +97,7 @@ class _PaymentRow extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                color: AppColors.textSecondary.withValues(alpha: 0.52),
+                color: AppColors.textSecondary,
                 fontSize: 11.5,
               ),
             ),
@@ -108,7 +108,7 @@ class _PaymentRow extends StatelessWidget {
               value,
               textAlign: TextAlign.right,
               style: const TextStyle(
-                color: AppColors.white,
+                color: Colors.black87,
                 fontSize: 11.5,
                 fontWeight: FontWeight.w600,
               ),

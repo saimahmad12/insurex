@@ -91,7 +91,7 @@ class _ProgressStep extends StatelessWidget {
             shape: BoxShape.circle,
             gradient: completed
                 ? const LinearGradient(
-                    colors: <Color>[AppColors.blue, AppColors.electricBlue],
+                    colors: <Color>[AppColors.blue, AppColors.blue],
                   )
                 : null,
             color: active ? AppColors.white.withValues(alpha: 0.08) : null,
@@ -106,8 +106,8 @@ class _ProgressStep extends StatelessWidget {
                 )
               : Text(
                   number,
-                  style: const TextStyle(
-                    color: AppColors.white,
+                  style: TextStyle(
+                    color: active ? AppColors.blue : AppColors.textSecondary,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -117,7 +117,7 @@ class _ProgressStep extends StatelessWidget {
           text,
           style: TextStyle(
             color: active || completed
-                ? AppColors.white
+                ? AppColors.blue
                 : AppColors.textSecondary,
             fontSize: 10.5,
             fontWeight: FontWeight.w700,
