@@ -26,7 +26,7 @@ class PayoutReceiptCard extends StatelessWidget {
           const Text(
             'Payment Receipt',
             style: TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontSize: 18,
               fontWeight: FontWeight.w800,
             ),
@@ -88,7 +88,7 @@ class _ReceiptRow extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                color: AppColors.textSecondary.withValues(alpha: 0.52),
+                color: AppColors.textSecondary,
                 fontSize: 11,
               ),
             ),
@@ -100,7 +100,7 @@ class _ReceiptRow extends StatelessWidget {
               value,
               textAlign: TextAlign.right,
               style: const TextStyle(
-                color: AppColors.white,
+                color: Colors.black87,
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
               ),

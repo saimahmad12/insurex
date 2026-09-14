@@ -37,7 +37,7 @@ class BlockchainSecurityCard extends StatelessWidget {
                 const Text(
                   'Secure',
                   style: TextStyle(
-                    color: AppColors.white,
+                    color: Colors.black87,
                     fontSize: 21,
                     fontWeight: FontWeight.w900,
                   ),
@@ -46,7 +46,7 @@ class BlockchainSecurityCard extends StatelessWidget {
                 const Text(
                   'on Blockchain',
                   style: TextStyle(
-                    color: AppColors.white,
+                    color: Colors.black87,
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                   ),
@@ -86,7 +86,7 @@ class _BlockchainGraphic extends StatelessWidget {
                 end: Alignment.bottomRight,
                 colors: <Color>[
                   AppColors.blue,
-                  AppColors.violet,
+                  AppColors.blue,
                 ],
               ),
               boxShadow: <BoxShadow>[
@@ -153,7 +153,7 @@ class _MiniBlock extends StatelessWidget {
         gradient: const LinearGradient(
           colors: <Color>[
             AppColors.blue,
-            AppColors.violet,
+            AppColors.blue,
           ],
         ),
         border: Border.all(

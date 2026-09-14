@@ -98,7 +98,7 @@ class _SummaryCard extends StatelessWidget {
                 item.value,
                 key: Key('seller_summary_${item.keyName}'),
                 style: const TextStyle(
-                  color: AppColors.white,
+                  color: Colors.black87,
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
                 ),

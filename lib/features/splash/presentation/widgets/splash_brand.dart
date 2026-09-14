@@ -14,8 +14,8 @@ class SplashBrand extends StatelessWidget {
             return const LinearGradient(
               colors: <Color>[
                 AppColors.blue,
-                AppColors.electricBlue,
-                AppColors.pink,
+                AppColors.blue,
+                AppColors.blue,
               ],
             ).createShader(bounds);
           },

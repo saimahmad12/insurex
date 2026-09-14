@@ -54,7 +54,7 @@ class _PayoutMethodFormState extends State<PayoutMethodForm> {
             Text(
               '${payoutMethodTypeLabel(widget.type)} details',
               style: const TextStyle(
-                color: AppColors.white,
+                color: Colors.black87,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
@@ -129,7 +129,7 @@ class _PayoutMethodFormState extends State<PayoutMethodForm> {
       validator: validator,
       keyboardType: keyboardType,
       textInputAction: textInputAction,
-      style: const TextStyle(color: AppColors.white, fontSize: 13),
+      style: const TextStyle(color: Colors.black87, fontSize: 13),
       decoration: InputDecoration(
         labelText: label,
         filled: true,

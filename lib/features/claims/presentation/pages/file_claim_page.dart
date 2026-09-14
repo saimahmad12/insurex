@@ -138,7 +138,7 @@ class _FileClaimPageState extends State<FileClaimPage> {
                                 _stepTitle(step),
                                 key: const Key('file_claim_step_title'),
                                 style: const TextStyle(
-                                  color: AppColors.white,
+                                  color: Colors.black87,
                                   fontSize: 22,
                                   fontWeight: FontWeight.w800,
                                   letterSpacing: -0.25,
@@ -354,7 +354,7 @@ class _ClaimHeader extends StatelessWidget {
           child: Text(
             'File a Claim',
             style: TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontSize: 20,
               fontWeight: FontWeight.w800,
             ),
@@ -366,11 +366,11 @@ class _ClaimHeader extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: const LinearGradient(
-              colors: <Color>[AppColors.violet, AppColors.blue],
+              colors: <Color>[AppColors.blue, AppColors.blue],
             ),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: AppColors.violet.withValues(alpha: 0.3),
+                color: AppColors.blue.withValues(alpha: 0.3),
                 blurRadius: 15,
               ),
             ],

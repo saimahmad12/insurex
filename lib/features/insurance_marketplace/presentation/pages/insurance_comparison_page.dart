@@ -58,7 +58,7 @@ class InsuranceComparisonPage extends StatelessWidget {
                                   Text(
                                     product.name,
                                     style: const TextStyle(
-                                      color: AppColors.white,
+                                      color: Colors.black87,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700,
                                     ),
@@ -135,7 +135,7 @@ class _ComparisonValue extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(color: AppColors.white, height: 1.4),
+          style: const TextStyle(color: Colors.black87, height: 1.4),
         ),
       ],
     ),

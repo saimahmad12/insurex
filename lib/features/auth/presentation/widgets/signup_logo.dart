@@ -26,7 +26,7 @@ class SignupLogo extends StatelessWidget {
           shape: BoxShape.circle,
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color: AppColors.violet.withValues(
+              color: AppColors.blue.withValues(
                 alpha: 0.30,
               ),
               blurRadius: 38,
@@ -75,13 +75,13 @@ class _SignupLogoFallback extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: <Color>[
             AppColors.blue,
-            AppColors.violet,
-            AppColors.pink,
+            AppColors.blue,
+            AppColors.blue,
           ],
         ),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: AppColors.violet,
+            color: AppColors.blue,
             blurRadius: 24,
           ),
         ],

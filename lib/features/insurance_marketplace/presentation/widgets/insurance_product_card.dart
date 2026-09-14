@@ -56,7 +56,7 @@ class InsuranceProductCard extends StatelessWidget {
                       Text(
                         product.name,
                         style: const TextStyle(
-                          color: AppColors.white,
+                          color: Colors.black87,
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
@@ -141,7 +141,7 @@ class InsuranceProductCard extends StatelessWidget {
             Text(
               product.eligibilitySummary,
               style: TextStyle(
-                color: AppColors.white.withValues(alpha: 0.64),
+                color: Colors.black.withValues(alpha: 0.64),
                 fontSize: 12,
               ),
             ),
@@ -196,7 +196,7 @@ class _Value extends StatelessWidget {
       Text(
         value,
         style: const TextStyle(
-          color: AppColors.white,
+          color: Colors.black87,
           fontWeight: FontWeight.w700,
         ),
       ),

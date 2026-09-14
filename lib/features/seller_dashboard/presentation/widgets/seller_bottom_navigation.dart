@@ -82,7 +82,7 @@ class _NavigationItem extends StatelessWidget {
       SellerDashboardNavigationTab.claims => Icons.fact_check_outlined,
       SellerDashboardNavigationTab.profile => Icons.person_outline_rounded,
     };
-    final Color color = selected ? AppColors.pink : AppColors.textSecondary;
+    final Color color = selected ? AppColors.blue : AppColors.textSecondary;
 
     return Expanded(
       child: Tooltip(
@@ -126,7 +126,7 @@ class _NavigationItem extends StatelessWidget {
                       height: 2,
                       child: DecoratedBox(
                         decoration: BoxDecoration(
-                          color: selected ? AppColors.pink : Colors.transparent,
+                          color: selected ? AppColors.blue : Colors.transparent,
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),

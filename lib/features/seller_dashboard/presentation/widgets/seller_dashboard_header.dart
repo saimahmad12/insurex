@@ -62,11 +62,11 @@ class _CompanyIdentity extends StatelessWidget {
               gradient: const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: <Color>[AppColors.violet, AppColors.blue],
+                colors: <Color>[AppColors.blue, AppColors.blue],
               ),
               boxShadow: <BoxShadow>[
                 BoxShadow(
-                  color: AppColors.violet.withValues(alpha: 0.32),
+                  color: AppColors.blue.withValues(alpha: 0.32),
                   blurRadius: 18,
                 ),
               ],
@@ -92,7 +92,7 @@ class _CompanyIdentity extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  color: AppColors.white,
+                  color: Colors.black87,
                   fontSize: 15.5,
                   fontWeight: FontWeight.w800,
                   height: 1.15,

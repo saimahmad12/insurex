@@ -31,7 +31,7 @@ class NotificationSettingTile extends StatelessWidget {
                 Text(
                   title,
                   style: const TextStyle(
-                    color: AppColors.white,
+                    color: Colors.black87,
                     fontSize: 12.5,
                     fontWeight: FontWeight.w600,
                   ),
@@ -62,7 +62,7 @@ class NotificationSettingTile extends StatelessWidget {
             Switch(
               value: value,
               activeThumbColor: AppColors.white,
-              activeTrackColor: AppColors.violet,
+              activeTrackColor: AppColors.blue,
               onChanged: onChanged,
             ),
         ],

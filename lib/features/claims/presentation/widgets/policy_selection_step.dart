@@ -110,7 +110,7 @@ class _ClaimPolicyCard extends StatelessWidget {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15),
                           gradient: const LinearGradient(
-                            colors: <Color>[AppColors.blue, AppColors.violet],
+                            colors: <Color>[AppColors.blue, AppColors.blue],
                           ),
                         ),
                         child: Icon(
@@ -127,7 +127,7 @@ class _ClaimPolicyCard extends StatelessWidget {
                             Text(
                               policy.name,
                               style: const TextStyle(
-                                color: AppColors.white,
+                                color: Colors.black87,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -234,7 +234,7 @@ class _PolicyValue extends StatelessWidget {
             value,
             textAlign: TextAlign.right,
             style: TextStyle(
-              color: highlighted ? AppColors.blue : AppColors.white,
+              color: highlighted ? AppColors.blue : Colors.black87,
               fontSize: 12.5,
               fontWeight: FontWeight.w600,
             ),
@@ -275,7 +275,7 @@ class _PolicyStateCard extends StatelessWidget {
             Text(
               title,
               style: const TextStyle(
-                color: AppColors.white,
+                color: Colors.black87,
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
               ),

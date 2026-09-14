@@ -132,7 +132,7 @@ class _PaymentsHistoryPageState extends State<PaymentsHistoryPage> {
                       key: const Key('payments_history_refresh_error'),
                       textAlign: TextAlign.center,
                       style: const TextStyle(
-                        color: Color(0xFFFFB3BE),
+                        color: Color(0xFFB3261E),
                         fontSize: 11,
                       ),
                     ),
@@ -206,7 +206,7 @@ class _PaymentsMessage extends StatelessWidget {
                   title,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    color: AppColors.white,
+                    color: Colors.black87,
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                   ),

@@ -60,7 +60,7 @@ class _SummaryValue extends StatelessWidget {
           Text(
             '$value',
             style: const TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontSize: 18,
               fontWeight: FontWeight.w800,
             ),

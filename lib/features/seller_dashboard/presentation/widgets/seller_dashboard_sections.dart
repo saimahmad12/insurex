@@ -89,7 +89,7 @@ class _ApplicationRow extends StatelessWidget {
                 child: Text(
                   application.applicantName,
                   style: const TextStyle(
-                    color: AppColors.white,
+                    color: Colors.black87,
                     fontSize: 13.5,
                     fontWeight: FontWeight.w800,
                   ),
@@ -123,7 +123,7 @@ class _ApplicationRow extends StatelessWidget {
           Text(
             '${application.reference}  •  ${_formatDate(application.submittedAt)}',
             style: TextStyle(
-              color: AppColors.textSecondary.withValues(alpha: 0.52),
+              color: AppColors.textSecondary,
               fontSize: 10.5,
             ),
           ),
@@ -173,7 +173,7 @@ class _ClaimRow extends StatelessWidget {
                 child: Text(
                   claim.policyHolderName,
                   style: const TextStyle(
-                    color: AppColors.white,
+                    color: Colors.black87,
                     fontSize: 13.5,
                     fontWeight: FontWeight.w800,
                   ),
@@ -206,7 +206,7 @@ class _ClaimRow extends StatelessWidget {
           Text(
             '${claim.reference}  •  ${_formatDate(claim.submittedAt)}',
             style: TextStyle(
-              color: AppColors.textSecondary.withValues(alpha: 0.52),
+              color: AppColors.textSecondary,
               fontSize: 10.5,
             ),
           ),
@@ -326,7 +326,7 @@ class SellerPolicyCategoryPerformanceCard extends StatelessWidget {
                             child: Text(
                               category.category,
                               style: const TextStyle(
-                                color: AppColors.white,
+                                color: Colors.black87,
                                 fontSize: 12.5,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -394,7 +394,7 @@ class _SectionCard extends StatelessWidget {
           Text(
             title,
             style: const TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontSize: 15,
               fontWeight: FontWeight.w800,
             ),

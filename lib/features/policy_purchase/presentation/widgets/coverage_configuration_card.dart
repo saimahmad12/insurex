@@ -33,7 +33,7 @@ class CoverageConfigurationCard extends StatelessWidget {
           Text(
             marketplaceMoney(configuration.coverageAmount),
             style: const TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontSize: 22,
               fontWeight: FontWeight.w800,
             ),
@@ -134,7 +134,7 @@ class CoverageConfigurationCard extends StatelessWidget {
             const Text(
               'Add-ons',
               style: TextStyle(
-                color: AppColors.white,
+                color: Colors.black87,
                 fontWeight: FontWeight.w700,
               ),
             ),

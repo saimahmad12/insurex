@@ -158,7 +158,7 @@ class _SignupPageState extends State<SignupPage> {
                                 'Create Account',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color: AppColors.white,
+                                  color: Colors.black87,
                                   fontSize: 29,
                                   fontWeight: FontWeight.w900,
                                   letterSpacing: -0.4,
@@ -454,7 +454,7 @@ class _SocialSignupSection extends StatelessWidget {
           onPressed: onAppleSignup,
           child: const Icon(
             Icons.apple_rounded,
-            color: AppColors.white,
+            color: AppColors.black,
             size: 27,
           ),
         ),
@@ -485,7 +485,7 @@ class _LoginLink extends StatelessWidget {
           child: const Text(
             'Login',
             style: TextStyle(
-              color: AppColors.pink,
+              color: AppColors.blue,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -523,7 +523,7 @@ class _SignupErrorMessage extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: const TextStyle(color: Color(0xFFFFD6DC), fontSize: 12.5),
+              style: const TextStyle(color: Color(0xFFB3261E), fontSize: 12.5),
             ),
           ),
         ],

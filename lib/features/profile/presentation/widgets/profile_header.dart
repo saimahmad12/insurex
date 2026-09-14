@@ -32,8 +32,8 @@ class ProfileHeader extends StatelessWidget {
               gradient: LinearGradient(
                 colors: <Color>[
                   AppColors.blue,
-                  AppColors.violet,
-                  AppColors.pink,
+                  AppColors.blue,
+                  AppColors.blue,
                 ],
               ),
             ),
@@ -54,7 +54,7 @@ class ProfileHeader extends StatelessWidget {
                 Text(
                   profile.fullName,
                   style: const TextStyle(
-                    color: AppColors.white,
+                    color: Colors.black87,
                     fontSize: 17,
                     fontWeight: FontWeight.w800,
                   ),

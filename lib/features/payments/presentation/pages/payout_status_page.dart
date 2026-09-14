@@ -57,7 +57,7 @@ class PayoutStatusPage extends StatelessWidget {
                           key: const Key('payout_refresh_error'),
                           textAlign: TextAlign.center,
                           style: const TextStyle(
-                            color: Color(0xFFFFB3BE),
+                            color: Color(0xFFB3261E),
                             fontSize: 11,
                           ),
                         ),

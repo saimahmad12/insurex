@@ -12,7 +12,7 @@ Future<bool> showLogoutConfirmationDialog(BuildContext context) async {
         title: const Text('Logout', style: TextStyle(color: AppColors.white)),
         content: const Text(
           'Are you sure you want to log out?',
-          style: TextStyle(color: AppColors.textSecondary),
+          style: TextStyle(color: Colors.white70),
         ),
         actions: <Widget>[
           TextButton(

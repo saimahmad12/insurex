@@ -30,7 +30,7 @@ class TermsAgreement extends StatelessWidget {
               offset: const Offset(-8, -5),
               child: Checkbox(
                 value: value,
-                activeColor: AppColors.violet,
+                activeColor: AppColors.blue,
                 checkColor: AppColors.white,
                 side: BorderSide(
                   color: showError
@@ -88,7 +88,7 @@ class TermsAgreement extends StatelessWidget {
             child: Text(
               'You must accept the terms to continue.',
               style: TextStyle(
-                color: Color(0xFFFFB3BE),
+                color: Color(0xFFB3261E),
                 fontSize: 11.5,
               ),
             ),

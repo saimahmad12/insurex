@@ -194,7 +194,7 @@ class _SectionTitle extends StatelessWidget {
     return Text(
       title,
       style: const TextStyle(
-        color: Colors.white,
+        color: Colors.black87,
         fontSize: 15,
         fontWeight: FontWeight.w700,
       ),
@@ -236,7 +236,7 @@ class _ErrorView extends StatelessWidget {
                 message,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  color: Colors.white70,
+                  color: Colors.black54,
                 ),
               ),
 

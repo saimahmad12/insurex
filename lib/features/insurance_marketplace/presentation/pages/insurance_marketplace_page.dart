@@ -70,7 +70,7 @@ class _InsuranceMarketplacePageState extends State<InsuranceMarketplacePage> {
                       key: const Key('marketplace_search_field'),
                       controller: _searchController,
                       onSubmitted: widget.controller.updateSearch,
-                      style: const TextStyle(color: AppColors.white),
+                      style: const TextStyle(color: Colors.black87),
                       decoration: InputDecoration(
                         hintText: 'Search products or providers',
                         prefixIcon: const Icon(Icons.search_rounded),
@@ -235,7 +235,7 @@ class _MarketplaceMessage extends StatelessWidget {
         Text(
           title,
           style: const TextStyle(
-            color: AppColors.white,
+            color: Colors.black87,
             fontWeight: FontWeight.w700,
           ),
         ),

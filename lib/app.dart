@@ -706,7 +706,7 @@ class _InsureXAppState extends State<InsureXApp> {
           // ----------------------------------------------------------
           if (arguments is! InsurancePolicy) {
             return Scaffold(
-              backgroundColor: const Color(0xFF061027),
+              backgroundColor: Colors.white,
               appBar: AppBar(
                 backgroundColor: Colors.transparent,
                 elevation: 0,
@@ -716,7 +716,7 @@ class _InsureXAppState extends State<InsureXApp> {
                   },
                   icon: const Icon(
                     Icons.arrow_back_ios_new_rounded,
-                    color: Colors.white,
+                    color: Color(0xFF1976D2),
                   ),
                 ),
               ),
@@ -738,7 +738,7 @@ class _InsureXAppState extends State<InsureXApp> {
                         'Policy information is unavailable.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Colors.white,
+                          color: Colors.black87,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),

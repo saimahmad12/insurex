@@ -73,7 +73,7 @@ class AiVerificationStep extends StatelessWidget {
           'AI verification supports claim review and never automatically rejects a claim. Suspicious or inconclusive evidence is sent for manual review.',
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: AppColors.textSecondary.withValues(alpha: 0.53),
+            color: AppColors.textSecondary,
             fontSize: 11.5,
           ),
         ),
@@ -117,11 +117,11 @@ class _VerificationProgress extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: const LinearGradient(
-                colors: <Color>[AppColors.violet, AppColors.blue],
+                colors: <Color>[AppColors.blue, AppColors.blue],
               ),
               boxShadow: <BoxShadow>[
                 BoxShadow(
-                  color: AppColors.violet.withValues(alpha: 0.35),
+                  color: AppColors.blue.withValues(alpha: 0.35),
                   blurRadius: 22,
                 ),
               ],
@@ -136,7 +136,7 @@ class _VerificationProgress extends StatelessWidget {
           const Text(
             'Ready for AI verification',
             style: TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontSize: 17,
               fontWeight: FontWeight.w700,
             ),
@@ -176,7 +176,7 @@ class _VerificationProgress extends StatelessWidget {
               child: Text(
                 'Verifying incident evidence',
                 style: TextStyle(
-                  color: AppColors.white,
+                  color: Colors.black87,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                 ),
@@ -269,7 +269,7 @@ class _VerificationResult extends StatelessWidget {
           ClaimFormatters.evidenceClassification(result.classification),
           textAlign: TextAlign.center,
           style: const TextStyle(
-            color: AppColors.white,
+            color: Colors.black87,
             fontSize: 18,
             fontWeight: FontWeight.w800,
           ),
@@ -356,7 +356,7 @@ class _Score extends StatelessWidget {
           Text(
             value,
             style: const TextStyle(
-              color: AppColors.white,
+              color: Colors.black87,
               fontSize: 16,
               fontWeight: FontWeight.w700,
             ),
@@ -387,7 +387,7 @@ class _VerificationFailure extends StatelessWidget {
         const Text(
           'Image could not be verified',
           style: TextStyle(
-            color: AppColors.white,
+            color: Colors.black87,
             fontSize: 17,
             fontWeight: FontWeight.w700,
           ),

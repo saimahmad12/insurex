@@ -144,7 +144,7 @@ class _SellerRegistrationPageState extends State<SellerRegistrationPage> {
                               'Register Insurance Company',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                color: AppColors.white,
+                                color: Colors.black87,
                                 fontSize: 28,
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: -0.4,
@@ -458,7 +458,7 @@ class _SellerRegistrationPageState extends State<SellerRegistrationPage> {
                                   child: const Text(
                                     'Login',
                                     style: TextStyle(
-                                      color: AppColors.pink,
+                                      color: AppColors.blue,
                                       fontWeight: FontWeight.w800,
                                     ),
                                   ),
@@ -490,7 +490,7 @@ class _SectionTitle extends StatelessWidget {
     return Text(
       label,
       style: const TextStyle(
-        color: AppColors.white,
+        color: Colors.black87,
         fontSize: 15,
         fontWeight: FontWeight.w800,
       ),

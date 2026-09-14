@@ -101,8 +101,8 @@ class _RoleOption extends StatelessWidget {
           gradient: LinearGradient(
             colors: isSelected
                 ? <Color>[
-                    AppColors.electricBlue.withValues(alpha: 0.34),
-                    AppColors.violet.withValues(alpha: 0.25),
+                    AppColors.blue.withValues(alpha: 0.34),
+                    AppColors.blue.withValues(alpha: 0.25),
                   ]
                 : <Color>[
                     AppColors.white.withValues(alpha: 0.08),
@@ -135,7 +135,7 @@ class _RoleOption extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: isSelected
-                            ? AppColors.white
+                            ? AppColors.blue
                             : AppColors.textSecondary,
                         fontSize: 12.5,
                         height: 1.1,
