@@ -133,6 +133,56 @@ void main() {
       );
     });
 
+    test('invalidating an in-flight quote discards its result', () async {
+      final controller = PolicyQuoteController(repository: repository);
+      final pending = controller.generate(
+        product: product,
+        configuration: configuration,
+      );
+      controller.invalidate();
+      expect(await pending, isNull);
+      expect(controller.quote, isNull);
+      expect(controller.status, PolicyQuoteStatus.idle);
+      controller.dispose();
+    });
+
+    test('failed quote regeneration cannot reuse an earlier quote', () async {
+      final failing = MockPolicyPurchaseRepository(
+        identityRepository: profileRepository,
+        policiesRepository: policiesRepository,
+        delay: Duration.zero,
+        failQuote: true,
+      );
+      final controller = PolicyQuoteController(repository: failing);
+      controller.quote = await repository.generateQuote(
+        PolicyQuoteRequest(product: product, configuration: configuration),
+      );
+      expect(
+        await controller.generate(
+          product: product,
+          configuration: configuration,
+        ),
+        isNull,
+      );
+      expect(controller.ensureCurrent(), isFalse);
+      controller.dispose();
+    });
+
+    test('coverage and deductible reject non-finite amounts', () {
+      for (final amount in [
+        double.nan,
+        double.infinity,
+        double.negativeInfinity,
+      ]) {
+        final errors = PolicyPurchaseValidator.validateConfiguration(
+          configuration.copyWith(coverageAmount: amount, deductible: amount),
+          minimumCoverage: product.minimumCoverage,
+          maximumCoverage: product.maximumCoverage,
+        );
+        expect(errors, contains('coverageAmount'));
+        expect(errors, contains('deductible'));
+      }
+    });
     test('saves, resumes, and deletes a draft', () async {
       final PolicyPurchaseDraft draft = PolicyPurchaseDraft(
         id: 'draft-synthetic',

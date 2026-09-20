@@ -20,7 +20,7 @@ class PremiumPaymentController extends ChangeNotifier {
   void selectMethod(PremiumPaymentMethod method) {
     if (operationStatus == PremiumPaymentOperationStatus.processing) return;
     selectedMethod = method;
-    notifyListeners();
+    _notify();
   }
 
   Future<PremiumPayment?> pay({
@@ -36,7 +36,7 @@ class PremiumPaymentController extends ChangeNotifier {
         'premium-$applicationId-$quoteId-${DateTime.now().microsecondsSinceEpoch}';
     operationStatus = PremiumPaymentOperationStatus.processing;
     errorMessage = null;
-    notifyListeners();
+    _notify();
     try {
       payment = await _repository.payPremium(
         applicationId: applicationId,
@@ -59,7 +59,19 @@ class PremiumPaymentController extends ChangeNotifier {
       operationStatus = PremiumPaymentOperationStatus.failure;
       errorMessage = 'The premium payment could not be completed.';
     }
-    notifyListeners();
+    _notify();
     return payment;
+  }
+
+  bool _disposed = false;
+
+  void _notify() {
+    if (!_disposed) notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 }

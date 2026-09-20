@@ -3,22 +3,15 @@ import 'package:flutter/foundation.dart';
 import '../../domain/entities/forgot_password_request.dart';
 import '../../domain/repositories/password_recovery_repository.dart';
 
-enum ForgotPasswordStatus {
-  idle,
-  loading,
-  success,
-  failure,
-}
+enum ForgotPasswordStatus { idle, loading, success, failure }
 
 class ForgotPasswordController extends ChangeNotifier {
-  ForgotPasswordController({
-    required PasswordRecoveryRepository repository,
-  }) : _repository = repository;
+  ForgotPasswordController({required PasswordRecoveryRepository repository})
+    : _repository = repository;
 
   final PasswordRecoveryRepository _repository;
 
-  ForgotPasswordStatus _status =
-      ForgotPasswordStatus.idle;
+  ForgotPasswordStatus _status = ForgotPasswordStatus.idle;
 
   String? _errorMessage;
 
@@ -26,54 +19,45 @@ class ForgotPasswordController extends ChangeNotifier {
 
   String? get errorMessage => _errorMessage;
 
-  bool get isLoading =>
-      _status == ForgotPasswordStatus.loading;
+  bool get isLoading => _status == ForgotPasswordStatus.loading;
 
-  bool get isSuccess =>
-      _status == ForgotPasswordStatus.success;
+  bool get isSuccess => _status == ForgotPasswordStatus.success;
 
-  Future<bool> requestPasswordReset({
-    required String identity,
-  }) async {
+  Future<bool> requestPasswordReset({required String identity}) async {
+    if (_disposed || isLoading) return false;
     _status = ForgotPasswordStatus.loading;
     _errorMessage = null;
 
-    notifyListeners();
+    _notify();
 
     try {
-      final ForgotPasswordRequest request =
-      ForgotPasswordRequest(
+      final ForgotPasswordRequest request = ForgotPasswordRequest(
         identity: identity.trim(),
       );
 
-      final bool sent =
-      await _repository.requestPasswordReset(
-        request,
-      );
+      final bool sent = await _repository.requestPasswordReset(request);
 
       if (sent) {
         _status = ForgotPasswordStatus.success;
 
-        notifyListeners();
+        _notify();
 
         return true;
       }
 
       _status = ForgotPasswordStatus.failure;
 
-      _errorMessage =
-      'Unable to send reset instructions. Please try again.';
+      _errorMessage = 'Unable to send reset instructions. Please try again.';
 
-      notifyListeners();
+      _notify();
 
       return false;
     } catch (_) {
       _status = ForgotPasswordStatus.failure;
 
-      _errorMessage =
-      'Something went wrong. Please try again.';
+      _errorMessage = 'Something went wrong. Please try again.';
 
-      notifyListeners();
+      _notify();
 
       return false;
     }
@@ -87,13 +71,25 @@ class ForgotPasswordController extends ChangeNotifier {
     _errorMessage = null;
     _status = ForgotPasswordStatus.idle;
 
-    notifyListeners();
+    _notify();
   }
 
   void resetState() {
     _status = ForgotPasswordStatus.idle;
     _errorMessage = null;
 
-    notifyListeners();
+    _notify();
+  }
+
+  bool _disposed = false;
+
+  void _notify() {
+    if (!_disposed) notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 }

@@ -16,6 +16,7 @@ abstract final class BeneficiaryValidator {
           beneficiary.relationship.trim().isEmpty ||
           beneficiary.contactDetails.trim().isEmpty ||
           beneficiary.dateOfBirth.isAfter(reference) ||
+          !beneficiary.allocationPercentage.isFinite ||
           beneficiary.allocationPercentage <= 0) {
         errors['beneficiaries'] =
             'Complete valid details for every beneficiary.';
@@ -27,7 +28,7 @@ abstract final class BeneficiaryValidator {
       (double total, PolicyBeneficiary item) =>
           total + item.allocationPercentage,
     );
-    if ((allocation - 100).abs() > 0.001) {
+    if (!allocation.isFinite || (allocation - 100).abs() > 0.001) {
       errors['allocation'] = 'Beneficiary allocations must total exactly 100%.';
     }
     return errors;

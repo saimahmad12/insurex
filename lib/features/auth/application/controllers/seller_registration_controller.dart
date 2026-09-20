@@ -44,7 +44,7 @@ class SellerRegistrationController extends ChangeNotifier {
     _clearFieldError(
       SellerRegistrationField.authorizedRepresentativeDesignation,
     );
-    notifyListeners();
+    _notify();
   }
 
   void toggleCategory(InsuranceCategory category) {
@@ -55,7 +55,7 @@ class SellerRegistrationController extends ChangeNotifier {
       _selectedCategories.remove(category);
     }
     _clearFieldError(SellerRegistrationField.supportedCategories);
-    notifyListeners();
+    _notify();
   }
 
   void setTermsAccepted(bool value) {
@@ -64,7 +64,7 @@ class SellerRegistrationController extends ChangeNotifier {
     }
     _acceptedTerms = value;
     _clearFieldError(SellerRegistrationField.terms);
-    notifyListeners();
+    _notify();
   }
 
   void setDeclarationsConfirmed(bool value) {
@@ -73,7 +73,7 @@ class SellerRegistrationController extends ChangeNotifier {
     }
     _confirmedDeclarations = value;
     _clearFieldError(SellerRegistrationField.declarations);
-    notifyListeners();
+    _notify();
   }
 
   void clearFieldError(SellerRegistrationField field) {
@@ -83,7 +83,7 @@ class SellerRegistrationController extends ChangeNotifier {
       if (_status != SellerRegistrationStatus.submitting) {
         _status = SellerRegistrationStatus.draft;
       }
-      notifyListeners();
+      _notify();
     }
   }
 
@@ -121,7 +121,7 @@ class SellerRegistrationController extends ChangeNotifier {
     _result = null;
     if (_fieldErrors.isNotEmpty) {
       _status = SellerRegistrationStatus.draft;
-      notifyListeners();
+      _notify();
       return null;
     }
 
@@ -141,7 +141,7 @@ class SellerRegistrationController extends ChangeNotifier {
     );
 
     _status = SellerRegistrationStatus.submitting;
-    notifyListeners();
+    _notify();
     try {
       final SellerRegistrationResult result = await _repository
           .submitRegistration(request);
@@ -167,7 +167,7 @@ class SellerRegistrationController extends ChangeNotifier {
           'Unable to submit company registration. Please try again.';
       return null;
     } finally {
-      notifyListeners();
+      _notify();
     }
   }
 
@@ -177,5 +177,17 @@ class SellerRegistrationController extends ChangeNotifier {
     }
     _fieldErrors = Map<SellerRegistrationField, String>.of(_fieldErrors)
       ..remove(field);
+  }
+
+  bool _disposed = false;
+
+  void _notify() {
+    if (!_disposed) notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 }

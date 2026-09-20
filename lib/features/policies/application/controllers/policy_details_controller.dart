@@ -4,22 +4,15 @@ import '../../domain/entities/insurance_policy.dart';
 import '../../domain/entities/policy_details.dart';
 import '../../domain/repositories/policy_details_repository.dart';
 
-enum PolicyDetailsStatus {
-  initial,
-  loading,
-  success,
-  failure,
-}
+enum PolicyDetailsStatus { initial, loading, success, failure }
 
 class PolicyDetailsController extends ChangeNotifier {
-  PolicyDetailsController({
-    required PolicyDetailsRepository repository,
-  }) : _repository = repository;
+  PolicyDetailsController({required PolicyDetailsRepository repository})
+    : _repository = repository;
 
   final PolicyDetailsRepository _repository;
 
-  PolicyDetailsStatus _status =
-      PolicyDetailsStatus.initial;
+  PolicyDetailsStatus _status = PolicyDetailsStatus.initial;
 
   PolicyDetails? _details;
 
@@ -31,12 +24,9 @@ class PolicyDetailsController extends ChangeNotifier {
 
   String? get errorMessage => _errorMessage;
 
-  bool get isLoading =>
-      _status == PolicyDetailsStatus.loading;
+  bool get isLoading => _status == PolicyDetailsStatus.loading;
 
-  Future<void> loadPolicyDetails(
-      InsurancePolicy policy,
-      ) async {
+  Future<void> loadPolicyDetails(InsurancePolicy policy) async {
     if (isLoading) {
       return;
     }
@@ -44,20 +34,29 @@ class PolicyDetailsController extends ChangeNotifier {
     _status = PolicyDetailsStatus.loading;
     _errorMessage = null;
 
-    notifyListeners();
+    _notify();
 
     try {
-      _details =
-      await _repository.getPolicyDetails(policy);
+      _details = await _repository.getPolicyDetails(policy);
 
       _status = PolicyDetailsStatus.success;
     } catch (_) {
       _status = PolicyDetailsStatus.failure;
 
-      _errorMessage =
-      'Unable to load policy details. Please try again.';
+      _errorMessage = 'Unable to load policy details. Please try again.';
     }
 
-    notifyListeners();
+    _notify();
+  }
+
+  bool _disposed = false;
+  void _notify() {
+    if (!_disposed) notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 }
