@@ -66,7 +66,7 @@ class SignupController extends ChangeNotifier {
     _prepareInProgress = true;
     _status = SignupStatus.loading;
     _errorMessage = null;
-    notifyListeners();
+    _notify();
 
     try {
       final bool prepared = await _repository.prepareSignup(request);
@@ -87,7 +87,7 @@ class SignupController extends ChangeNotifier {
       return false;
     } finally {
       _prepareInProgress = false;
-      notifyListeners();
+      _notify();
     }
   }
 
@@ -110,13 +110,13 @@ class SignupController extends ChangeNotifier {
     if (request == null) {
       _status = SignupStatus.failure;
       _errorMessage = 'Your signup details are unavailable. Please try again.';
-      notifyListeners();
+      _notify();
       return false;
     }
     _completionInProgress = true;
     _status = SignupStatus.completing;
     _errorMessage = null;
-    notifyListeners();
+    _notify();
     try {
       final IdentityVerification verification = await _identityRepository
           .getIdentityVerification();
@@ -139,7 +139,7 @@ class SignupController extends ChangeNotifier {
       return false;
     } finally {
       _completionInProgress = false;
-      notifyListeners();
+      _notify();
     }
   }
 
@@ -153,12 +153,19 @@ class SignupController extends ChangeNotifier {
         ? SignupStatus.idle
         : SignupStatus.awaitingIdentityVerification;
 
-    notifyListeners();
+    _notify();
   }
 
   @override
   void dispose() {
+    _disposed = true;
     _pendingRequest = null;
     super.dispose();
+  }
+
+  bool _disposed = false;
+
+  void _notify() {
+    if (!_disposed) notifyListeners();
   }
 }
