@@ -21,6 +21,7 @@ import 'features/auth/application/validators/seller_auth_validator.dart';
 // AUTH REPOSITORIES
 // ============================================================
 import 'features/auth/domain/repositories/auth_repository.dart';
+import 'features/auth/data/repositories/api_signup_repository.dart';
 import 'features/auth/data/repositories/mock_auth_repository.dart';
 import 'features/auth/data/repositories/mock_otp_verification_repository.dart';
 import 'features/auth/data/repositories/mock_password_recovery_repository.dart';
@@ -338,9 +339,15 @@ class _InsureXAppState extends State<InsureXApp> {
         // ============================================================
         AppRoutes.signup: (BuildContext context) {
           final SignupController signupController = SignupController(
-            repository: MockSignupRepository(
+            repository: widget.authRepository != null
+                ? ApiSignupRepository(
+              authRepository: widget.authRepository!,
               initializeAccountName:
-                  _profileRepository.initializeUnverifiedAccountName,
+              _profileRepository.initializeUnverifiedAccountName,
+            )
+                : MockSignupRepository(
+              initializeAccountName:
+              _profileRepository.initializeUnverifiedAccountName,
             ),
             identityRepository: _profileRepository,
           );
