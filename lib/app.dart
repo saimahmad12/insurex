@@ -100,6 +100,7 @@ import 'features/profile/data/repositories/mock_security_repository.dart';
 import 'features/profile/domain/entities/identity_verification.dart';
 import 'features/profile/domain/entities/user_profile.dart';
 import 'features/profile/domain/repositories/profile_repository.dart';
+import 'features/profile/domain/repositories/auth_session_repository.dart';
 import 'features/profile/presentation/pages/change_password_page.dart';
 import 'features/profile/presentation/pages/edit_profile_page.dart';
 import 'features/profile/presentation/pages/help_support_page.dart';
@@ -171,6 +172,7 @@ class InsureXApp extends StatefulWidget {
   const InsureXApp({
     this.initialVerificationStatus = IdentityVerificationStatus.notStarted,
     this.authRepository,
+    this.authSessionRepository,
     this.sellerAuthRepository,
     this.sellerDashboardRepository,
     this.sellerRegistrationRepository,
@@ -180,6 +182,7 @@ class InsureXApp extends StatefulWidget {
   final IdentityVerificationStatus initialVerificationStatus;
 
   final AuthRepository? authRepository;
+  final AuthSessionRepository? authSessionRepository;
 
   final SellerAuthRepository? sellerAuthRepository;
 
@@ -198,7 +201,7 @@ class _InsureXAppState extends State<InsureXApp> {
   late final MockNotificationPreferencesRepository
   _notificationPreferencesRepository;
   late final MockSecurityRepository _securityRepository;
-  late final MockAuthSessionRepository _authSessionRepository;
+  late final AuthSessionRepository _authSessionRepository;
   late final MockPoliciesRepository _policiesRepository;
   late final MockInsuranceMarketplaceRepository _marketplaceRepository;
   late final MockPolicyPurchaseRepository _policyPurchaseRepository;
@@ -222,7 +225,8 @@ class _InsureXAppState extends State<InsureXApp> {
     _notificationPreferencesRepository =
         MockNotificationPreferencesRepository();
     _securityRepository = MockSecurityRepository();
-    _authSessionRepository = MockAuthSessionRepository();
+    _authSessionRepository =
+        widget.authSessionRepository ?? MockAuthSessionRepository();
     _policiesRepository = MockPoliciesRepository();
     _marketplaceRepository = MockInsuranceMarketplaceRepository();
     _policyPurchaseRepository = MockPolicyPurchaseRepository(
@@ -270,9 +274,7 @@ class _InsureXAppState extends State<InsureXApp> {
         AppRoutes.login: (BuildContext context) {
           return LoginPage(
             controller: LoginController(
-              repository:
-              widget.authRepository ??
-                  const MockAuthRepository(),
+              repository: widget.authRepository ?? const MockAuthRepository(),
             ),
 
             onBack: () {
@@ -1323,13 +1325,17 @@ class _InsureXAppState extends State<InsureXApp> {
           return result is UserProfile ? result : null;
         },
         onIdentityVerification: () async {
+          final bool wasVerified =
+              profileController.profile?.identityVerification.status ==
+              IdentityVerificationStatus.verified;
           final Object? result = await Navigator.of(
             context,
           ).pushNamed(AppRoutes.identityVerification);
           if (result is! IdentityVerification) {
             return null;
           }
-          if (result.status == IdentityVerificationStatus.verified) {
+          if (!wasVerified &&
+              result.status == IdentityVerificationStatus.verified) {
             await dashboardController.refreshDashboard();
           }
           return result;

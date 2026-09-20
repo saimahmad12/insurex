@@ -25,9 +25,10 @@ class LoginController extends ChangeNotifier {
     required String identity,
     required String password,
   }) async {
+    if (_disposed || isLoading) return false;
     _status = LoginStatus.loading;
     _errorMessage = null;
-    notifyListeners();
+    _notify();
 
     try {
       final LoginCredentials credentials = LoginCredentials(
@@ -40,7 +41,7 @@ class LoginController extends ChangeNotifier {
 
       if (authenticated) {
         _status = LoginStatus.success;
-        notifyListeners();
+        _notify();
 
         return true;
       }
@@ -48,14 +49,14 @@ class LoginController extends ChangeNotifier {
       _status = LoginStatus.failure;
       _errorMessage = 'Invalid mobile number, email, or password.';
 
-      notifyListeners();
+      _notify();
 
       return false;
     } catch (_) {
       _status = LoginStatus.failure;
       _errorMessage = 'Unable to sign in. Please try again.';
 
-      notifyListeners();
+      _notify();
 
       return false;
     }
@@ -69,6 +70,18 @@ class LoginController extends ChangeNotifier {
     _errorMessage = null;
     _status = LoginStatus.idle;
 
-    notifyListeners();
+    _notify();
+  }
+
+  bool _disposed = false;
+
+  void _notify() {
+    if (!_disposed) notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 }
