@@ -6,10 +6,7 @@ import '../../../../core/constants/app_assets.dart';
 import '../../../../core/theme/app_colors.dart';
 
 class InsureXLogo extends StatelessWidget {
-  const InsureXLogo({
-    super.key,
-    this.size = 235,
-  });
+  const InsureXLogo({super.key, this.size = 235});
 
   final double size;
 
@@ -25,11 +22,7 @@ class InsureXLogo extends StatelessWidget {
           clipBehavior: Clip.none,
           alignment: Alignment.center,
           children: <Widget>[
-            Positioned.fill(
-              child: CustomPaint(
-                painter: _OrbitPainter(),
-              ),
-            ),
+            Positioned.fill(child: CustomPaint(painter: _OrbitPainter())),
             Container(
               width: size * 0.82,
               height: size * 0.82,
@@ -37,16 +30,12 @@ class InsureXLogo extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: <BoxShadow>[
                   BoxShadow(
-                    color: AppColors.blue.withValues(
-                      alpha: 0.42,
-                    ),
+                    color: AppColors.blue.withValues(alpha: 0.42),
                     blurRadius: 40,
                     spreadRadius: 2,
                   ),
                   BoxShadow(
-                    color: AppColors.blue.withValues(
-                      alpha: 0.22,
-                    ),
+                    color: AppColors.blue.withValues(alpha: 0.22),
                     blurRadius: 58,
                     spreadRadius: 4,
                   ),
@@ -58,7 +47,7 @@ class InsureXLogo extends StatelessWidget {
                   AppAssets.insureXShieldLogo,
                   fit: BoxFit.contain,
                   filterQuality: FilterQuality.high,
-                  errorBuilder: (_, __, ___) {
+                  errorBuilder: (_, _, _) {
                     return const Icon(
                       Icons.verified_user_rounded,
                       size: 120,
@@ -71,30 +60,22 @@ class InsureXLogo extends StatelessWidget {
             const Positioned(
               top: 18,
               right: 14,
-              child: _OrbitIcon(
-                icon: Icons.lock_outline_rounded,
-              ),
+              child: _OrbitIcon(icon: Icons.lock_outline_rounded),
             ),
             const Positioned(
               top: 78,
               left: -2,
-              child: _OrbitIcon(
-                icon: Icons.auto_awesome_rounded,
-              ),
+              child: _OrbitIcon(icon: Icons.auto_awesome_rounded),
             ),
             const Positioned(
               right: -2,
               bottom: 48,
-              child: _OrbitIcon(
-                icon: Icons.description_outlined,
-              ),
+              child: _OrbitIcon(icon: Icons.description_outlined),
             ),
             const Positioned(
               left: 17,
               bottom: 13,
-              child: _OrbitIcon(
-                icon: Icons.person_outline_rounded,
-              ),
+              child: _OrbitIcon(icon: Icons.person_outline_rounded),
             ),
           ],
         ),
@@ -104,9 +85,7 @@ class InsureXLogo extends StatelessWidget {
 }
 
 class _OrbitIcon extends StatelessWidget {
-  const _OrbitIcon({
-    required this.icon,
-  });
+  const _OrbitIcon({required this.icon});
 
   final IconData icon;
 
@@ -117,9 +96,7 @@ class _OrbitIcon extends StatelessWidget {
       height: 38,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(13),
-        border: Border.all(
-          color: AppColors.white.withValues(alpha: 0.48),
-        ),
+        border: Border.all(color: AppColors.white.withValues(alpha: 0.48)),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -135,11 +112,7 @@ class _OrbitIcon extends StatelessWidget {
           ),
         ],
       ),
-      child: Icon(
-        icon,
-        size: 18,
-        color: AppColors.white,
-      ),
+      child: Icon(icon, size: 18, color: AppColors.white),
     );
   }
 }
@@ -173,8 +146,7 @@ class _OrbitPainter extends CustomPainter {
     canvas.translate(center.dx, center.dy);
     canvas.rotate(math.pi / 7);
 
-    orbitPaint.color =
-        AppColors.blue.withValues(alpha: 0.24);
+    orbitPaint.color = AppColors.blue.withValues(alpha: 0.24);
 
     canvas.drawOval(
       Rect.fromCenter(

@@ -108,7 +108,7 @@ class PolicyPurchaseController extends ChangeNotifier {
     _initialized = true;
     loadStatus = PolicyPurchaseLoadStatus.loading;
     errorMessage = null;
-    notifyListeners();
+    _notify();
     try {
       final (
         InsuranceProduct loadedProduct,
@@ -137,7 +137,7 @@ class PolicyPurchaseController extends ChangeNotifier {
       loadStatus = PolicyPurchaseLoadStatus.failure;
       errorMessage = 'The policy purchase could not be loaded.';
     }
-    notifyListeners();
+    _notify();
   }
 
   Future<void> retry() async {
@@ -149,7 +149,7 @@ class PolicyPurchaseController extends ChangeNotifier {
     final UserProfile? refreshed = await _profileRepository.refreshProfile();
     if (refreshed != null) {
       profile = refreshed;
-      notifyListeners();
+      _notify();
     }
   }
 
@@ -157,26 +157,26 @@ class PolicyPurchaseController extends ChangeNotifier {
     configuration = value;
     validationErrors = const <String, String>{};
     draftSaveStatus = DraftSaveStatus.idle;
-    notifyListeners();
+    _notify();
   }
 
   void goTo(PolicyPurchaseStep value) {
     step = value;
-    notifyListeners();
+    _notify();
   }
 
   void updateApplicationDetails(PolicyApplicationDetails value) {
     applicationDetails = value;
     validationErrors = const <String, String>{};
     draftSaveStatus = DraftSaveStatus.idle;
-    notifyListeners();
+    _notify();
   }
 
   void updateBeneficiaries(List<PolicyBeneficiary> value) {
     beneficiaries = List<PolicyBeneficiary>.unmodifiable(value);
     validationErrors = const <String, String>{};
     draftSaveStatus = DraftSaveStatus.idle;
-    notifyListeners();
+    _notify();
   }
 
   bool validateConfiguration() {
@@ -188,7 +188,7 @@ class PolicyPurchaseController extends ChangeNotifier {
       minimumCoverage: currentProduct.minimumCoverage,
       maximumCoverage: currentProduct.maximumCoverage,
     );
-    notifyListeners();
+    _notify();
     return validationErrors.isEmpty;
   }
 
@@ -201,14 +201,14 @@ class PolicyPurchaseController extends ChangeNotifier {
     } else {
       validationErrors = PolicyPurchaseValidator.validateApplication(current);
     }
-    notifyListeners();
+    _notify();
     return validationErrors.isEmpty;
   }
 
   bool validateBeneficiaries() {
     if (product?.requiresBeneficiaries != true) return true;
     validationErrors = BeneficiaryValidator.validate(beneficiaries);
-    notifyListeners();
+    _notify();
     return validationErrors.isEmpty;
   }
 
@@ -219,7 +219,7 @@ class PolicyPurchaseController extends ChangeNotifier {
     }
     draftSaveStatus = DraftSaveStatus.saving;
     draftMessage = null;
-    notifyListeners();
+    _notify();
     try {
       await _purchaseRepository.saveDraft(
         PolicyPurchaseDraft(
@@ -233,12 +233,12 @@ class PolicyPurchaseController extends ChangeNotifier {
       );
       draftSaveStatus = DraftSaveStatus.saved;
       draftMessage = 'Draft saved';
-      notifyListeners();
+      _notify();
       return true;
     } catch (_) {
       draftSaveStatus = DraftSaveStatus.failure;
       draftMessage = 'Draft could not be saved.';
-      notifyListeners();
+      _notify();
       return false;
     }
   }
@@ -250,7 +250,7 @@ class PolicyPurchaseController extends ChangeNotifier {
     if (currentProduct == null || currentProfile == null) return null;
     eligibilityStatus = EligibilityCheckStatus.checking;
     eligibility = null;
-    notifyListeners();
+    _notify();
     try {
       final DateTime today = DateTime.now();
       int age = today.year - currentProfile.dateOfBirth.year;
@@ -283,7 +283,7 @@ class PolicyPurchaseController extends ChangeNotifier {
       eligibilityStatus = EligibilityCheckStatus.failure;
       errorMessage = 'Eligibility could not be checked.';
     }
-    notifyListeners();
+    _notify();
     return eligibility;
   }
 
@@ -300,7 +300,7 @@ class PolicyPurchaseController extends ChangeNotifier {
     issuanceStatus = PolicyIssuanceStatus.issuing;
     step = PolicyPurchaseStep.issuing;
     errorMessage = null;
-    notifyListeners();
+    _notify();
     try {
       issuanceResult = await _purchaseRepository.issuePolicy(
         PolicyIssuanceRequest(
@@ -316,7 +316,7 @@ class PolicyPurchaseController extends ChangeNotifier {
       errorMessage =
           'Policy issuance could not be completed. Payment is preserved.';
     }
-    notifyListeners();
+    _notify();
     return issuanceResult;
   }
 
@@ -330,5 +330,17 @@ class PolicyPurchaseController extends ChangeNotifier {
       paymentFrequency: product.paymentFrequencies.first,
       insuredPeople: 1,
     );
+  }
+
+  bool _disposed = false;
+
+  void _notify() {
+    if (!_disposed) notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 }

@@ -13,14 +13,12 @@ enum OtpVerificationStatus {
 }
 
 class OtpVerificationController extends ChangeNotifier {
-  OtpVerificationController({
-    required OtpVerificationRepository repository,
-  }) : _repository = repository;
+  OtpVerificationController({required OtpVerificationRepository repository})
+    : _repository = repository;
 
   final OtpVerificationRepository _repository;
 
-  OtpVerificationStatus _status =
-      OtpVerificationStatus.idle;
+  OtpVerificationStatus _status = OtpVerificationStatus.idle;
 
   String? _errorMessage;
   String? _successMessage;
@@ -31,64 +29,57 @@ class OtpVerificationController extends ChangeNotifier {
 
   String? get successMessage => _successMessage;
 
-  bool get isVerifying =>
-      _status == OtpVerificationStatus.verifying;
+  bool get isVerifying => _status == OtpVerificationStatus.verifying;
 
-  bool get isResending =>
-      _status == OtpVerificationStatus.resending;
+  bool get isResending => _status == OtpVerificationStatus.resending;
 
   Future<bool> verifyOtp({
     required String identity,
     required String code,
   }) async {
+    if (_disposed || isVerifying || isResending) return false;
     _status = OtpVerificationStatus.verifying;
     _errorMessage = null;
     _successMessage = null;
 
-    notifyListeners();
+    _notify();
 
     try {
-      final OtpVerificationRequest request =
-      OtpVerificationRequest(
+      final OtpVerificationRequest request = OtpVerificationRequest(
         identity: identity.trim(),
         code: code.trim(),
       );
 
-      final bool verified =
-      await _repository.verifyOtp(request);
+      final bool verified = await _repository.verifyOtp(request);
 
       if (verified) {
         _status = OtpVerificationStatus.verified;
 
-        notifyListeners();
+        _notify();
 
         return true;
       }
 
       _status = OtpVerificationStatus.failure;
 
-      _errorMessage =
-      'Invalid verification code. Please try again.';
+      _errorMessage = 'Invalid verification code. Please try again.';
 
-      notifyListeners();
+      _notify();
 
       return false;
     } catch (_) {
       _status = OtpVerificationStatus.failure;
 
-      _errorMessage =
-      'Unable to verify the code. Please try again.';
+      _errorMessage = 'Unable to verify the code. Please try again.';
 
-      notifyListeners();
+      _notify();
 
       return false;
     }
   }
 
-  Future<void> resendOtp({
-    required String identity,
-  }) async {
-    if (isResending) {
+  Future<void> resendOtp({required String identity}) async {
+    if (_disposed || isVerifying || isResending) {
       return;
     }
 
@@ -96,32 +87,27 @@ class OtpVerificationController extends ChangeNotifier {
     _errorMessage = null;
     _successMessage = null;
 
-    notifyListeners();
+    _notify();
 
     try {
-      final bool sent = await _repository.resendOtp(
-        identity: identity,
-      );
+      final bool sent = await _repository.resendOtp(identity: identity);
 
       if (sent) {
         _status = OtpVerificationStatus.resent;
 
-        _successMessage =
-        'A new verification code has been sent.';
+        _successMessage = 'A new verification code has been sent.';
       } else {
         _status = OtpVerificationStatus.failure;
 
-        _errorMessage =
-        'Unable to resend the code.';
+        _errorMessage = 'Unable to resend the code.';
       }
     } catch (_) {
       _status = OtpVerificationStatus.failure;
 
-      _errorMessage =
-      'Unable to resend the code. Please try again.';
+      _errorMessage = 'Unable to resend the code. Please try again.';
     }
 
-    notifyListeners();
+    _notify();
   }
 
   void clearMessage() {
@@ -133,6 +119,18 @@ class OtpVerificationController extends ChangeNotifier {
       _status = OtpVerificationStatus.idle;
     }
 
-    notifyListeners();
+    _notify();
+  }
+
+  bool _disposed = false;
+
+  void _notify() {
+    if (!_disposed) notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 }

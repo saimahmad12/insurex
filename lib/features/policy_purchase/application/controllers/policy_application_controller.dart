@@ -29,7 +29,7 @@ class PolicyApplicationController extends ChangeNotifier {
     this.informationAccurate = informationAccurate ?? this.informationAccurate;
     this.coverageReviewed = coverageReviewed ?? this.coverageReviewed;
     this.processingConsent = processingConsent ?? this.processingConsent;
-    notifyListeners();
+    _notify();
   }
 
   Future<PolicyApplication?> submit(
@@ -42,7 +42,7 @@ class PolicyApplicationController extends ChangeNotifier {
     }
     operationStatus = PolicyApplicationOperationStatus.submitting;
     errorMessage = null;
-    notifyListeners();
+    _notify();
     try {
       application = await _repository.submitApplication(request);
       operationStatus = PolicyApplicationOperationStatus.idle;
@@ -50,7 +50,7 @@ class PolicyApplicationController extends ChangeNotifier {
       operationStatus = PolicyApplicationOperationStatus.failure;
       errorMessage = 'The policy application could not be submitted.';
     }
-    notifyListeners();
+    _notify();
     return application;
   }
 
@@ -62,7 +62,7 @@ class PolicyApplicationController extends ChangeNotifier {
     }
     operationStatus = PolicyApplicationOperationStatus.refreshing;
     errorMessage = null;
-    notifyListeners();
+    _notify();
     try {
       application = await _repository.refreshApplication(current.id);
       operationStatus = PolicyApplicationOperationStatus.idle;
@@ -70,7 +70,19 @@ class PolicyApplicationController extends ChangeNotifier {
       operationStatus = PolicyApplicationOperationStatus.failure;
       errorMessage = 'Provider review could not be refreshed.';
     }
-    notifyListeners();
+    _notify();
     return application;
+  }
+
+  bool _disposed = false;
+
+  void _notify() {
+    if (!_disposed) notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 }

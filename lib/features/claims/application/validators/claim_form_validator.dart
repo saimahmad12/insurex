@@ -39,7 +39,7 @@ abstract final class ClaimFormValidator {
       return 'Enter the estimated loss amount.';
     }
     final double? parsed = double.tryParse(amount);
-    if (parsed == null || parsed <= 0) {
+    if (parsed == null || !parsed.isFinite || parsed <= 0) {
       return 'Enter a valid positive amount.';
     }
     return null;
@@ -89,7 +89,9 @@ abstract final class ClaimFormValidator {
     if (descriptionError != null) {
       errors['description'] = descriptionError;
     }
-    if (details.estimatedLoss == null || details.estimatedLoss! <= 0) {
+    if (details.estimatedLoss == null ||
+        !details.estimatedLoss!.isFinite ||
+        details.estimatedLoss! <= 0) {
       errors['estimatedLoss'] = 'Enter a valid positive amount.';
     }
     return errors;

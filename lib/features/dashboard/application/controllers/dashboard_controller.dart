@@ -3,22 +3,15 @@ import 'package:flutter/foundation.dart';
 import '../../domain/entities/dashboard_summary.dart';
 import '../../domain/repositories/dashboard_repository.dart';
 
-enum DashboardStatus {
-  initial,
-  loading,
-  success,
-  failure,
-}
+enum DashboardStatus { initial, loading, success, failure }
 
 class DashboardController extends ChangeNotifier {
-  DashboardController({
-    required DashboardRepository repository,
-  }) : _repository = repository;
+  DashboardController({required DashboardRepository repository})
+    : _repository = repository;
 
   final DashboardRepository _repository;
 
-  DashboardStatus _status =
-      DashboardStatus.initial;
+  DashboardStatus _status = DashboardStatus.initial;
 
   DashboardSummary? _summary;
 
@@ -30,8 +23,7 @@ class DashboardController extends ChangeNotifier {
 
   String? get errorMessage => _errorMessage;
 
-  bool get isLoading =>
-      _status == DashboardStatus.loading;
+  bool get isLoading => _status == DashboardStatus.loading;
 
   Future<void> loadDashboard() async {
     if (isLoading) {
@@ -41,24 +33,34 @@ class DashboardController extends ChangeNotifier {
     _status = DashboardStatus.loading;
     _errorMessage = null;
 
-    notifyListeners();
+    _notify();
 
     try {
-      _summary =
-      await _repository.getDashboardSummary();
+      _summary = await _repository.getDashboardSummary();
 
       _status = DashboardStatus.success;
     } catch (_) {
       _status = DashboardStatus.failure;
 
-      _errorMessage =
-      'Unable to load dashboard. Please try again.';
+      _errorMessage = 'Unable to load dashboard. Please try again.';
     }
 
-    notifyListeners();
+    _notify();
   }
 
   Future<void> refreshDashboard() async {
     await loadDashboard();
+  }
+
+  bool _disposed = false;
+
+  void _notify() {
+    if (!_disposed) notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 }

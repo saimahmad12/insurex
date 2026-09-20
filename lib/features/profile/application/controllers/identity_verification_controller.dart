@@ -145,7 +145,9 @@ class IdentityVerificationController extends ChangeNotifier {
       if (progress != null) {
         _applyProgress(progress);
       }
-      _flowStep = previousStatus == IdentityVerificationStatus.rejected
+      _flowStep = !_consentConfirmed
+          ? IdentityVerificationFlowStep.introduction
+          : previousStatus == IdentityVerificationStatus.rejected
           ? IdentityVerificationFlowStep.legalDetails
           : _legalDetails == null
           ? IdentityVerificationFlowStep.introduction

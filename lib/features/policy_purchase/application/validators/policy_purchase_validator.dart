@@ -8,14 +8,15 @@ abstract final class PolicyPurchaseValidator {
     required double maximumCoverage,
   }) {
     final Map<String, String> errors = <String, String>{};
-    if (configuration.coverageAmount < minimumCoverage ||
+    if (!configuration.coverageAmount.isFinite ||
+        configuration.coverageAmount < minimumCoverage ||
         configuration.coverageAmount > maximumCoverage) {
       errors['coverageAmount'] = 'Select a coverage amount within plan limits.';
     }
     if (configuration.durationMonths <= 0) {
       errors['durationMonths'] = 'Select a policy duration.';
     }
-    if (configuration.deductible < 0) {
+    if (!configuration.deductible.isFinite || configuration.deductible < 0) {
       errors['deductible'] = 'Deductible cannot be negative.';
     }
     if (configuration.insuredPeople < 1) {
@@ -46,7 +47,7 @@ abstract final class PolicyPurchaseValidator {
             value.manufacturingYear > reference.year) {
           errors['manufacturingYear'] = 'Enter a valid manufacturing year.';
         }
-        if (value.vehicleValue <= 0) {
+        if (!value.vehicleValue.isFinite || value.vehicleValue <= 0) {
           errors['vehicleValue'] = 'Enter a valid vehicle value.';
         }
       case HealthPolicyApplication value:
@@ -79,7 +80,7 @@ abstract final class PolicyPurchaseValidator {
           errors['travellers'] = 'Add at least one traveller.';
         }
       case LifePolicyApplication value:
-        if (value.coverageAmount <= 0) {
+        if (!value.coverageAmount.isFinite || value.coverageAmount <= 0) {
           errors['coverageAmount'] = 'Enter a valid life coverage amount.';
         }
         _required(errors, 'occupation', value.occupation);
@@ -88,7 +89,7 @@ abstract final class PolicyPurchaseValidator {
         _required(errors, 'address', value.address);
         _required(errors, 'ownershipStatus', value.ownershipStatus);
         _required(errors, 'coverageType', value.coverageType);
-        if (value.estimatedValue <= 0) {
+        if (!value.estimatedValue.isFinite || value.estimatedValue <= 0) {
           errors['estimatedValue'] = 'Enter a valid property value.';
         }
     }

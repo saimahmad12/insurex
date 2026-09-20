@@ -71,7 +71,7 @@ class PoliciesController extends ChangeNotifier {
     _status = PoliciesStatus.loading;
     _errorMessage = null;
 
-    notifyListeners();
+    _notify();
 
     try {
       _policies = await _repository.getPolicies();
@@ -82,7 +82,7 @@ class PoliciesController extends ChangeNotifier {
       _errorMessage = 'Unable to load your policies. Please try again.';
     } finally {
       _loadInProgress = false;
-      notifyListeners();
+      _notify();
     }
   }
 
@@ -92,10 +92,22 @@ class PoliciesController extends ChangeNotifier {
     }
 
     _selectedFilter = filter;
-    notifyListeners();
+    _notify();
   }
 
   Future<void> refresh() async {
     await loadPolicies();
+  }
+
+  bool _disposed = false;
+
+  void _notify() {
+    if (!_disposed) notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 }

@@ -47,12 +47,12 @@ class SellerLoginController extends ChangeNotifier {
     _result = null;
     if (_fieldErrors.isNotEmpty) {
       _status = SellerLoginStatus.failure;
-      notifyListeners();
+      _notify();
       return null;
     }
 
     _status = SellerLoginStatus.authenticating;
-    notifyListeners();
+    _notify();
     try {
       final SellerAuthenticationResult result = await _repository.login(
         SellerLoginCredentials(
@@ -96,7 +96,7 @@ class SellerLoginController extends ChangeNotifier {
           'Unable to sign in to the company portal. Please try again.';
       return null;
     } finally {
-      notifyListeners();
+      _notify();
     }
   }
 
@@ -108,6 +108,18 @@ class SellerLoginController extends ChangeNotifier {
       ..remove(field);
     _errorMessage = null;
     _status = SellerLoginStatus.idle;
-    notifyListeners();
+    _notify();
+  }
+
+  bool _disposed = false;
+
+  void _notify() {
+    if (!_disposed) notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 }

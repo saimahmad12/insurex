@@ -48,6 +48,7 @@ class _LiveIdentityCaptureStepState extends State<LiveIdentityCaptureStep>
   bool _initializing = true;
   bool _takingPicture = false;
   String? _cameraError;
+  int _cameraGeneration = 0;
 
   @override
   void initState() {
@@ -86,9 +87,16 @@ class _LiveIdentityCaptureStepState extends State<LiveIdentityCaptureStep>
   }
 
   Future<void> _initializeCamera() async {
-    if (mounted) setState(() => _initializing = true);
+    if (!mounted) return;
+    final int generation = ++_cameraGeneration;
+    final CameraController? previous = _cameraController;
+    _cameraController = null;
+    CameraController? pending;
+    setState(() => _initializing = true);
     try {
+      await previous?.dispose();
       final List<CameraDescription> cameras = await availableCameras();
+      if (!mounted || generation != _cameraGeneration) return;
       final CameraLensDirection direction =
           widget.side == IdentityCaptureSide.selfie
           ? CameraLensDirection.front
@@ -103,24 +111,25 @@ class _LiveIdentityCaptureStepState extends State<LiveIdentityCaptureStep>
         enableAudio: false,
         imageFormatGroup: ImageFormatGroup.jpeg,
       );
+      pending = controller;
       await controller.initialize();
-      if (!mounted) {
-        await controller.dispose();
-        return;
-      }
+      if (!mounted || generation != _cameraGeneration) return;
       _cameraController = controller;
+      pending = null;
       setState(() {
         _initializing = false;
         _cameraError = null;
       });
     } catch (_) {
-      if (mounted) {
+      if (mounted && generation == _cameraGeneration) {
         setState(() {
           _initializing = false;
           _cameraError =
               'Camera access is required for secure live identity capture.';
         });
       }
+    } finally {
+      await pending?.dispose();
     }
   }
 
@@ -163,6 +172,7 @@ class _LiveIdentityCaptureStepState extends State<LiveIdentityCaptureStep>
           ),
         );
       }
+      if (!mounted) return;
       final bool accepted = await widget.onRegister(input);
       if (!accepted && mounted && _preview != null) {
         try {
@@ -319,6 +329,7 @@ class _LiveIdentityCaptureStepState extends State<LiveIdentityCaptureStep>
   }
 
   Future<void> _disposeCamera() async {
+    _cameraGeneration++;
     final CameraController? controller = _cameraController;
     _cameraController = null;
     await controller?.dispose();
