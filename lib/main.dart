@@ -1,25 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'app.dart';
+import 'core/storage/auth_token_storage.dart';
+import 'features/auth/data/repositories/api_auth_repository.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+void main() {
+  final SecureAuthTokenStorage tokenStorage =
+  SecureAuthTokenStorage();
 
-  await SystemChrome.setPreferredOrientations(
-    <DeviceOrientation>[
-      DeviceOrientation.portraitUp,
-    ],
+  final ApiAuthRepository authRepository =
+  ApiAuthRepository(
+    tokenStorage: tokenStorage,
   );
 
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarColor: Colors.white,
-      systemNavigationBarIconBrightness: Brightness.dark,
+  runApp(
+    InsureXApp(
+      authRepository: authRepository,
     ),
   );
-
-  runApp(const InsureXApp());
 }

@@ -20,6 +20,7 @@ import 'features/auth/application/validators/seller_auth_validator.dart';
 // ============================================================
 // AUTH REPOSITORIES
 // ============================================================
+import 'features/auth/domain/repositories/auth_repository.dart';
 import 'features/auth/data/repositories/mock_auth_repository.dart';
 import 'features/auth/data/repositories/mock_otp_verification_repository.dart';
 import 'features/auth/data/repositories/mock_password_recovery_repository.dart';
@@ -169,6 +170,7 @@ import 'features/policy_purchase/presentation/pages/premium_payment_receipt_page
 class InsureXApp extends StatefulWidget {
   const InsureXApp({
     this.initialVerificationStatus = IdentityVerificationStatus.notStarted,
+    this.authRepository,
     this.sellerAuthRepository,
     this.sellerDashboardRepository,
     this.sellerRegistrationRepository,
@@ -176,8 +178,13 @@ class InsureXApp extends StatefulWidget {
   });
 
   final IdentityVerificationStatus initialVerificationStatus;
+
+  final AuthRepository? authRepository;
+
   final SellerAuthRepository? sellerAuthRepository;
+
   final SellerDashboardRepository? sellerDashboardRepository;
+
   final SellerRegistrationRepository? sellerRegistrationRepository;
 
   @override
@@ -262,7 +269,11 @@ class _InsureXAppState extends State<InsureXApp> {
         // ============================================================
         AppRoutes.login: (BuildContext context) {
           return LoginPage(
-            controller: LoginController(repository: const MockAuthRepository()),
+            controller: LoginController(
+              repository:
+              widget.authRepository ??
+                  const MockAuthRepository(),
+            ),
 
             onBack: () {
               Navigator.of(context).pop();
