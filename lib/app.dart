@@ -88,6 +88,10 @@ import 'features/payments/presentation/pages/payments_history_page.dart';
 // ============================================================
 // PROFILE
 // ============================================================
+import 'core/storage/auth_token_storage.dart';
+
+import 'features/profile/data/repositories/api_identity_verification_repository.dart';
+import 'features/profile/domain/repositories/identity_verification_repository.dart';
 import 'features/profile/application/controllers/edit_profile_controller.dart';
 import 'features/profile/application/controllers/identity_verification_controller.dart';
 import 'features/profile/application/controllers/notification_preferences_controller.dart';
@@ -173,6 +177,7 @@ class InsureXApp extends StatefulWidget {
   const InsureXApp({
     this.initialVerificationStatus = IdentityVerificationStatus.notStarted,
     this.authRepository,
+    this.authTokenStorage,
     this.authSessionRepository,
     this.sellerAuthRepository,
     this.sellerDashboardRepository,
@@ -183,6 +188,9 @@ class InsureXApp extends StatefulWidget {
   final IdentityVerificationStatus initialVerificationStatus;
 
   final AuthRepository? authRepository;
+
+  final AuthTokenStorage? authTokenStorage;
+
   final AuthSessionRepository? authSessionRepository;
 
   final SellerAuthRepository? sellerAuthRepository;
@@ -199,6 +207,7 @@ class _InsureXAppState extends State<InsureXApp> {
   late final MockClaimStatusRepository _claimsRepository;
   late final MockClaimPayoutRepository _payoutRepository;
   late final MockProfileRepository _profileRepository;
+  late final IdentityVerificationRepository _identityVerificationRepository;
   late final MockNotificationPreferencesRepository
   _notificationPreferencesRepository;
   late final MockSecurityRepository _securityRepository;
@@ -223,6 +232,13 @@ class _InsureXAppState extends State<InsureXApp> {
       initialVerificationStatus: widget.initialVerificationStatus,
       verificationOutcome: IdentityVerificationStatus.verified,
     );
+    _identityVerificationRepository = widget.authTokenStorage != null
+        ? ApiIdentityVerificationRepository(
+            tokenStorage: widget.authTokenStorage!,
+            canonicalAccountNameLoader:
+                _profileRepository.getCanonicalAccountName,
+          )
+        : _profileRepository;
     _notificationPreferencesRepository =
         MockNotificationPreferencesRepository();
     _securityRepository = MockSecurityRepository();
@@ -231,7 +247,7 @@ class _InsureXAppState extends State<InsureXApp> {
     _policiesRepository = MockPoliciesRepository();
     _marketplaceRepository = MockInsuranceMarketplaceRepository();
     _policyPurchaseRepository = MockPolicyPurchaseRepository(
-      identityRepository: _profileRepository,
+      identityRepository: _identityVerificationRepository,
       policiesRepository: _policiesRepository,
     );
     _policyApplicationRepository = MockPolicyApplicationRepository();
@@ -341,15 +357,15 @@ class _InsureXAppState extends State<InsureXApp> {
           final SignupController signupController = SignupController(
             repository: widget.authRepository != null
                 ? ApiSignupRepository(
-              authRepository: widget.authRepository!,
-              initializeAccountName:
-              _profileRepository.initializeUnverifiedAccountName,
-            )
+                    authRepository: widget.authRepository!,
+                    initializeAccountName:
+                        _profileRepository.initializeUnverifiedAccountName,
+                  )
                 : MockSignupRepository(
-              initializeAccountName:
-              _profileRepository.initializeUnverifiedAccountName,
-            ),
-            identityRepository: _profileRepository,
+                    initializeAccountName:
+                        _profileRepository.initializeUnverifiedAccountName,
+                  ),
+            identityRepository: _identityVerificationRepository,
           );
           return SignupPage(
             controller: signupController,
@@ -1165,7 +1181,7 @@ class _InsureXAppState extends State<InsureXApp> {
               : IdentityVerificationEntryPoint.account;
           return IdentityVerificationPage(
             controller: IdentityVerificationController(
-              repository: _profileRepository,
+              repository: _identityVerificationRepository,
             ),
             startImmediately:
                 entryPoint == IdentityVerificationEntryPoint.signup,
@@ -1179,7 +1195,7 @@ class _InsureXAppState extends State<InsureXApp> {
         AppRoutes.purchaseIdentityVerification: (BuildContext context) {
           return IdentityVerificationPage(
             controller: IdentityVerificationController(
-              repository: _profileRepository,
+              repository: _identityVerificationRepository,
             ),
             startImmediately: true,
             onBack: (IdentityVerification? verification) {
