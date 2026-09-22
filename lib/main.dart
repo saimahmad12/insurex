@@ -15,6 +15,7 @@ void main() {
   runApp(
     InsureXApp(
       authRepository: authRepository,
+      authTokenStorage: tokenStorage,
       authSessionRepository: TokenAuthSessionRepository(
         tokenStorage: tokenStorage,
       ),

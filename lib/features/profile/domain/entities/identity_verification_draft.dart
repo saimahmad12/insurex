@@ -85,9 +85,8 @@ class IdentityLegalDetails {
     required this.cnicExpiryDate,
   });
 
-  final String fullLegalName;
-
   /// Kept only in memory during verification and never used in route arguments.
+  final String fullLegalName;
   final String cnicNumber;
   final DateTime dateOfBirth;
   final ProfileGender gender;
