@@ -195,6 +195,8 @@ class InsureXApp extends StatefulWidget {
 }
 
 class _InsureXAppState extends State<InsureXApp> {
+  bool _sessionResolved = false;
+  bool _sessionRestored = false;
   late final MockClaimStatusRepository _claimsRepository;
   late final MockClaimPayoutRepository _payoutRepository;
   late final MockProfileRepository _profileRepository;
@@ -242,6 +244,36 @@ class _InsureXAppState extends State<InsureXApp> {
     _sellerRegistrationRepository =
         widget.sellerRegistrationRepository ??
         MockSellerRegistrationRepository();
+
+    if (widget.authSessionRepository != null) {
+      unawaited(_restoreSession());
+    } else {
+      _sessionResolved = true;
+    }
+  }
+
+  Future<void> _restoreSession() async {
+    try {
+      final bool restored = await _authSessionRepository.restoreSession();
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _sessionRestored = restored;
+        _sessionResolved = true;
+      });
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _sessionRestored = false;
+        _sessionResolved = true;
+      });
+    }
   }
 
   @override
@@ -250,24 +282,31 @@ class _InsureXAppState extends State<InsureXApp> {
       title: 'InsureX',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
-      initialRoute: AppRoutes.splash,
 
-      routes: <String, WidgetBuilder>{
-        // ============================================================
-        // SPLASH
-        // ============================================================
-        AppRoutes.splash: (BuildContext context) {
+      home: Builder(
+        builder: (BuildContext rootContext) {
+          if (!_sessionResolved) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          if (_sessionRestored) {
+            return _buildDashboardNavigationShell(rootContext);
+          }
+
           return SplashPage(
             onGetStarted: () {
-              Navigator.of(context).pushNamed(AppRoutes.signup);
+              Navigator.of(rootContext).pushNamed(AppRoutes.signup);
             },
-
             onLogin: () {
-              Navigator.of(context).pushNamed(AppRoutes.login);
+              Navigator.of(rootContext).pushNamed(AppRoutes.login);
             },
           );
         },
+      ),
 
+      routes: <String, WidgetBuilder>{
         // ============================================================
         // LOGIN
         // ============================================================
