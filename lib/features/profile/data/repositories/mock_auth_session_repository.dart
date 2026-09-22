@@ -8,19 +8,34 @@ class MockAuthSessionRepository implements AuthSessionRepository {
 
   final Duration delay;
   final bool failLogout;
+
   bool _sessionActive = true;
+
   bool get sessionActive => _sessionActive;
+
   int logoutCallCount = 0;
+
+  @override
+  Future<bool> restoreSession() async {
+    if (delay > Duration.zero) {
+      await Future<void>.delayed(delay);
+    }
+
+    return _sessionActive;
+  }
 
   @override
   Future<void> logout() async {
     logoutCallCount++;
+
     if (delay > Duration.zero) {
       await Future<void>.delayed(delay);
     }
+
     if (failLogout) {
       throw StateError('Unable to log out.');
     }
+
     _sessionActive = false;
   }
 }
