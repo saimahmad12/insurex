@@ -24,8 +24,9 @@ class ResetPasswordController extends ChangeNotifier {
   bool get isSuccess => _status == ResetPasswordStatus.success;
 
   Future<bool> resetPassword({
-    required String identity,
+    required String resetToken,
     required String newPassword,
+    required String confirmPassword,
   }) async {
     if (isLoading) {
       return false;
@@ -38,8 +39,9 @@ class ResetPasswordController extends ChangeNotifier {
 
     try {
       final ResetPasswordRequest request = ResetPasswordRequest(
-        identity: identity.trim(),
+        resetToken: resetToken,
         newPassword: newPassword,
+        confirmPassword: confirmPassword,
       );
 
       final bool success = await _repository.resetPassword(request);
@@ -53,7 +55,6 @@ class ResetPasswordController extends ChangeNotifier {
       }
 
       _status = ResetPasswordStatus.failure;
-
       _errorMessage = 'Unable to reset your password. Please try again.';
 
       _notify();
@@ -61,7 +62,6 @@ class ResetPasswordController extends ChangeNotifier {
       return false;
     } catch (_) {
       _status = ResetPasswordStatus.failure;
-
       _errorMessage = 'Something went wrong. Please try again.';
 
       _notify();

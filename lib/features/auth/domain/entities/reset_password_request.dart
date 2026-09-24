@@ -1,9 +1,11 @@
 class ResetPasswordRequest {
   const ResetPasswordRequest({
-    required this.identity,
+    required this.resetToken,
     required this.newPassword,
+    required this.confirmPassword,
   });
 
-  final String identity;
+  final String resetToken;
   final String newPassword;
+  final String confirmPassword;
 }

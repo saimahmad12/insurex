@@ -9,6 +9,7 @@ import '../validators/otp_validator.dart';
 import '../widgets/forgot_password_logo.dart';
 import '../widgets/otp_code_field.dart';
 import '../widgets/password_recovery_progress.dart';
+import '../../domain/entities/password_reset_session.dart';
 
 class OtpVerificationPage extends StatefulWidget {
   const OtpVerificationPage({
@@ -24,7 +25,7 @@ class OtpVerificationPage extends StatefulWidget {
   final OtpVerificationController controller;
 
   final VoidCallback onBack;
-  final VoidCallback onVerified;
+  final ValueChanged<PasswordResetSession> onVerified;
 
   @override
   State<OtpVerificationPage> createState() {
@@ -32,15 +33,13 @@ class OtpVerificationPage extends StatefulWidget {
   }
 }
 
-class _OtpVerificationPageState
-    extends State<OtpVerificationPage> {
+class _OtpVerificationPageState extends State<OtpVerificationPage> {
   String _otp = '';
 
   Future<void> _verifyOtp() async {
     FocusManager.instance.primaryFocus?.unfocus();
 
-    final String? validationError =
-    OtpValidator.validate(_otp);
+    final String? validationError = OtpValidator.validate(_otp);
 
     if (validationError != null) {
       ScaffoldMessenger.of(context)
@@ -55,23 +54,20 @@ class _OtpVerificationPageState
       return;
     }
 
-    final bool verified =
-    await widget.controller.verifyOtp(
+    final PasswordResetSession? session = await widget.controller.verifyOtp(
       identity: widget.identity,
       code: _otp,
     );
 
-    if (!mounted || !verified) {
+    if (!mounted || session == null) {
       return;
     }
 
-    widget.onVerified();
+    widget.onVerified(session);
   }
 
   Future<void> _resendCode() async {
-    await widget.controller.resendOtp(
-      identity: widget.identity,
-    );
+    await widget.controller.resendOtp(identity: widget.identity);
   }
 
   @override
@@ -88,79 +84,54 @@ class _OtpVerificationPageState
       body: GlassBackground(
         child: SafeArea(
           child: LayoutBuilder(
-            builder: (
-                BuildContext context,
-                BoxConstraints constraints,
-                ) {
-              final double logoSize =
-              (constraints.maxHeight * 0.18).clamp(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              final double logoSize = (constraints.maxHeight * 0.18).clamp(
                 125.0,
                 155.0,
               );
 
               return SingleChildScrollView(
-                physics:
-                const BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 padding: EdgeInsets.fromLTRB(
                   22,
                   12,
                   22,
-                  24 +
-                      MediaQuery.viewInsetsOf(context)
-                          .bottom *
-                          0.12,
+                  24 + MediaQuery.viewInsetsOf(context).bottom * 0.12,
                 ),
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
-                    minHeight:
-                    constraints.maxHeight - 36,
+                    minHeight: constraints.maxHeight - 36,
                   ),
                   child: Center(
                     child: ConstrainedBox(
-                      constraints:
-                      const BoxConstraints(
-                        maxWidth: 430,
-                      ),
+                      constraints: const BoxConstraints(maxWidth: 430),
                       child: AnimatedBuilder(
                         animation: widget.controller,
-                        builder: (
-                            BuildContext context,
-                            Widget? child,
-                            ) {
+                        builder: (BuildContext context, Widget? child) {
                           return Column(
-                            mainAxisAlignment:
-                            MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              _BackButton(
-                                onPressed:
-                                widget.onBack,
-                              ),
+                              _BackButton(onPressed: widget.onBack),
 
                               const SizedBox(height: 6),
 
-                              ForgotPasswordLogo(
-                                size: logoSize,
-                              ),
+                              ForgotPasswordLogo(size: logoSize),
 
                               const SizedBox(height: 12),
 
                               const PasswordRecoveryProgress(
-                                currentStep:
-                                PasswordRecoveryStep.code,
+                                currentStep: PasswordRecoveryStep.code,
                               ),
 
                               const SizedBox(height: 24),
 
                               const Text(
                                 'Verify Your Code',
-                                textAlign:
-                                TextAlign.center,
+                                textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color:
-                                  Colors.black87,
+                                  color: Colors.black87,
                                   fontSize: 29,
-                                  fontWeight:
-                                  FontWeight.w900,
+                                  fontWeight: FontWeight.w900,
                                   letterSpacing: -0.4,
                                 ),
                               ),
@@ -169,13 +140,10 @@ class _OtpVerificationPageState
 
                               Text(
                                 'Enter the 6-digit verification '
-                                    'code sent to',
-                                textAlign:
-                                TextAlign.center,
+                                'code sent to',
+                                textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color: AppColors
-                                      .textSecondary
-                                      .withValues(
+                                  color: AppColors.textSecondary.withValues(
                                     alpha: 0.76,
                                   ),
                                   fontSize: 13,
@@ -185,28 +153,20 @@ class _OtpVerificationPageState
                               const SizedBox(height: 6),
 
                               Text(
-                                _maskIdentity(
-                                  widget.identity,
-                                ),
-                                textAlign:
-                                TextAlign.center,
+                                _maskIdentity(widget.identity),
+                                textAlign: TextAlign.center,
                                 style: const TextStyle(
-                                  color:
-                                  AppColors.blue,
+                                  color: AppColors.blue,
                                   fontSize: 14,
-                                  fontWeight:
-                                  FontWeight.w700,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
 
                               const SizedBox(height: 25),
 
                               GlassContainer(
-                                width:
-                                double.infinity,
-                                padding:
-                                const EdgeInsets
-                                    .fromLTRB(
+                                width: double.infinity,
+                                padding: const EdgeInsets.fromLTRB(
                                   18,
                                   24,
                                   18,
@@ -216,66 +176,45 @@ class _OtpVerificationPageState
                                   children: <Widget>[
                                     const _VerificationIcon(),
 
-                                    const SizedBox(
-                                      height: 21,
-                                    ),
+                                    const SizedBox(height: 21),
 
                                     OtpCodeField(
-                                      onChanged: (
-                                          String value,
-                                          ) {
+                                      onChanged: (String value) {
                                         setState(() {
                                           _otp = value;
                                         });
 
-                                        widget.controller
-                                            .clearMessage();
+                                        widget.controller.clearMessage();
                                       },
                                     ),
 
-                                    if (widget.controller
-                                        .errorMessage !=
+                                    if (widget.controller.errorMessage !=
                                         null) ...<Widget>[
-                                      const SizedBox(
-                                        height: 14,
-                                      ),
+                                      const SizedBox(height: 14),
                                       _MessageBox(
-                                        message: widget
-                                            .controller
-                                            .errorMessage!,
+                                        message:
+                                            widget.controller.errorMessage!,
                                         isError: true,
                                       ),
                                     ],
 
-                                    if (widget.controller
-                                        .successMessage !=
+                                    if (widget.controller.successMessage !=
                                         null) ...<Widget>[
-                                      const SizedBox(
-                                        height: 14,
-                                      ),
+                                      const SizedBox(height: 14),
                                       _MessageBox(
-                                        message: widget
-                                            .controller
-                                            .successMessage!,
+                                        message:
+                                            widget.controller.successMessage!,
                                         isError: false,
                                       ),
                                     ],
 
-                                    const SizedBox(
-                                      height: 21,
-                                    ),
+                                    const SizedBox(height: 21),
 
                                     GlassActionButton(
-                                      label:
-                                      'Verify Code',
-                                      icon: Icons
-                                          .verified_rounded,
-                                      isLoading: widget
-                                          .controller
-                                          .isVerifying,
-                                      onPressed: widget
-                                          .controller
-                                          .isVerifying
+                                      label: 'Verify Code',
+                                      icon: Icons.verified_rounded,
+                                      isLoading: widget.controller.isVerifying,
+                                      onPressed: widget.controller.isVerifying
                                           ? null
                                           : _verifyOtp,
                                     ),
@@ -288,9 +227,7 @@ class _OtpVerificationPageState
                               Text(
                                 "Didn't receive the code?",
                                 style: TextStyle(
-                                  color: AppColors
-                                      .textSecondary
-                                      .withValues(
+                                  color: AppColors.textSecondary.withValues(
                                     alpha: 0.72,
                                   ),
                                   fontSize: 13,
@@ -298,56 +235,40 @@ class _OtpVerificationPageState
                               ),
 
                               TextButton(
-                                onPressed: widget
-                                    .controller
-                                    .isResending
+                                onPressed: widget.controller.isResending
                                     ? null
                                     : _resendCode,
-                                child: widget.controller
-                                    .isResending
+                                child: widget.controller.isResending
                                     ? const SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child:
-                                  CircularProgressIndicator(
-                                    strokeWidth:
-                                    2,
-                                    color:
-                                    AppColors
-                                        .pink,
-                                  ),
-                                )
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: AppColors.pink,
+                                        ),
+                                      )
                                     : const Text(
-                                  'Resend Code',
-                                  style:
-                                  TextStyle(
-                                    color:
-                                    AppColors
-                                        .pink,
-                                    fontWeight:
-                                    FontWeight
-                                        .w800,
-                                  ),
-                                ),
+                                        'Resend Code',
+                                        style: TextStyle(
+                                          color: AppColors.pink,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                      ),
                               ),
 
                               const SizedBox(height: 5),
 
                               TextButton.icon(
-                                onPressed:
-                                widget.onBack,
+                                onPressed: widget.onBack,
                                 icon: const Icon(
-                                  Icons
-                                      .edit_outlined,
+                                  Icons.edit_outlined,
                                   size: 17,
-                                  color: AppColors
-                                      .textSecondary,
+                                  color: AppColors.textSecondary,
                                 ),
                                 label: const Text(
                                   'Change email or mobile number',
                                   style: TextStyle(
-                                    color: AppColors
-                                        .textSecondary,
+                                    color: AppColors.textSecondary,
                                     fontSize: 12,
                                   ),
                                 ),
@@ -371,8 +292,7 @@ class _OtpVerificationPageState
     final String identity = value.trim();
 
     if (identity.contains('@')) {
-      final List<String> parts =
-      identity.split('@');
+      final List<String> parts = identity.split('@');
 
       if (parts.length != 2) {
         return identity;
@@ -387,19 +307,13 @@ class _OtpVerificationPageState
       return '${name.substring(0, 2)}***@${parts.last}';
     }
 
-    final String digits =
-    identity.replaceAll(
-      RegExp(r'[^0-9]'),
-      '',
-    );
+    final String digits = identity.replaceAll(RegExp(r'[^0-9]'), '');
 
     if (digits.length <= 4) {
       return identity;
     }
 
-    return '******${digits.substring(
-      digits.length - 4,
-    )}';
+    return '******${digits.substring(digits.length - 4)}';
   }
 }
 
@@ -412,23 +326,15 @@ class _VerificationIcon extends StatelessWidget {
       width: 62,
       height: 62,
       decoration: BoxDecoration(
-        borderRadius:
-        BorderRadius.circular(20),
-        gradient:
-        const LinearGradient(
+        borderRadius: BorderRadius.circular(20),
+        gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: <Color>[
-            AppColors.blue,
-            AppColors.blue,
-            AppColors.blue,
-          ],
+          colors: <Color>[AppColors.blue, AppColors.blue, AppColors.blue],
         ),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: AppColors.blue.withValues(
-              alpha: 0.33,
-            ),
+            color: AppColors.blue.withValues(alpha: 0.33),
             blurRadius: 22,
           ),
         ],
@@ -443,9 +349,7 @@ class _VerificationIcon extends StatelessWidget {
 }
 
 class _BackButton extends StatelessWidget {
-  const _BackButton({
-    required this.onPressed,
-  });
+  const _BackButton({required this.onPressed});
 
   final VoidCallback onPressed;
 
@@ -457,31 +361,17 @@ class _BackButton extends StatelessWidget {
         tooltip: 'Back',
         onPressed: onPressed,
         style: IconButton.styleFrom(
-          backgroundColor:
-          AppColors.white.withValues(
-            alpha: 0.09,
-          ),
-          side: BorderSide(
-            color:
-            AppColors.white.withValues(
-              alpha: 0.20,
-            ),
-          ),
+          backgroundColor: AppColors.white.withValues(alpha: 0.09),
+          side: BorderSide(color: AppColors.white.withValues(alpha: 0.20)),
         ),
-        icon: const Icon(
-          Icons.arrow_back_rounded,
-          color: AppColors.white,
-        ),
+        icon: const Icon(Icons.arrow_back_rounded, color: AppColors.white),
       ),
     );
   }
 }
 
 class _MessageBox extends StatelessWidget {
-  const _MessageBox({
-    required this.message,
-    required this.isError,
-  });
+  const _MessageBox({required this.message, required this.isError});
 
   final String message;
   final bool isError;
@@ -494,29 +384,18 @@ class _MessageBox extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 13,
-        vertical: 11,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
       decoration: BoxDecoration(
-        color: color.withValues(
-          alpha: 0.12,
-        ),
-        borderRadius:
-        BorderRadius.circular(13),
-        border: Border.all(
-          color: color.withValues(
-            alpha: 0.46,
-          ),
-        ),
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(13),
+        border: Border.all(color: color.withValues(alpha: 0.46)),
       ),
       child: Row(
         children: <Widget>[
           Icon(
             isError
                 ? Icons.error_outline_rounded
-                : Icons
-                .check_circle_outline_rounded,
+                : Icons.check_circle_outline_rounded,
             color: color,
             size: 19,
           ),
@@ -524,10 +403,7 @@ class _MessageBox extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: TextStyle(
-                color: color,
-                fontSize: 12.5,
-              ),
+              style: TextStyle(color: color, fontSize: 12.5),
             ),
           ),
         ],

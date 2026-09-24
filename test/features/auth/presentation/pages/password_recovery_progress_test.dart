@@ -2,16 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:insurancex/core/theme/app_colors.dart';
 import 'package:insurancex/core/theme/app_theme.dart';
-import 'package:insurancex/features/auth/application/controllers/forgot_password_controller.dart';
 import 'package:insurancex/features/auth/application/controllers/otp_verification_controller.dart';
 import 'package:insurancex/features/auth/application/controllers/reset_password_controller.dart';
 import 'package:insurancex/features/auth/data/repositories/mock_otp_verification_repository.dart';
-import 'package:insurancex/features/auth/data/repositories/mock_password_recovery_repository.dart';
 import 'package:insurancex/features/auth/data/repositories/mock_reset_password_repository.dart';
-import 'package:insurancex/features/auth/presentation/pages/forgot_password_page.dart';
 import 'package:insurancex/features/auth/presentation/pages/otp_verification_page.dart';
 import 'package:insurancex/features/auth/presentation/pages/reset_password_page.dart';
 import 'package:insurancex/features/auth/presentation/widgets/password_recovery_progress.dart';
+import 'package:insurancex/features/auth/domain/entities/password_reset_session.dart';
 
 void main() {
   testWidgets('shared progress renders every recovery state correctly', (
@@ -29,72 +27,71 @@ void main() {
     }
   });
 
-  testWidgets('Forgot Password uses the Email progress state', (
-    WidgetTester tester,
-  ) async {
-    _useTallTestSurface(tester);
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.darkTheme,
-        home: ForgotPasswordPage(
-          controller: ForgotPasswordController(
-            repository: const MockPasswordRecoveryRepository(),
+  testWidgets(
+    'OTP Verification uses the Code progress state',
+        (WidgetTester tester) async {
+      _useTallTestSurface(tester);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.darkTheme,
+          home: OtpVerificationPage(
+            identity: 'policyholder@example.test',
+            controller: OtpVerificationController(
+              repository: const MockOtpVerificationRepository(),
+            ),
+            onBack: () {},
+            onVerified: (PasswordResetSession session) {},
           ),
-          onBack: () {},
-          onBackToLogin: () {},
-          onContinueToVerification: (_) {},
         ),
-      ),
-    );
+      );
 
-    expect(find.text('Forgot Password?'), findsOneWidget);
-    _expectProgress(tester, PasswordRecoveryStep.email);
-  });
+      expect(
+        find.text('Verify Your Code'),
+        findsOneWidget,
+      );
 
-  testWidgets('OTP Verification uses the Code progress state', (
-    WidgetTester tester,
-  ) async {
-    _useTallTestSurface(tester);
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.darkTheme,
-        home: OtpVerificationPage(
-          identity: 'policyholder@example.test',
-          controller: OtpVerificationController(
-            repository: const MockOtpVerificationRepository(),
+      _expectProgress(
+        tester,
+        PasswordRecoveryStep.code,
+      );
+    },
+  );
+
+  testWidgets(
+    'New Password uses the Password progress state',
+        (WidgetTester tester) async {
+      _useTallTestSurface(tester);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.darkTheme,
+          home: ResetPasswordPage(
+            session: const PasswordResetSession(
+              identity: 'policyholder@example.test',
+              resetToken: 'test-reset-token',
+            ),
+            controller: ResetPasswordController(
+              repository: const MockResetPasswordRepository(),
+            ),
+            onBack: () {},
+            onResetSuccess: () {},
+            onBackToLogin: () {},
           ),
-          onBack: () {},
-          onVerified: () {},
         ),
-      ),
-    );
+      );
 
-    expect(find.text('Verify Your Code'), findsOneWidget);
-    _expectProgress(tester, PasswordRecoveryStep.code);
-  });
+      expect(
+        find.text('Create New Password'),
+        findsOneWidget,
+      );
 
-  testWidgets('New Password uses the Password progress state', (
-    WidgetTester tester,
-  ) async {
-    _useTallTestSurface(tester);
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.darkTheme,
-        home: ResetPasswordPage(
-          identity: 'policyholder@example.test',
-          controller: ResetPasswordController(
-            repository: const MockResetPasswordRepository(),
-          ),
-          onBack: () {},
-          onResetSuccess: () {},
-          onBackToLogin: () {},
-        ),
-      ),
-    );
-
-    expect(find.text('Create New Password'), findsOneWidget);
-    _expectProgress(tester, PasswordRecoveryStep.password);
-  });
+      _expectProgress(
+        tester,
+        PasswordRecoveryStep.password,
+      );
+    },
+  );
 }
 
 void _expectProgress(WidgetTester tester, PasswordRecoveryStep currentStep) {

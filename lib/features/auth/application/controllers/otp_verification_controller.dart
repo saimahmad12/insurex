@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../domain/entities/otp_verification_request.dart';
 import '../../domain/repositories/otp_verification_repository.dart';
+import '../../domain/entities/password_reset_session.dart';
 
 enum OtpVerificationStatus {
   idle,
@@ -33,11 +34,14 @@ class OtpVerificationController extends ChangeNotifier {
 
   bool get isResending => _status == OtpVerificationStatus.resending;
 
-  Future<bool> verifyOtp({
+  Future<PasswordResetSession?> verifyOtp({
     required String identity,
     required String code,
   }) async {
-    if (_disposed || isVerifying || isResending) return false;
+    if (_disposed || isVerifying || isResending) {
+      return null;
+    }
+
     _status = OtpVerificationStatus.verifying;
     _errorMessage = null;
     _successMessage = null;
@@ -50,31 +54,31 @@ class OtpVerificationController extends ChangeNotifier {
         code: code.trim(),
       );
 
-      final bool verified = await _repository.verifyOtp(request);
+      final PasswordResetSession? session = await _repository.verifyOtp(
+        request,
+      );
 
-      if (verified) {
+      if (session != null) {
         _status = OtpVerificationStatus.verified;
 
         _notify();
 
-        return true;
+        return session;
       }
 
       _status = OtpVerificationStatus.failure;
-
       _errorMessage = 'Invalid verification code. Please try again.';
 
       _notify();
 
-      return false;
+      return null;
     } catch (_) {
       _status = OtpVerificationStatus.failure;
-
       _errorMessage = 'Unable to verify the code. Please try again.';
 
       _notify();
 
-      return false;
+      return null;
     }
   }
 
