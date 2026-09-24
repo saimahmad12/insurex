@@ -16,6 +16,7 @@ import 'features/auth/application/controllers/seller_login_controller.dart';
 import 'features/auth/application/controllers/seller_registration_controller.dart';
 import 'features/auth/application/controllers/signup_controller.dart';
 import 'features/auth/application/validators/seller_auth_validator.dart';
+import 'features/auth/domain/entities/password_reset_session.dart';
 
 // ============================================================
 // AUTH REPOSITORIES
@@ -23,9 +24,6 @@ import 'features/auth/application/validators/seller_auth_validator.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
 import 'features/auth/data/repositories/api_signup_repository.dart';
 import 'features/auth/data/repositories/mock_auth_repository.dart';
-import 'features/auth/data/repositories/mock_otp_verification_repository.dart';
-import 'features/auth/data/repositories/mock_password_recovery_repository.dart';
-import 'features/auth/data/repositories/mock_reset_password_repository.dart';
 import 'features/auth/data/repositories/mock_seller_auth_repository.dart';
 import 'features/auth/data/repositories/mock_seller_registration_repository.dart';
 import 'features/auth/data/repositories/mock_signup_repository.dart';
@@ -51,6 +49,9 @@ import 'features/auth/presentation/pages/seller_login_page.dart';
 import 'features/auth/presentation/pages/seller_registration_page.dart';
 import 'features/auth/presentation/pages/seller_registration_submitted_page.dart';
 import 'features/auth/presentation/pages/signup_page.dart';
+import 'features/auth/data/repositories/api_password_recovery_repository.dart';
+import 'features/auth/data/repositories/api_otp_verification_repository.dart';
+import 'features/auth/data/repositories/api_reset_password_repository.dart';
 
 // ============================================================
 // SPLASH
@@ -648,7 +649,7 @@ class _InsureXAppState extends State<InsureXApp> {
         AppRoutes.forgotPassword: (BuildContext context) {
           return ForgotPasswordPage(
             controller: ForgotPasswordController(
-              repository: const MockPasswordRecoveryRepository(),
+              repository: ApiPasswordRecoveryRepository(),
             ),
 
             onBack: () {
@@ -685,7 +686,7 @@ class _InsureXAppState extends State<InsureXApp> {
             identity: identity,
 
             controller: OtpVerificationController(
-              repository: const MockOtpVerificationRepository(),
+              repository: ApiOtpVerificationRepository(),
             ),
 
             onBack: () {
@@ -693,10 +694,10 @@ class _InsureXAppState extends State<InsureXApp> {
             },
 
             // OTP verified successfully.
-            onVerified: () {
+            onVerified: (PasswordResetSession session) {
               Navigator.of(context).pushReplacementNamed(
                 AppRoutes.resetPassword,
-                arguments: identity,
+                arguments: session,
               );
             },
           );
@@ -708,13 +709,29 @@ class _InsureXAppState extends State<InsureXApp> {
         AppRoutes.resetPassword: (BuildContext context) {
           final Object? arguments = ModalRoute.of(context)?.settings.arguments;
 
-          final String identity = arguments is String ? arguments : '';
+          if (arguments is! PasswordResetSession) {
+            return Scaffold(
+              body: Center(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      AppRoutes.login,
+                      (Route<dynamic> route) => false,
+                    );
+                  },
+                  child: const Text('Password reset session is unavailable.'),
+                ),
+              ),
+            );
+          }
+
+          final PasswordResetSession session = arguments;
 
           return ResetPasswordPage(
-            identity: identity,
+            session: session,
 
             controller: ResetPasswordController(
-              repository: const MockResetPasswordRepository(),
+              repository: ApiResetPasswordRepository(),
             ),
 
             onBack: () {
