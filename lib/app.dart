@@ -90,7 +90,8 @@ import 'features/payments/presentation/pages/payments_history_page.dart';
 // PROFILE
 // ============================================================
 import 'core/storage/auth_token_storage.dart';
-
+import 'features/profile/data/repositories/api_security_repository.dart';
+import 'features/profile/domain/repositories/security_repository.dart';
 import 'features/profile/data/repositories/api_identity_verification_repository.dart';
 import 'features/profile/domain/repositories/identity_verification_repository.dart';
 import 'features/profile/application/controllers/edit_profile_controller.dart';
@@ -213,7 +214,7 @@ class _InsureXAppState extends State<InsureXApp> {
   late final IdentityVerificationRepository _identityVerificationRepository;
   late final MockNotificationPreferencesRepository
   _notificationPreferencesRepository;
-  late final MockSecurityRepository _securityRepository;
+  late final SecurityRepository _securityRepository;
   late final AuthSessionRepository _authSessionRepository;
   late final MockPoliciesRepository _policiesRepository;
   late final MockInsuranceMarketplaceRepository _marketplaceRepository;
@@ -244,7 +245,15 @@ class _InsureXAppState extends State<InsureXApp> {
         : _profileRepository;
     _notificationPreferencesRepository =
         MockNotificationPreferencesRepository();
-    _securityRepository = MockSecurityRepository();
+    final MockSecurityRepository localSecurityRepository =
+        MockSecurityRepository();
+
+    _securityRepository = widget.authTokenStorage != null
+        ? ApiSecurityRepository(
+            tokenStorage: widget.authTokenStorage!,
+            settingsRepository: localSecurityRepository,
+          )
+        : localSecurityRepository;
     _authSessionRepository =
         widget.authSessionRepository ?? MockAuthSessionRepository();
     _policiesRepository = MockPoliciesRepository();
@@ -1296,7 +1305,7 @@ class _InsureXAppState extends State<InsureXApp> {
               Navigator.of(context).pop();
             },
             onPasswordChanged: () {
-              Navigator.of(context).pop(true);
+              _logoutToLogin(context);
             },
           );
         },
