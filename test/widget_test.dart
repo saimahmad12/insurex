@@ -23,6 +23,7 @@ import 'package:insurancex/features/policies/application/controllers/policies_co
 import 'package:insurancex/features/policies/domain/entities/insurance_policy.dart';
 import 'package:insurancex/features/policies/domain/repositories/policies_repository.dart';
 import 'package:insurancex/features/profile/domain/entities/identity_verification.dart';
+import 'package:insurancex/features/auth/presentation/pages/login_page.dart';
 
 void main() {
   testWidgets('Splash screen displays primary content', (
@@ -610,56 +611,60 @@ void main() {
     },
   );
 
-  testWidgets(
-    'successful Change Password returns through Security to Profile',
-    (WidgetTester tester) async {
-      await tester.pumpWidget(const InsureXApp());
-      final NavigatorState navigator = tester.state<NavigatorState>(
-        find.byType(Navigator),
-      );
-      unawaited(navigator.pushNamed(AppRoutes.dashboard));
-      await tester.pumpAndSettle();
+  testWidgets('successful Change Password redirects to Login', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const InsureXApp());
+    final NavigatorState navigator = tester.state<NavigatorState>(
+      find.byType(Navigator),
+    );
+    unawaited(navigator.pushNamed(AppRoutes.dashboard));
+    await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Profile'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('profile_settings_button')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('change_password_setting')));
-      await tester.pumpAndSettle();
+    await tester.tap(find.text('Profile'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('profile_settings_button')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('change_password_setting')));
+    await tester.pumpAndSettle();
 
-      expect(find.text('Change Password'), findsWidgets);
-      await tester.enterText(
-        find.descendant(
-          of: find.byKey(const Key('current_password_field')),
-          matching: find.byType(TextFormField),
-        ),
-        'Current@123',
-      );
-      await tester.enterText(
-        find.descendant(
-          of: find.byKey(const Key('new_password_field')),
-          matching: find.byType(TextFormField),
-        ),
-        'NewSecure1',
-      );
-      await tester.enterText(
-        find.descendant(
-          of: find.byKey(const Key('confirm_password_field')),
-          matching: find.byType(TextFormField),
-        ),
-        'NewSecure1',
-      );
-      final Finder action = find.byKey(const Key('change_password_button'));
-      await tester.ensureVisible(action);
-      await tester.tap(action);
-      await tester.pumpAndSettle();
+    expect(find.text('Change Password'), findsWidgets);
+    await tester.enterText(
+      find.descendant(
+        of: find.byKey(const Key('current_password_field')),
+        matching: find.byType(TextFormField),
+      ),
+      'Current@123',
+    );
+    await tester.enterText(
+      find.descendant(
+        of: find.byKey(const Key('new_password_field')),
+        matching: find.byType(TextFormField),
+      ),
+      'NewSecure1',
+    );
+    await tester.enterText(
+      find.descendant(
+        of: find.byKey(const Key('confirm_password_field')),
+        matching: find.byType(TextFormField),
+      ),
+      'NewSecure1',
+    );
+    final Finder action = find.byKey(const Key('change_password_button'));
+    await tester.ensureVisible(action);
+    await tester.tap(action);
+    await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('profile_account_menu')), findsOneWidget);
-      expect(find.byType(DashboardBottomNavigation), findsOneWidget);
-      expect(find.text('Password changed successfully.'), findsOneWidget);
-      expect(find.byKey(const Key('change_password_button')), findsNothing);
-    },
-  );
+    expect(find.byType(LoginPage), findsOneWidget);
+
+    expect(find.text('Welcome Back!'), findsOneWidget);
+
+    expect(find.byType(DashboardBottomNavigation), findsNothing);
+
+    expect(find.byKey(const Key('profile_account_menu')), findsNothing);
+
+    expect(find.byKey(const Key('change_password_button')), findsNothing);
+  });
 
   testWidgets('Profile Payments opens the existing payments history route', (
     WidgetTester tester,
