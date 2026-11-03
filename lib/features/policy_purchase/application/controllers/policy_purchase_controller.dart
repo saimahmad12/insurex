@@ -252,12 +252,28 @@ class PolicyPurchaseController extends ChangeNotifier {
     eligibility = null;
     _notify();
     try {
+      final DateTime? dateOfBirth = currentProfile.dateOfBirth;
+
+      if (dateOfBirth == null) {
+        eligibilityStatus = EligibilityCheckStatus.failure;
+
+        eligibility = null;
+
+        errorMessage = 'Add your date of birth before checking eligibility.';
+
+        _notify();
+
+        return null;
+      }
+
       final DateTime today = DateTime.now();
-      int age = today.year - currentProfile.dateOfBirth.year;
+
+      int age = today.year - dateOfBirth.year;
+
       if (DateTime(
         today.year,
-        currentProfile.dateOfBirth.month,
-        currentProfile.dateOfBirth.day,
+        dateOfBirth.month,
+        dateOfBirth.day,
       ).isAfter(today)) {
         age--;
       }

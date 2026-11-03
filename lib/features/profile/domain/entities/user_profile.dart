@@ -22,8 +22,8 @@ class UserProfile {
   final String fullName;
   final String emailAddress;
   final String mobileNumber;
-  final DateTime dateOfBirth;
-  final ProfileGender gender;
+  final DateTime? dateOfBirth;
+  final ProfileGender? gender;
   final String maskedIdentityNumber;
   final UserAddress address;
   final String role;

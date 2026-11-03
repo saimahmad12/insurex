@@ -44,8 +44,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   late final TextEditingController _addressController;
   late final TextEditingController _cityController;
   late final TextEditingController _countryController;
-  late DateTime _dateOfBirth;
-  late ProfileGender _gender;
+  DateTime? _dateOfBirth;
+  ProfileGender? _gender;
   late final ProfileFieldPermissions _permissions;
 
   @override
@@ -55,7 +55,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
     _permissions = widget.controller.fieldPermissions;
     _nameController = TextEditingController(text: profile.fullName);
     _dateOfBirth = profile.dateOfBirth;
-    _dateController = TextEditingController(text: _formatDate(_dateOfBirth));
+
+    _dateController = TextEditingController(
+      text: _dateOfBirth == null ? '' : _formatDate(_dateOfBirth!),
+    );
+
     _gender = profile.gender;
     _addressController = TextEditingController(
       text: profile.address.residentialAddress,
@@ -178,7 +182,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   else
                                     ProfileReadOnlyField(
                                       key: const Key('edit_profile_dob'),
-                                      value: _dateController.text,
+                                      value: _dateOfBirth == null
+                                          ? 'Not provided'
+                                          : _formatDate(_dateOfBirth!),
                                       label: 'Date of birth',
                                       prefixIcon: Icons.calendar_today_outlined,
                                       statusLabel: _identityFieldStatusLabel,
@@ -218,7 +224,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   else
                                     ProfileReadOnlyField(
                                       key: const Key('edit_profile_gender'),
-                                      value: _genderLabel(_gender),
+                                      value: _gender == null
+                                          ? 'Not provided'
+                                          : _genderLabel(_gender!),
                                       label: 'Gender',
                                       prefixIcon: Icons.people_outline,
                                       statusLabel: _identityFieldStatusLabel,
@@ -330,15 +338,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<void> _pickDate() async {
+    final DateTime now = DateTime.now();
+
+    final DateTime initialDate =
+        _dateOfBirth ?? DateTime(now.year - 18, now.month, now.day);
+
     final DateTime? selected = await showDatePicker(
       context: context,
-      initialDate: _dateOfBirth,
+      initialDate: initialDate,
       firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
+      lastDate: now,
     );
+
     if (selected == null || !mounted) {
       return;
     }
+
     setState(() {
       _dateOfBirth = selected;
       _dateController.text = _formatDate(selected);
