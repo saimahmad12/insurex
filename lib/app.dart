@@ -117,6 +117,7 @@ import 'features/profile/presentation/pages/notification_settings_page.dart';
 import 'features/profile/presentation/pages/profile_page.dart';
 import 'features/profile/presentation/pages/saved_payout_methods_page.dart';
 import 'features/profile/presentation/pages/security_settings_page.dart';
+import 'features/profile/data/repositories/api_profile_repository.dart';
 
 // ============================================================
 // DASHBOARD
@@ -210,7 +211,8 @@ class _InsureXAppState extends State<InsureXApp> {
   bool _sessionRestored = false;
   late final MockClaimStatusRepository _claimsRepository;
   late final MockClaimPayoutRepository _payoutRepository;
-  late final MockProfileRepository _profileRepository;
+  late final MockProfileRepository _localProfileRepository;
+  late final ProfileRepository _profileRepository;
   late final IdentityVerificationRepository _identityVerificationRepository;
   late final MockNotificationPreferencesRepository
   _notificationPreferencesRepository;
@@ -232,17 +234,21 @@ class _InsureXAppState extends State<InsureXApp> {
     _payoutRepository = MockClaimPayoutRepository(
       claimsRepository: _claimsRepository,
     );
-    _profileRepository = MockProfileRepository(
+    _localProfileRepository = MockProfileRepository(
       initialVerificationStatus: widget.initialVerificationStatus,
       verificationOutcome: IdentityVerificationStatus.verified,
     );
+
+    _profileRepository = widget.authTokenStorage != null
+        ? ApiProfileRepository(tokenStorage: widget.authTokenStorage!)
+        : _localProfileRepository;
+
     _identityVerificationRepository = widget.authTokenStorage != null
         ? ApiIdentityVerificationRepository(
             tokenStorage: widget.authTokenStorage!,
-            canonicalAccountNameLoader:
-                _profileRepository.getCanonicalAccountName,
+            canonicalAccountNameLoader: _loadCanonicalAccountName,
           )
-        : _profileRepository;
+        : _localProfileRepository;
     _notificationPreferencesRepository =
         MockNotificationPreferencesRepository();
     final MockSecurityRepository localSecurityRepository =
@@ -277,6 +283,16 @@ class _InsureXAppState extends State<InsureXApp> {
     } else {
       _sessionResolved = true;
     }
+  }
+
+  Future<String> _loadCanonicalAccountName() async {
+    final UserProfile? profile = await _profileRepository.getProfile();
+
+    if (profile == null || profile.fullName.trim().isEmpty) {
+      throw StateError('The account name is unavailable.');
+    }
+
+    return profile.fullName.trim();
   }
 
   Future<void> _restoreSession() async {
@@ -408,11 +424,11 @@ class _InsureXAppState extends State<InsureXApp> {
                 ? ApiSignupRepository(
                     authRepository: widget.authRepository!,
                     initializeAccountName:
-                        _profileRepository.initializeUnverifiedAccountName,
+                        _localProfileRepository.initializeUnverifiedAccountName,
                   )
                 : MockSignupRepository(
                     initializeAccountName:
-                        _profileRepository.initializeUnverifiedAccountName,
+                        _localProfileRepository.initializeUnverifiedAccountName,
                   ),
             identityRepository: _identityVerificationRepository,
           );
